@@ -320,7 +320,7 @@ class LoginWindow(QWidget):
                 <p>Usa este código para continuar con el proceso de recuperación:</p>
                 <h3>{recovery_code}</h3>
                 <p>Si no solicitaste este cambio, ignora este mensaje.</p>
-                <p>Para más ayuda, contacta a <a href='mailto:gestionStock@gmail.com'>gestionstockdb@gmail.com</a>.</p>
+                <p>Para más ayuda, contacta a <a href='mailto:gestionstockdb@gmail.com'>gestionstockdb@gmail.com</a>.</p>
             </body>
         </html>
         """
@@ -334,7 +334,7 @@ class LoginWindow(QWidget):
         try:
             with smtplib.SMTP('smtp.gmail.com', 587) as server:
                 server.starttls()
-                server.login(sender_email, "tjjw gvdp tlot rege")  # Configura tu contraseña de aplicación
+                server.login(sender_email, "tjjw gvdp tlot rege")
                 server.sendmail(sender_email, recipient_email, msg.as_string())
                 print("Correo de recuperación enviado con éxito.")
         except Exception as e:

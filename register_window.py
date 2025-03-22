@@ -286,7 +286,7 @@ class RegisterWindow(QWidget):
 
     def send_welcome_email(self, recipient_email):
         """Envía un correo de bienvenida tras el registro con imagen y datos de contacto."""
-        sender_email = "gestionstock@gmail.com"
+        sender_email = "gestionstockdb@gmail.com"
         subject = "¡Bienvenido a Gestión de Stock!"
         body = """
         <html>
@@ -294,9 +294,9 @@ class RegisterWindow(QWidget):
                 <h2>¡Hola!</h2>
                 <p>Gracias por registrarte en el programa de Gestión de Stock.</p>
                 <p>Estamos encantados de tenerte con nosotros.</p>
-                <p>Si necesitas ayuda, no dudes en escribirnos a <a href='mailto:gestionstock@gmail.com'>gestionSçstock@gmail.com</a> o <a href='mailto:mariotomecore@gmail.com'>mariotomecore@gmail.com</a>.</p>
+                <p>Si necesitas ayuda, no dudes en escribirnos a <a href='mailto:gestionstockdb@gmail.com'>gestionstockdb@gmail.com</a> o <a href='mailto:mariotomecore@gmail.com'>mariotomecore@gmail.com</a>.</p>
                 <br>
-                <img src='cid:thanks_image' width='400'/>
+                <img src='cid:gracias' width='400'/>
                 <p>Saludos,<br>El equipo de Gestión de Stock.</p>
             </body>
         </html>
@@ -309,7 +309,7 @@ class RegisterWindow(QWidget):
         msg.attach(MIMEText(body, 'html'))
 
         try:
-            with open("images/thanks.png", "rb") as img_file:
+            with open("images/gracias.png", "rb") as img_file:
                 img = MIMEImage(img_file.read())
                 img.add_header('Content-ID', '<thanks_image>')
                 msg.attach(img)
@@ -319,7 +319,7 @@ class RegisterWindow(QWidget):
         try:
             with smtplib.SMTP('smtp.gmail.com', 587) as server:
                 server.starttls()
-                server.login(sender_email, "TU_CONTRASEÑA_AQUÍ")  # Configura tu contraseña correctamente
+                server.login(sender_email, "tjjw gvdp tlot rege")  # Configura tu contraseña correctamente
                 server.sendmail(sender_email, recipient_email, msg.as_string())
                 print("Correo de bienvenida enviado con éxito.")
         except Exception as e:
