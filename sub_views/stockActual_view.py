@@ -1,5 +1,8 @@
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QGridLayout, QFrame, QMessageBox, QDialog, QFormLayout, QLineEdit, QComboBox
+    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
+    QLabel, QGridLayout, QFrame, QMessageBox, QDialog, 
+    QFormLayout, QLineEdit, QComboBox, QScrollArea,
+    QSpacerItem, QSizePolicy
 )
 from PyQt5.QtGui import QFont, QIcon, QColor, QPixmap
 from PyQt5.QtCore import Qt, QSize
@@ -18,16 +21,37 @@ class StockActualView(QWidget):
         self.load_stock_data()
 
     def initUI(self):
-        layout = QVBoxLayout(self)
-        self.grid_layout = QGridLayout()
-        layout.addLayout(self.grid_layout)
+        main_layout = QVBoxLayout(self)
 
-        # Botones de gestión
+        # 👉 Crear el área scrollable SOLO para las cards
+        scroll_area = QScrollArea(self)
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setStyleSheet("""
+            QScrollArea {
+                border: none;
+            }
+            QScrollBar:vertical {
+                width: 0px;
+            }
+            QScrollBar:horizontal {
+                height: 0px;
+            }
+        """)
+
+        self.scroll_content = QWidget()
+        scroll_layout = QVBoxLayout(self.scroll_content)
+        scroll_area.setWidget(self.scroll_content)
+
+        # 👉 Crear el layout para las cards
+        self.grid_layout = QGridLayout()
+        scroll_layout.addLayout(self.grid_layout)
+
+        # 👉 Sección FIJA para los botones (NO será parte del scroll)
         btn_layout = QHBoxLayout()
         self.btn_add = QPushButton(" Añadir Producto")
-        self.btn_assign = QPushButton(" Asignar Producto/s a Mobiliario")
+        self.btn_assign = QPushButton(" Asignar Producto a Mobiliario")
         self.btn_export = QPushButton(" Exportar a Excel")
-        
+
         self.btn_add.setIcon(QIcon("images/add.png"))
         self.btn_assign.setIcon(QIcon("images/assign.png"))
         self.btn_export.setIcon(QIcon("images/excel.png"))
@@ -56,7 +80,7 @@ class StockActualView(QWidget):
         self.btn_add.setStyleSheet(button_style)
         self.btn_assign.setStyleSheet(button_style)
         self.btn_export.setStyleSheet(button_style)
-        
+
         self.btn_add.clicked.connect(self.add_product)
         self.btn_assign.clicked.connect(self.assign_product)
         self.btn_export.clicked.connect(self.export_to_excel)
@@ -64,10 +88,13 @@ class StockActualView(QWidget):
         btn_layout.addWidget(self.btn_add)
         btn_layout.addWidget(self.btn_assign)
         btn_layout.addWidget(self.btn_export)
-        layout.addStretch()
-        layout.addLayout(btn_layout)
 
-        self.setLayout(layout)
+        # 👉 Añadir los elementos principales al layout
+        main_layout.addWidget(scroll_area)  # ✅ Zona Scrollable
+        main_layout.addLayout(btn_layout)    # ✅ Zona Fija para los botones
+
+        self.setLayout(main_layout)
+
     
     def load_stock_data(self):
         response = requests.get(f"{API_BASE_URL}/productos/listar")
@@ -84,7 +111,9 @@ class StockActualView(QWidget):
         for i, producto in enumerate(productos):
             card = self.create_product_card(producto)
             self.grid_layout.addWidget(card, i // 3, i % 3)
-    
+        
+        self.grid_layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
+
     def create_product_card(self, producto):
         card = QFrame()
         card.setStyleSheet("""

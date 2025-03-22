@@ -89,7 +89,7 @@ class EditProductDialog(QDialog):
         spacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
         layout.addItem(spacer)
 
-        self.btn_confirm = QPushButton("Confirmar Cambios")
+        self.btn_confirm = QPushButton("Guardar")
         self.btn_confirm.setIcon(QIcon("images/check.png"))
         self.btn_confirm.clicked.connect(self.save_edited_product)
 
@@ -98,8 +98,8 @@ class EditProductDialog(QDialog):
         self.btn_cancel.setObjectName("btn_cancel")
         self.btn_cancel.clicked.connect(self.reject)
 
-        self.btn_delete = QPushButton("Eliminar Producto")
-        self.btn_delete.setIcon(QIcon("images/delete.png"))
+        self.btn_delete = QPushButton("Eliminar")
+        self.btn_delete.setIcon(QIcon("images/basura.png"))
         self.btn_delete.setStyleSheet("background-color: #E74C3C;")
         self.btn_delete.clicked.connect(self.confirm_delete_product)
 
