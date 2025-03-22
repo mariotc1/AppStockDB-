@@ -55,6 +55,7 @@ class StyledLineEdit(QLineEdit):
                 border-radius: 15px;
                 background: transparent;
                 color: white;
+                font-size: 16px;
             }
             QLineEdit:focus {
                 border-color: #FF8C00;
@@ -66,6 +67,8 @@ class StyledLineEdit(QLineEdit):
         icon_label.setPixmap(QIcon(icon).pixmap(QSize(24, 24)))
         icon_label.setStyleSheet("background: transparent;")
         icon_label.move(10, 8)
+
+
 class PasswordField(QHBoxLayout):
     def __init__(self, placeholder, icon):
         super().__init__()
@@ -79,6 +82,7 @@ class PasswordField(QHBoxLayout):
                 border-radius: 15px;
                 background: transparent;
                 color: white;
+                font-size: 16px;
             }
             QLineEdit:focus {
                 border-color: #FF8C00;
@@ -87,7 +91,7 @@ class PasswordField(QHBoxLayout):
         self.addWidget(self.line_edit)
 
         self.eye_button = QPushButton()
-        self.eye_button.setIcon(QIcon("images/ojo_cerrado.png"))
+        self.eye_button.setIcon(QIcon("images/icon_eye_off.png"))
         self.eye_button.setIconSize(QSize(24, 24))
         self.eye_button.setCheckable(True)
         self.eye_button.setStyleSheet("background: transparent; border: none;")
@@ -97,10 +101,10 @@ class PasswordField(QHBoxLayout):
     def toggle_password_visibility(self):
         if self.eye_button.isChecked():
             self.line_edit.setEchoMode(QLineEdit.Normal)
-            self.eye_button.setIcon(QIcon("images/ojo_abierto.png"))
+            self.eye_button.setIcon(QIcon("images/icon_eye.png"))
         else:
             self.line_edit.setEchoMode(QLineEdit.Password)
-            self.eye_button.setIcon(QIcon("images/ojo_cerrado.png"))
+            self.eye_button.setIcon(QIcon("images/icon_eye_off.png"))
 
     def text(self):
         return self.line_edit.text()
@@ -197,20 +201,19 @@ class MiPerfilView(QWidget):
             self.email_input.setText(user_data.get("email", ""))
 
             profile_pic_url = user_data.get("profile_picture", "")
-            if profile_pic_url:
+            pixmap = QPixmap()
+
+            if profile_pic_url.startswith("http"):
                 try:
                     img_data = requests.get(profile_pic_url).content
-                    pixmap = QPixmap()
                     pixmap.loadFromData(BytesIO(img_data).read())
-                    self.set_profile_picture(pixmap)
-
-                    # 🔥 Emitir la señal para que la imagen se actualice en el menú lateral
-                    self.profile_pic_updated.emit(profile_pic_url)
-
                 except Exception as e:
-                    print(f"Error al cargar la imagen de perfil: {e}")
+                    print(f"Error al cargar la imagen de perfil desde la URL: {e}")
+                    pixmap.load("images/usuario.png")
             else:
-                self.set_profile_picture(QPixmap("images/usuario.png"))
+                pixmap.load("images/usuario.png")
+
+            self.set_profile_picture(pixmap)
 
     def enable_name_edit(self):
         """Habilita la edición del nombre"""
@@ -227,7 +230,7 @@ class MiPerfilView(QWidget):
                 color: black;
                 border: 2px solid #FFA500;
                 border-radius: 12px;
-                font-size: 14px;
+                font-size: 16px;
             }
             QLabel {
                 color: black;
