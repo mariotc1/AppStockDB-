@@ -109,15 +109,17 @@ class InfoView(QWidget):
         grid_layout.setSpacing(20)
         grid_layout.setAlignment(Qt.AlignCenter)
 
+        # Card Navegación inteigente: explicaión + video
         card_nav = self.createCard("images/navigation.png", 
                                    "Navegación Inteligente",
                                      "• Menú lateral expandible al acercar el ratón\n"
                                      "• Acceso rápido a todas las secciones\n"
                                      "• Atajos de teclado personalizables\n"
                                      "• Historial de navegación integrado\n", 
-                                     "navInteligente.mp4")
+                                     "navegacionInteligente.mp4")
         grid_layout.addWidget(card_nav, 0, 0)
 
+        # Card Personalización de tu Perfil: explicación + video
         card_op = self.createCard("images/usuario.png", 
                                 "Personalización de Tu Perfil", 
                                 "• Cambia la imagen de perfil por una personalizada\n"
@@ -125,10 +127,11 @@ class InfoView(QWidget):
                                 "• Edita tu nombre de usuario\n"
                                 "• Consulta el correo con el que está registrado\n"
                                 "• Cambia tu contraseña si lo necesitas!", 
-                                "miPerfil.mp4")
+                                "usomiPerfil.mp4")
 
         grid_layout.addWidget(card_op, 0, 1)
 
+        # Card Gestión de Moviliario Avanzada: explicación + *falta el video
         card_mob = self.createCard("images/furniture.png", 
                                    "Gestión de Mobiliario Avanzada", 
                                    "• Gestión integral del ciclo de vida del mobiliario\n"
@@ -138,13 +141,14 @@ class InfoView(QWidget):
                                    "video3.mp4")
         grid_layout.addWidget(card_mob, 1, 0)
 
+        # Card Chat Bot: explicación + video
         card_chat = self.createCard("images/chatbot_icon.png", 
                                     "Chat-Bot Inteligente", 
                                     "• Asistente virtual para la resolución de tus dudas sobre la app\n"
                                     "• Aprendizaje continuo basado en interacciones\n"
                                     "• Análisis de sentimientos para mejorar la experiencia\n"
                                     "• Integración con base de conocimientos", 
-                                    "chatBot.mp4")
+                                    "usoChatBot.mp4")
         grid_layout.addWidget(card_chat, 1, 1)
 
         main_layout.addLayout(grid_layout)
