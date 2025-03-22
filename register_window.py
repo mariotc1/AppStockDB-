@@ -1,18 +1,26 @@
-import sys
-import math
-import requests
-import re
-import smtplib
+import sys, math, requests, re, smtplib
+
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.image import MIMEImage
-from PyQt5.QtCore import Qt, QTimer, QPropertyAnimation, QEasingCurve, QSize
-from PyQt5.QtGui import QPainter, QPixmap, QTransform, QLinearGradient, QBrush, QColor, QFont, QIcon
-from PyQt5.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QToolButton,
-    QGraphicsOpacityEffect, QLineEdit, QProgressBar, QGraphicsDropShadowEffect, QMessageBox
+
+from PyQt5.QtCore import (
+     Qt, QTimer, QPropertyAnimation, 
+     QEasingCurve, QSize
 )
 
+from PyQt5.QtGui import (
+    QPainter, QPixmap, QTransform, QLinearGradient, 
+    QBrush, QColor, QFont, QIcon
+)
+
+from PyQt5.QtWidgets import (
+    QApplication, QWidget, QVBoxLayout, QHBoxLayout, 
+    QLabel, QPushButton, QToolButton, QGraphicsOpacityEffect, 
+    QLineEdit, QProgressBar, QGraphicsDropShadowEffect, QMessageBox
+)
+
+# Clase de Registro
 class RegisterWindow(QWidget):
     def __init__(self):
         super().__init__()

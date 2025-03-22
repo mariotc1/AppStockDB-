@@ -1,19 +1,27 @@
 import sys, math, requests
+
 from io import BytesIO  
+
 from PyQt5.QtCore import (
     Qt, QTimer, QPropertyAnimation, QEasingCurve, QSize, 
     QEvent, QRect, QPoint, QTimer,QCoreApplication
 )
+
 from PyQt5.QtGui import (
     QPainter, QPixmap, QTransform, QLinearGradient, QBrush, 
     QColor, QFont, QIcon,QBitmap, QMovie
 )
+
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
     QStackedWidget, QFrame, QGraphicsOpacityEffect, QSizePolicy, QTextEdit,
     QDialog, QVBoxLayout, QMessageBox
 )
-        
+
+# Importación de los efectos/animaciones
+from animations.lateral_menu_button import LateralMenuButton
+from animations.rotating_logo_mw import RotatingLogo
+
 # Importación de las vistas
 from views.habitaciones_view import HabitacionesView
 from views.electrodomesticos_view import ElectrodomesticosView
@@ -22,110 +30,36 @@ from views.bano_view import BanoView
 from views.info_view import InfoView
 from views.miPerfil_view import MiPerfilView
 
+# URL para la conexión y uso de la api rest
 API_BASE_URL = "http://localhost:5000"
 
-class LateralMenuButton(QPushButton):
-    def __init__(self, text, icon_path, is_main_view=True, parent=None):
-        super().__init__("", parent)
-        self.full_text = text
-        self.full_icon = QIcon(icon_path)
-        self.setIcon(self.full_icon)
-        self.setIconSize(QSize(32, 32))
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        self.setMinimumHeight(60)
-        self.is_main_view = is_main_view
-        self.setExpanded(False)
 
-    def setExpanded(self, expanded: bool):
-        if expanded:
-            text_color = "white" if self.is_main_view else "black"
-            font_weight = "bold"
-            font_size = "16px" if self.is_main_view else "14px"
-            self.setText("  " + self.full_text)
-            self.setStyleSheet(f"""
-                QPushButton {{
-                    background-color: rgba(255, 255, 255, 0.1);
-                    color: {text_color};
-                    border: none;
-                    border-radius: 5px;
-                    font-size: {font_size};
-                    font-weight: {font_weight};
-                    text-align: left;
-                    padding: 10px;
-                }}
-                QPushButton:hover {{
-                    background-color: rgba(255, 165, 0, 0.8);
-                }}
-            """)
-        else:
-            self.setText("")
-            self.setStyleSheet("""
-                QPushButton {
-                    background-color: transparent;
-                    border: none;
-                    border-radius: 5px;
-                    text-align: center;
-                    padding: 10px;
-                }
-                QPushButton:hover {
-                    background-color: rgba(255, 165, 0, 0.8);
-                }
-            """)
-        self.update()
-
-class RotatingLogo(QWidget):
-    def __init__(self, logo_path="images/logoDB_Blanco.png", parent=None):
-        super().__init__(parent)
-        self.logo = QPixmap(logo_path)
-        self.logo = self.logo.scaled(60, 60, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        self.angle = 0
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.updateRotation)
-        self.timer.start(50)
-        self.setFixedSize(60, 60)
-
-    def updateRotation(self):
-        self.angle = (self.angle + 1) % 360
-        self.update()
-
-    def paintEvent(self, event):
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
-        rect = self.rect()
-        center_x = rect.width() // 2
-        center_y = rect.height() // 2
-        angle_radians = math.radians(self.angle)
-        scale_x = abs(math.cos(angle_radians))
-        transform = QTransform()
-        transform.translate(center_x, center_y)
-        transform.scale(scale_x, 1.0)
-        transform.translate(-self.logo.width() // 2, -self.logo.height() // 2)
-        painter.setTransform(transform)
-        painter.drawPixmap(0, 0, self.logo)
-        painter.resetTransform()
-
-
-# Clase principal MainWindow
+# Clase principal de la app
 class MainWindow(QWidget):
     def __init__(self, user_id):
         super().__init__()
-        self.user_id = user_id  # ✅ Ahora sí recibe el ID desde LoginWindow
+        self.user_id = user_id 
+        
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.showFullScreen()
+        
         self.collapsed_width = 60
         self.expanded_width = 320
+        
         self.initUI()
         self.fadeIn()
 
+    # Creación de la interfaz de la app
     def initUI(self):
         self.main_layout = QHBoxLayout(self)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.main_layout.setSpacing(0)
 
-        # MENÚ LATERAL
+        # Menú lateral
         self.lateral_menu = QWidget()
         self.lateral_menu.setMinimumWidth(self.collapsed_width)
         self.lateral_menu.setMaximumWidth(self.collapsed_width)
+        
         lateral_layout = QVBoxLayout(self.lateral_menu)
         lateral_layout.setContentsMargins(5, 10, 5, 10)
         lateral_layout.setSpacing(10)
@@ -133,9 +67,13 @@ class MainWindow(QWidget):
         self.logo_widget = RotatingLogo()
         lateral_layout.addWidget(self.logo_widget, alignment=Qt.AlignCenter)
 
-        # Crear botones con vistas
-        menu_items = ["Información del programa", "Mi Perfil", "Mobiliario Habitaciones", 
-                    "Mobiliario Electrodomesticos", "Mobiliario Zonas Comunes", "Mobiliario Baño"]
+        # Creo los botones de las vistas
+        menu_items = ["Información del programa", 
+                      "Mi Perfil", 
+                      "Mobiliario Habitaciones", 
+                      "Mobiliario Electrodomesticos", 
+                      "Mobiliario Zonas Comunes", 
+                      "Mobiliario Baño"]
 
         menu_icons = {
             "Información del programa": "images/informacion.png",
@@ -148,20 +86,20 @@ class MainWindow(QWidget):
 
         self.menu_buttons = []
 
-        # Crear el botón "Información del programa" (Primero)
+        # Creo el botón de la vista Información del programa
         info_button = LateralMenuButton("Información del programa", menu_icons["Información del programa"], is_main_view=True)
         info_button.clicked.connect(lambda: self.showView("Información del programa"))
         lateral_layout.addWidget(info_button)
         self.menu_buttons.append(info_button)
 
-        # Crear el botón "Mi Perfil" (Segundo)
+        # Creo el botón de la vista Mi Perfil
         self.user_icon_button = LateralMenuButton("Mi Perfil", "images/usuario.png", is_main_view=True)
         self.user_icon_button.setIcon(self.createCircularIcon("images/usuario.png"))
         self.user_icon_button.clicked.connect(lambda: self.showView("Mi Perfil"))
         lateral_layout.addWidget(self.user_icon_button)
         self.menu_buttons.append(self.user_icon_button)
 
-        # Crear el resto de botones
+        # Creo el resto de botones
         for item in menu_items[2:]:
             icon_path = menu_icons.get(item, "images/default.png")
             btn = LateralMenuButton(item, icon_path, is_main_view=True)
@@ -184,13 +122,13 @@ class MainWindow(QWidget):
 
         self.main_layout.addWidget(self.lateral_menu)
 
-        # ÁREA DE CONTENIDO
+        # El área de contenido
         content_widget = QWidget()
         content_layout = QVBoxLayout(content_widget)
         content_layout.setContentsMargins(0, 0, 0, 0)
         content_layout.setSpacing(5)
 
-        # CABECERA
+        # La ccabecera: título de la app + logo con el giro 360º
         header = QWidget()
         header_layout = QHBoxLayout(header)
         header_layout.setContentsMargins(5, 5, 5, 5)
@@ -202,16 +140,15 @@ class MainWindow(QWidget):
         header_layout.addStretch()
         content_layout.addWidget(header)
 
-        # ✅ CORRECTO: Definir content_stack antes de usarlo
-        self.content_stack = QStackedWidget()  # 🔥 Crear el QStackedWidget primero
+        # Defino el content_stack para luego usarlo
+        self.content_stack = QStackedWidget()
         self.content_stack.setMaximumHeight(self.height() - 100)
         self.content_stack.update()
         self.update()
 
-        # Ahora sí puedes agregarlo al layout
-        content_layout.addWidget(self.content_stack, stretch=1)  # ✅ Ahora sí es correcto
+        content_layout.addWidget(self.content_stack, stretch=1)
 
-        # Vistas
+        # Añado las vistas (situadas en la carpeta views)
         self.info_view = InfoView()
         self.miPerfil_view = MiPerfilView(user_id=self.user_id)  
         self.habitaciones_view = HabitacionesView()
@@ -242,9 +179,11 @@ class MainWindow(QWidget):
         self.load_profile_picture()
         self.miPerfil_view.profile_pic_updated.connect(self.updateUserIcon)
 
+
+    # Actualiza el icono del usuario en el menú lateral en tiempo real con formato circular
     def updateUserIcon(self, new_icon_path):
-        """Actualiza el icono del usuario en el menú lateral en tiempo real con formato circular."""
         try:
+
             if new_icon_path.startswith("http"):  
                 img_data = requests.get(new_icon_path).content
                 pixmap = QPixmap()
@@ -259,17 +198,21 @@ class MainWindow(QWidget):
             self.user_icon_button.setIcon(self.createCircularIcon("images/usuario.png"))  # Imagen por defecto
 
 
+    # Cargo la foto de perfil del usuario desde la API al iniciar la app
     def load_profile_picture(self):
-        """Carga la foto de perfil del usuario desde la API al iniciar la aplicación"""
         try:
+
             response = requests.get(f"{API_BASE_URL}/get-user/{self.user_id}")
+
             if response.status_code == 200:
+
                 user_data = response.json()
                 profile_pic_url = user_data.get("profile_picture", "")
 
-                # 🔥 Verificar si la imagen está en la API o si se trata de la imagen por defecto
+                # Verifico si la imagen está en la API o si sino poner la imagen por defecto
                 if profile_pic_url.startswith("http"):
                     self.updateUserIcon(profile_pic_url)
+
                 else:
                     self.updateUserIcon("images/usuario.png")  # Imagen por defecto si no hay personalizada
 
@@ -281,11 +224,12 @@ class MainWindow(QWidget):
             print(f"Error al cargar la imagen de perfil al iniciar la app: {e}")
             self.updateUserIcon("images/usuario.png")
 
+
+    # Creo un icono circular a partir de una imagen
     def createCircularIcon(self, image_path, icon_size=32):
-        """Crea un icono circular a partir de una imagen."""
         pixmap = QPixmap(image_path).scaled(icon_size, icon_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
 
-        # Crear una máscara circular
+        # Creo una máscara circular
         mask = QBitmap(pixmap.size())
         mask.fill(Qt.color0)
         painter = QPainter(mask)
@@ -293,11 +237,12 @@ class MainWindow(QWidget):
         painter.drawEllipse(0, 0, pixmap.width(), pixmap.height())
         painter.end()
 
-        # Aplicar la máscara circular
         pixmap.setMask(mask)
 
         return QIcon(pixmap)
 
+
+    # Filtro de eventos que expande un menú lateral al pasar el mouse por encima y lo colapsa al alejarse
     def eventFilter(self, source, event):
         if source == self.lateral_menu:
             if event.type() == QEvent.Enter:
@@ -306,6 +251,8 @@ class MainWindow(QWidget):
                 self.collapseMenu()
         return super().eventFilter(source, event)
 
+
+    # Expande el menú lateral mediante una animación suave
     def expandMenu(self):
         anim = QPropertyAnimation(self.lateral_menu, b"maximumWidth")
         anim.setDuration(300)
@@ -316,7 +263,9 @@ class MainWindow(QWidget):
         self.menu_anim = anim
         for btn in self.menu_buttons:
             btn.setExpanded(True)
-
+    
+    
+    # Colapsa el menú lateral mediante una animación suave
     def collapseMenu(self):
         anim = QPropertyAnimation(self.lateral_menu, b"maximumWidth")
         anim.setDuration(300)
@@ -328,6 +277,8 @@ class MainWindow(QWidget):
         for btn in self.menu_buttons:
             btn.setExpanded(False)
 
+
+    # Mostrar la vista
     def showView(self, view_name):
         print(f"Mostrando vista: {view_name}")
         widget = self.views.get(view_name)
@@ -336,6 +287,8 @@ class MainWindow(QWidget):
         else:
             print("Vista no definida.")
 
+
+    # Volver a la pantalla de Bienvenida
     def volverWelcome(self):
         print("Volviendo a la pantalla de bienvenida...")
         from welcome_window import WelcomeWindow
@@ -343,10 +296,14 @@ class MainWindow(QWidget):
         self.welcome_window.show()
         self.close()
 
+
+    # Cerrar la app
     def closeApp(self):
         print("Cerrando aplicación...")
         self.close()
 
+
+    # Efecto de desvanecimiento
     def fadeIn(self):
         effect = QGraphicsOpacityEffect(self)
         self.setGraphicsEffect(effect)
@@ -358,6 +315,8 @@ class MainWindow(QWidget):
         anim.start()
         self.fade_anim = anim
 
+
+    # 'Pinto' el fondo de la pantalla con un degradado de negro a naranja
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)

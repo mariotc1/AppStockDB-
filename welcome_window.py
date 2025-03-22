@@ -1,72 +1,30 @@
 import sys
-import math
-import os
-from PyQt5.QtCore import Qt, QTimer, QPropertyAnimation, QEasingCurve, QPoint, QSequentialAnimationGroup, QParallelAnimationGroup
-from PyQt5.QtGui import QPainter, QPixmap, QTransform, QLinearGradient, QBrush, QColor, QFont, QIcon
-from PyQt5.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QGraphicsOpacityEffect, QGraphicsDropShadowEffect
+
+from PyQt5.QtCore import (
+    Qt, QPropertyAnimation, QEasingCurve, QPoint, 
+    QSequentialAnimationGroup, QParallelAnimationGroup
 )
 
-# Ruta de las imágenes
+from PyQt5.QtGui import ( 
+    QPainter, QLinearGradient, 
+    QBrush, QColor, QFont, QIcon
+)
+
+from PyQt5.QtWidgets import (
+    QApplication, QWidget, QVBoxLayout, QHBoxLayout, 
+    QLabel, QPushButton, QGraphicsOpacityEffect, QGraphicsDropShadowEffect
+)
+
+from animations.rotating_logo import RotatingLogoWidget
+from animations.typewriter_label import TypewriterLabel
+
+
+# Ruta de las imágenes: logo, cerrar y refrescar
 LOGO_PATH = "images/logoDB_Blanco.png"
 REFRESH_ICON_PATH = "images/refrescar.png"
 CLOSE_ICON_PATH = "images/cerrar.png"
 
-class RotatingLogoWidget(QWidget):
-    def __init__(self, logo_path, parent=None):
-        super().__init__(parent)
-        self.logo_path = logo_path
-        self.loadLogo()
-        self.angle = 0
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.updateRotation)
-        self.timer.start(50)
-        self.setFixedSize(300, 300)
-
-    def loadLogo(self):
-        """Carga el logo y lo escala."""
-        if os.path.exists(self.logo_path):
-            self.logo = QPixmap(self.logo_path)
-            self.logo = self.logo.scaled(200, 200, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        else:
-            print(f"Error: No se encontró el logo en '{self.logo_path}'")
-            self.logo = QPixmap()
-
-    def updateRotation(self):
-        self.angle = (self.angle + 1) % 360
-        self.update()
-
-    def paintEvent(self, event):
-        painter = QPainter(self)
-        center_x = self.width() // 2
-        center_y = self.height() // 2
-        angle_radians = math.radians(self.angle)
-        scale_x = abs(math.cos(angle_radians))
-        transform = QTransform()
-        transform.translate(center_x, center_y)
-        transform.scale(scale_x, 1.0)
-        transform.translate(-self.logo.width() // 2, -self.logo.height() // 2)
-        painter.setTransform(transform)
-        painter.drawPixmap(0, 0, self.logo)
-        painter.resetTransform()
-
-class TypewriterLabel(QLabel):
-    def __init__(self, text, parent=None):
-        super().__init__(parent)
-        self.full_text = text
-        self.current_text = ""
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.updateText)
-        self.timer.start(50)
-
-    def updateText(self):
-        if len(self.current_text) < len(self.full_text):
-            self.current_text += self.full_text[len(self.current_text)]
-            self.setText(self.current_text)
-        else:
-            self.timer.stop()
-
+# Pantalla de Bienvenida 
 class WelcomeWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -76,6 +34,7 @@ class WelcomeWindow(QWidget):
         self.showFullScreen() 
         self.initUI()
 
+    # Creacion de la interfaz
     def initUI(self):
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(20, 20, 20, 20)
@@ -84,10 +43,14 @@ class WelcomeWindow(QWidget):
         top_buttons_layout = QHBoxLayout()
         self.refresh_button = QPushButton(QIcon(REFRESH_ICON_PATH), "")
         self.close_button = QPushButton(QIcon(CLOSE_ICON_PATH), "")
+        
         self.refresh_button.setFixedSize(40, 40)
         self.close_button.setFixedSize(40, 40)
+        
         self.refresh_button.clicked.connect(self.refreshApp)
         self.close_button.clicked.connect(self.close)
+        
+        # Estilo de los botones de refrescar y cerrar
         btn_style = """
             QPushButton {
                 background-color: rgba(255, 255, 255, 50);
@@ -98,16 +61,20 @@ class WelcomeWindow(QWidget):
                 background-color: rgba(255, 255, 255, 100);
             }
         """
+        
         self.refresh_button.setStyleSheet(btn_style)
         self.close_button.setStyleSheet(btn_style)
+        
         self.applyShadow(self.refresh_button)
         self.applyShadow(self.close_button)
+        
         top_buttons_layout.addStretch()
         top_buttons_layout.addWidget(self.refresh_button)
         top_buttons_layout.addWidget(self.close_button)
+        
         main_layout.addLayout(top_buttons_layout)
 
-        # Logo rotatorio
+        # Logo con el efecto de giro 360º
         self.rotating_logo = RotatingLogoWidget(LOGO_PATH)
         main_layout.addWidget(self.rotating_logo, alignment=Qt.AlignCenter)
 
@@ -151,13 +118,16 @@ class WelcomeWindow(QWidget):
         """
         self.btn_login.setStyleSheet(btn_gradient_style)
         self.btn_register.setStyleSheet(btn_gradient_style)
+        
         self.applyShadow(self.btn_login)
         self.applyShadow(self.btn_register)
+        
         button_layout.addWidget(self.btn_login)
         button_layout.addWidget(self.btn_register)
 
         content_layout.addWidget(self.title_label)
         content_layout.addWidget(self.subtitle_label)
+        
         content_layout.addSpacing(40)
         content_layout.addLayout(button_layout)
 
@@ -166,13 +136,14 @@ class WelcomeWindow(QWidget):
         self.tagline_label.setFont(QFont("Courier", 14, QFont.StyleItalic))
         self.tagline_label.setStyleSheet("color: white;")
         self.tagline_label.setAlignment(Qt.AlignCenter)
+        
         content_layout.addSpacing(20)
         content_layout.addWidget(self.tagline_label)
 
         main_layout.addLayout(content_layout)
         main_layout.addStretch()
 
-        # Etiqueta del pie de página
+        # Footer
         footer_label = QLabel("© 2025 DB Inmuebles. Todos los derechos reservados.")
         footer_label.setStyleSheet("color: white; font-size: 18px;")
         footer_label.setAlignment(Qt.AlignCenter)
@@ -187,8 +158,9 @@ class WelcomeWindow(QWidget):
         # Configuración de las animaciones
         self.setupAnimations()
 
+
+    # Configuro las animaciones de los elementos de la ventana
     def setupAnimations(self):
-        """Configura las animaciones de los elementos de la ventana."""
         self.fadeInWidget(self.title_label, 1500, QEasingCurve.OutCubic)
         self.fadeInWidget(self.subtitle_label, 2000, QEasingCurve.OutCubic)
 
@@ -196,20 +168,21 @@ class WelcomeWindow(QWidget):
         login_anim = self.createButtonAnimation(self.btn_login)
         register_anim = self.createButtonAnimation(self.btn_register)
 
-        # Agrupa las animaciones de los botones para que se ejecuten en paralelo
+        # Agrupo las animaciones de los botones para que se ejecuten en paralelo
         button_group = QParallelAnimationGroup()
         button_group.addAnimation(login_anim)
         button_group.addAnimation(register_anim)
 
         # Crea una secuencia de animación principal
         main_sequence = QSequentialAnimationGroup()
-        main_sequence.addPause(2000)  # Pausa antes de iniciar las animaciones de los botones
+        main_sequence.addPause(2000)  # pausa antes de iniciar las animaciones de los botones
         main_sequence.addAnimation(button_group)
 
         main_sequence.start()
 
+
+    # Creo una animación de desplazamiento para el botón
     def createButtonAnimation(self, button):
-        """Crea una animación de desplazamiento para el botón."""
         anim = QPropertyAnimation(button, b"pos")
         anim.setDuration(1000)
         start_pos = button.pos() + QPoint(0, 50)
@@ -218,8 +191,9 @@ class WelcomeWindow(QWidget):
         anim.setEasingCurve(QEasingCurve.OutElastic)
         return anim
 
+
+    # Aplico el efecto de sombra al widget
     def applyShadow(self, widget):
-        """Aplica un efecto de sombra al widget."""
         shadow = QGraphicsDropShadowEffect(self)
         shadow.setBlurRadius(15)
         shadow.setXOffset(0)
@@ -227,8 +201,9 @@ class WelcomeWindow(QWidget):
         shadow.setColor(QColor(0, 0, 0, 160))
         widget.setGraphicsEffect(shadow)
 
+
+    # Efecto de 'fundido' de entrada en el widget
     def fadeInWidget(self, widget, duration=2000, easing=QEasingCurve.InOutQuad):
-        """Realiza un efecto de fundido de entrada en el widget."""
         effect = QGraphicsOpacityEffect(widget)
         widget.setGraphicsEffect(effect)
         animation = QPropertyAnimation(effect, b"opacity")
@@ -239,27 +214,30 @@ class WelcomeWindow(QWidget):
         animation.start()
         self.animations.append(animation)
 
+
+    # Lleva a la pantalla de Inicio de Sesión
     def onLogin(self):
-        """Muestra la ventana de inicio de sesión."""
-        # Importa la ventana de inicio de sesión aquí para evitar dependencias circulares
         from login_window import LoginWindow
         self.login_window = LoginWindow()
         self.login_window.show()
         self.close()
 
+
+    # Lleva a la pantalla de Registro
     def onRegister(self):
-        """Muestra la ventana de registro."""
-        # Importa la ventana de registro aquí para evitar dependencias circulares
         from register_window import RegisterWindow
         self.register_window = RegisterWindow()
         self.register_window.show()
         self.close()
 
+
+    # Refreca la app
     def refreshApp(self):
-        """Refresca la aplicación."""
         print("Refrescando la aplicación...")
         self.update()
 
+
+    # 'Pinto' el fondo de la pantalla con un degradado de negro a naranja
     def paintEvent(self, event):
         """Pinta el fondo con un degradado."""
         painter = QPainter(self)
@@ -270,8 +248,9 @@ class WelcomeWindow(QWidget):
         painter.fillRect(rect, QBrush(gradient))
         super().paintEvent(event)
 
+
+    # Animación de fundido de entrada al mostrar la pantalla
     def showEvent(self, event):
-        """Realiza una animación de fundido de entrada al mostrar la ventana."""
         self.setWindowOpacity(0)
         anim = QPropertyAnimation(self, b"windowOpacity")
         anim.setDuration(1000)
@@ -282,29 +261,30 @@ class WelcomeWindow(QWidget):
         self.animations.append(anim)
         super().showEvent(event)
 
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    # Define el estilo de la aplicación
+    # Estilo de la aplicación
     app.setStyleSheet("""
         QWidget {
-            background-color: #333; /* Fondo oscuro */
-            color: white; /* Texto blanco */
+            background-color: #333;
+            color: white;
             font-family: Arial, Helvetica, sans-serif;
         }
+                      
         QPushButton {
-            background-color: #555; /* Botones grises */
+            background-color: #555;
             color: white;
             border: none;
             padding: 10px 20px;
             border-radius: 5px;
         }
-        QPushButton:hover {
-            background-color: #777; /* Botones grises más claros al pasar el ratón */
-        }
-        QLabel {
-            color: #eee;
-        }
+                      
+        QPushButton:hover { background-color: #777; }
+                      
+        QLabel { color: #eee; }
     """)
+
     window = WelcomeWindow()
     window.show()
     sys.exit(app.exec_())

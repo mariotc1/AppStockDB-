@@ -5,7 +5,7 @@ from welcome_window import WelcomeWindow
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     
-    # Crear e iniciar la ventana de bienvenida
+    # Iniciar la ventana de bienvenida
     welcome_window = WelcomeWindow()
     welcome_window.show()
     

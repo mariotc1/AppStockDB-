@@ -1,24 +1,32 @@
-import re
-import smtplib
-import sys
-import math
-import requests
+import smtplib, sys, math, requests
+
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from PyQt5.QtCore import Qt, QTimer, QPropertyAnimation, QEasingCurve, QSize
-from PyQt5.QtGui import QPainter, QPixmap, QTransform, QLinearGradient, QBrush, QColor, QFont, QIcon
-from PyQt5.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QGraphicsOpacityEffect, QLineEdit, QGraphicsDropShadowEffect, QMessageBox, QToolButton
+
+from PyQt5.QtCore import ( 
+    Qt, QTimer, QPropertyAnimation, 
+    QEasingCurve, QSize
 )
 
+from PyQt5.QtGui import (
+    QPainter, QPixmap, QTransform, QLinearGradient, 
+    QBrush, QColor, QFont, QIcon
+)
+
+from PyQt5.QtWidgets import (
+    QApplication, QWidget, QVBoxLayout, QHBoxLayout, 
+    QLabel, QPushButton, QGraphicsOpacityEffect, QLineEdit, 
+    QGraphicsDropShadowEffect, QMessageBox, QToolButton
+)
+
+# Pantalla de inicio de sesión
 class LoginWindow(QWidget):
     def __init__(self):
         super().__init__()
         # Inicializo la lista de animaciones
         self.animations = []
         
-        # Configuramos la ventana sin bordes y en pantalla completa
+        # Configuro la ventana sin bordes y en pantalla completa
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.showFullScreen()
 
@@ -30,10 +38,11 @@ class LoginWindow(QWidget):
         self.angle = 0
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.updateRotation)
-        self.timer.start(50)  # Velocidad del giro
+        self.timer.start(50)  # velocidad del giro
 
         self.initUI()
 
+    # Creacion de la interfaz
     def initUI(self):
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(20, 20, 20, 20)
@@ -50,6 +59,7 @@ class LoginWindow(QWidget):
         refresh_button.clicked.connect(self.refreshApp)
         close_button.clicked.connect(self.close)
         
+        # Estilo de los botones
         btn_top_style = """
             QPushButton {
                 background-color: rgba(255, 255, 255, 50);
@@ -60,6 +70,7 @@ class LoginWindow(QWidget):
                 background-color: rgba(255, 255, 255, 100);
             }
         """
+
         refresh_button.setStyleSheet(btn_top_style)
         close_button.setStyleSheet(btn_top_style)
         
@@ -71,16 +82,15 @@ class LoginWindow(QWidget):
         self.applyShadow(close_button)
         main_layout.addLayout(top_buttons_layout)
 
-        # Espacio para bajar el logo
         main_layout.addSpacing(50)
 
-        # Contenedor para el logo (usado en paintEvent)
+        # Contenedor para el logo
         logo_container = QWidget()
         logo_container.setFixedSize(300, 300)
         main_layout.addWidget(logo_container, alignment=Qt.AlignCenter)
         self.logo_container = logo_container
 
-        # Título de la pantalla
+        # Título
         title_label = QLabel("Inicia Sesión")
         title_label.setFont(QFont("Arial", 28, QFont.Bold))
         title_label.setStyleSheet("color: white;")
@@ -101,11 +111,12 @@ class LoginWindow(QWidget):
 
         main_layout.addLayout(fields_layout)
 
-        # Botones de Iniciar Sesión y Volver
+        # Botones de Iniciar Sesión y Volver (pantalla de bienvenida)
         bottom_buttons_layout = QHBoxLayout()
         self.btn_login = QPushButton("INICIAR SESIÓN")
         self.btn_back = QPushButton("VOLVER")
 
+        # Estilo de lso botones
         btn_style = """
             QPushButton {
                 background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -126,19 +137,21 @@ class LoginWindow(QWidget):
                                                   stop:0 #FF8C00, stop:1 #FFA500);
             }
         """
+
         self.btn_login.setStyleSheet(btn_style)
         self.btn_back.setStyleSheet(btn_style)
+        
         self.applyShadow(self.btn_login)
         self.applyShadow(self.btn_back)
 
         bottom_buttons_layout.addWidget(self.btn_login)
         bottom_buttons_layout.addWidget(self.btn_back)
+        
         main_layout.addLayout(bottom_buttons_layout)
 
-        # Agregar un pequeño espacio para separar de los enlaces
         main_layout.addSpacing(20)
 
-        # Enlaces adicionales en paralelo usando QToolButton
+        # Enlaces a otras pantallas con QToolButton
         additional_layout = QHBoxLayout()
         additional_layout.setSpacing(40)
         
@@ -157,12 +170,14 @@ class LoginWindow(QWidget):
         self.btn_forgot_password.setAutoRaise(True)
         
         additional_layout.addStretch()
+        
         additional_layout.addWidget(self.btn_no_account)
         additional_layout.addWidget(self.btn_forgot_password)
+        
         additional_layout.addStretch()
+        
         main_layout.addLayout(additional_layout)
 
-        # Agregar un stretch para empujar el footer hacia abajo
         main_layout.addStretch()
 
         # Footer
@@ -171,7 +186,7 @@ class LoginWindow(QWidget):
         footer_label.setAlignment(Qt.AlignCenter)
         main_layout.addWidget(footer_label)
 
-        # Animaciones de aparición para algunos elementos
+        # Animaciones de aparición de los elementos
         self.fadeInWidget(title_label, 1500, QEasingCurve.OutCubic)
         self.fadeInWidget(self.btn_login, 2000, QEasingCurve.OutCubic)
         self.fadeInWidget(self.btn_back, 2000, QEasingCurve.OutCubic)
@@ -186,8 +201,9 @@ class LoginWindow(QWidget):
 
         self.setLayout(main_layout)
 
+
+    # Efecto de sombra a un widget
     def applyShadow(self, widget):
-        """Añade un efecto de sombra a un widget."""
         shadow = QGraphicsDropShadowEffect(self)
         shadow.setBlurRadius(15)
         shadow.setXOffset(0)
@@ -195,11 +211,9 @@ class LoginWindow(QWidget):
         shadow.setColor(QColor(0, 0, 0, 160))
         widget.setGraphicsEffect(shadow)
 
+
+    # Creo un layout horizontal que contiene el icno del ojo, y si is_password es True se añade el botón para mostrar/ocultar contraseña
     def createInputField(self, placeholder, icon_path, is_password):
-        """
-        Crea un layout horizontal que contiene un icono y un QLineEdit.
-        Si is_password es True, se añade un botón para mostrar/ocultar la contraseña.
-        """
         layout = QHBoxLayout()
         layout.setSpacing(10)
 
@@ -223,6 +237,7 @@ class LoginWindow(QWidget):
                 border: 2px solid #FF8C00;
             }
         """)
+
         if is_password:
             line_edit.setEchoMode(QLineEdit.Password)
             eye_button = QPushButton()
@@ -233,18 +248,25 @@ class LoginWindow(QWidget):
             eye_button.toggled.connect(lambda checked, le=line_edit, btn=eye_button: self.togglePasswordVisibility(checked, le, btn))
             layout.addWidget(line_edit)
             layout.addWidget(eye_button)
+            
         else:
             layout.addWidget(line_edit)
+
         return layout
 
+
+    # Cambio de icono dependiendo de si se muestra/oculta la contraseña
     def togglePasswordVisibility(self, checked, line_edit, button):
         if checked:
             line_edit.setEchoMode(QLineEdit.Normal)
             button.setIcon(QIcon("images/icon_eye.png"))
+
         else:
             line_edit.setEchoMode(QLineEdit.Password)
             button.setIcon(QIcon("images/icon_eye_off.png"))
 
+
+    # Efecto de 'fundido' de entrada en el widget
     def fadeInWidget(self, widget, duration=2000, easing=QEasingCurve.InOutQuad):
         effect = QGraphicsOpacityEffect(widget)
         widget.setGraphicsEffect(effect)
@@ -256,14 +278,19 @@ class LoginWindow(QWidget):
         animation.start()
         self.animations.append(animation)
 
+
+    # Método de conexión con la api rest para inicar sesión
     def login(self):
         url = "http://localhost:5000/login"
+
         data = {
             "email": self.email_field.itemAt(1).widget().text(),
             "password": self.password_field.itemAt(1).widget().text()
         }
+
         try:
             response = requests.post(url, json=data)
+            
             if response.status_code == 200:
                 user_data = response.json()
                 user_id = user_data.get("user_id", "")
@@ -278,14 +305,17 @@ class LoginWindow(QWidget):
                 self.main_window = MainWindow(user_id)
                 self.main_window.show()
                 self.close()
+
             else:
                 error_message = response.json().get("error", "Error desconocido.")
                 self.showDialog("Error de Inicio de Sesión", error_message, QMessageBox.Critical)
+
         except Exception as e:
             self.showDialog("Error de Conexión", str(e), QMessageBox.Critical)
 
+
+    # Dialog personalizado: muestra un cuadro de diálogo con un título, mensaje y logo
     def showDialog(self, title, message, icon=QMessageBox.Information):
-        """Muestra un cuadro de diálogo con un título, mensaje e ícono personalizado."""
         msg_box = QMessageBox(self)
         msg_box.setWindowTitle(title)
         msg_box.setText(message)
@@ -294,6 +324,8 @@ class LoginWindow(QWidget):
         msg_box.setIconPixmap(logo)
         msg_box.exec_()
 
+
+    # Volver a la pantalla de bienvenida
     def goBack(self):
         print("Volviendo a la pantalla de bienvenida...")
         from welcome_window import WelcomeWindow
@@ -301,6 +333,8 @@ class LoginWindow(QWidget):
         self.welcome_window = WelcomeWindow()
         self.welcome_window.show()
 
+
+    # LLevar a la pantalla de resgistro
     def openRegister(self):
         print("Abriendo pantalla de registro...")
         from register_window import RegisterWindow
@@ -308,6 +342,8 @@ class LoginWindow(QWidget):
         self.register_window = RegisterWindow()
         self.register_window.show()
 
+
+    # Enviar un correo de recuperción de la contraseña
     def send_recovery_email(self, recipient_email, recovery_code):
         """Envía un correo de recuperación de contraseña con un código temporal."""
         sender_email = "gestionstockdb@gmail.com"
@@ -334,20 +370,23 @@ class LoginWindow(QWidget):
         try:
             with smtplib.SMTP('smtp.gmail.com', 587) as server:
                 server.starttls()
-                server.login(sender_email, "tjjw gvdp tlot rege")
+                server.login(sender_email, "tjjw gvdp tlot rege") # contraseña genera para este proyecto por seguridad
                 server.sendmail(sender_email, recipient_email, msg.as_string())
-                print("Correo de recuperación enviado con éxito.")
+                print("Correo de recuperación enviado con éxito")
+
         except Exception as e:
             print(f"Error al enviar el correo: {e}")
 
+
+    # Valido el formato del correo con una regex
     def is_valid_email(self, email):
-        """Valida si el correo tiene un formato correcto usando regex."""
         import re
         pattern = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
         return re.match(pattern, email) is not None
 
+
+    # Funcion para recuperar la contraseña 
     def forgotPassword(self):
-        """Funcionalidad para recuperación de contraseña."""
         email = self.email_field.itemAt(1).widget().text().strip()
         
         if not email:
@@ -364,81 +403,100 @@ class LoginWindow(QWidget):
         try:
             response = requests.post(url, json=data)
             
-            # Manejar errores de conexión
             if response.status_code != 200:
                 try:
                     error_message = response.json().get("error", "Error desconocido.")
                 except ValueError:
                     error_message = "Respuesta no válida del servidor."
                 self.showDialog("Error", error_message, QMessageBox.Critical)
+
                 return
 
             # Si la API responde correctamente
             json_response = response.json()
             recovery_code = json_response.get("recovery_code", "000000")
             self.send_recovery_email(email, recovery_code)
-            self.showDialog("Correo Enviado", "Se ha enviado un código de recuperación a tu correo.", QMessageBox.Information)
+            self.showDialog("Correo Enviado", "Se ha enviado un código de recuperación a tu correo", QMessageBox.Information)
 
         except requests.exceptions.RequestException as e:
             self.showDialog("Error de Conexión", f"No se pudo conectar con el servidor: {e}", QMessageBox.Critical)
-        except ValueError:
-            self.showDialog("Error", "Respuesta inválida del servidor.", QMessageBox.Critical)
 
+        except ValueError:
+            self.showDialog("Error", "Respuesta inválida del servidor", QMessageBox.Critical)
+
+
+    # Refrescar la aplicación
     def refreshApp(self):
         print("Refrescando la aplicación...")
         self.logo = QPixmap("images/logoDB_Blanco.png")
         self.logo = self.logo.scaled(200, 200, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         self.update()
 
+
+    # Mostrar un mensaje de error
     def showError(self, message):
         print("Error:", message)
 
+
+    # Mostrar un mensaje
     def showMessage(self, message):
         print("Mensaje:", message)
 
+
+    # Actualizar la rotación del logo
     def updateRotation(self):
         self.angle = (self.angle + 1) % 360
         self.update()
 
+
+    # 'Pinto' el fondo de la pantalla con un degradado de negro a naranja
     def paintEvent(self, event):
         painter = QPainter(self)
         rect = self.rect()
-        # Fondo degradado original: de negro a naranja
+        
+        # Degradado de negro a naranja
         gradient = QLinearGradient(0, 0, 0, rect.height())
         gradient.setColorAt(0.0, QColor(0, 0, 0))
         gradient.setColorAt(1.0, QColor(255, 140, 0))
         painter.fillRect(rect, QBrush(gradient))
 
-        # Dibuja el logo giratorio usando la geometría del logo_container si existe
+        # 'Dibujo' el logo giratorio usando la geometría del logo_container si existe
         if hasattr(self, 'logo_container'):
             geo = self.logo_container.geometry()
             center_x = geo.center().x()
             center_y = geo.center().y()
+        
         else:
             center_x = rect.width() // 2
             center_y = rect.height() // 3
 
         angle_radians = math.radians(self.angle)
         scale_x = abs(math.cos(angle_radians))
+        
         transform = QTransform()
         transform.translate(center_x, center_y)
         transform.scale(scale_x, 1.0)
         transform.translate(-self.logo.width() // 2, -self.logo.height() // 2)
+        
         painter.setTransform(transform)
         painter.drawPixmap(0, 0, self.logo)
         painter.resetTransform()
 
+
+    # Animación de fade in para la ventana
     def showEvent(self, event):
-        # Animación de fade in para la ventana sin afectar a sus widgets hijos
         self.setWindowOpacity(0)
+        
         anim = QPropertyAnimation(self, b"windowOpacity")
         anim.setDuration(1000)
         anim.setStartValue(0)
         anim.setEndValue(1)
         anim.setEasingCurve(QEasingCurve.InOutQuad)
         anim.start()
+        
         self.animations.append(anim)
         super().showEvent(event)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

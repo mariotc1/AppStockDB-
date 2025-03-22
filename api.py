@@ -2,7 +2,6 @@ import mysql.connector, bcrypt, os, string, random
 import pandas as pd
 
 from flask import Flask, request, jsonify, send_file, send_from_directory
-from mysql.connector import errorcode
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
@@ -211,6 +210,7 @@ def listar_productos():
         cursor.close()
         cnx.close()
 
+
 # Endpoint para Asignar Varios Productos
 @app.route('/productos/asignar_multiples', methods=['POST'])
 def asignar_multiples_productos():
@@ -359,7 +359,6 @@ def devolver_producto(id):
         cnx.close()
 
 
-
 # Endpoint para Actualizar el Perfil del usuario
 @app.route('/update-profile', methods=['POST'])
 def update_profile():
@@ -489,6 +488,6 @@ def add_headers(response):
     return response
 
 
-# Inicia la aplicación Flask en modo de desarrollo  
+# Inicio la aplicación Flask en modo de desarrollo  
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
