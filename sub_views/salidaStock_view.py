@@ -1,10 +1,12 @@
+import requests
+
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QGridLayout,
     QFrame, QMessageBox, QScrollArea, QSpacerItem, QSizePolicy
 )
 from PyQt5.QtGui import QFont, QIcon, QPixmap
-from PyQt5.QtCore import Qt, QSize
-import requests
+from PyQt5.QtCore import Qt
+
 
 API_BASE_URL = "http://localhost:5000"
 
