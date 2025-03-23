@@ -142,12 +142,15 @@ class SalidaStockView(QWidget):
             icon_label = self.create_icon_label(icon_path)
             text_label = QLabel(text)
             
-            # Estilo para campo de dirección (en negrita)
+            # Aplicar estilo y permitir que el texto se expanda
             if bold:
                 text_label.setFont(QFont("Arial", 12, QFont.Bold))
             else:
                 text_label.setFont(QFont("Arial", 12))
 
+            text_label.setStyleSheet("background-color: rgba(255, 255, 255, 0.3); padding: 8px; border-radius: 8px;")
+            text_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)  # 🔥 Se expande horizontalmente
+            
             row_layout.addWidget(icon_label)
             row_layout.addWidget(text_label)
             row_layout.setAlignment(Qt.AlignLeft)
