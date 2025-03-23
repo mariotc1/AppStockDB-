@@ -1,25 +1,29 @@
-from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QStackedWidget, QPushButton, QLabel,
-    QGraphicsDropShadowEffect, QScrollArea, QGridLayout, QFrame, QSizePolicy, QSpacerItem, QLineEdit
-)
-from PyQt5.QtGui import QFont, QIcon, QColor, QPixmap
+from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt, QSize
-import requests
+from PyQt5.QtWidgets import (
+    QWidget, QVBoxLayout, QHBoxLayout, 
+    QStackedWidget, QPushButton, QLabel,
+)
 
-# Importa sub vistas
+# Importación del chatbot
+from chatbot.chat_popup import ChatPopup  
+
+# Importación de las subvistas
 from sub_views.stockActual_view import StockActualView
 from sub_views.salidaStock_view import SalidaStockView
 from sub_views.historialMovimientos_view import HistorialMovimientosView
-from chatbot.chat_popup import ChatPopup  
 
+# URL para la conexión con la api rest
 API_BASE_URL = "http://localhost:5000"
 
+# Clase principal de la svista de Habitaciones
 class HabitacionesView(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.chat_popup = None
         self.initUI()
     
+    # Creo la interfaz: titulo, 3 botones inferioes y chatbot
     def initUI(self):
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(20, 20, 20, 20)
@@ -40,6 +44,7 @@ class HabitacionesView(QWidget):
             ("salida.png", "Salida de Stock"),
             ("historial.png", "Historial de movimientos")
         ]
+
         self.icon_buttons = []
         
         for i, (icon, text) in enumerate(icons):
@@ -101,6 +106,7 @@ class HabitacionesView(QWidget):
         self.setLayout(main_layout)
         self.positionChatbotButton()
     
+    # Posiciono el chatbot en la vista abajo a la derecha
     def positionChatbotButton(self):
         margin = 20
         self.chatbot_btn.move(
@@ -111,6 +117,7 @@ class HabitacionesView(QWidget):
     def change_tab(self, index):
         self.content_stack.setCurrentIndex(index)
     
+    # Llamo a la clase del chatbot
     def toggleChatPopup(self):
         if self.chat_popup and self.chat_popup.isVisible():
             self.chat_popup.close()

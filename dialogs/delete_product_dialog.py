@@ -1,17 +1,20 @@
-from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QMessageBox
-)
-from PyQt5.QtGui import QFont, QIcon, QPixmap
-from PyQt5.QtCore import Qt
 import requests
 
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont, QIcon, QPixmap
+from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QMessageBox
+
+# URL para la conexion con la api
 API_BASE_URL = "http://localhost:5000"
 
+# Dialog para poder eliminar un producto desde Stock Actual
 class DeleteProductDialog(QDialog):
     def __init__(self, producto_id, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Eliminar Producto")
         self.setFixedSize(400, 300)
+
+        # estilo de lso botones
         self.setStyleSheet(
             """
             QDialog {
@@ -76,13 +79,18 @@ class DeleteProductDialog(QDialog):
 
         layout.addLayout(btn_layout)
 
+
+    # Eliminar un producto, conexión con la base de datos
     def delete_product(self):
         try:
             response = requests.delete(f"{API_BASE_URL}/productos/eliminar/{self.producto_id}")
+            
             if response.status_code == 200:
                 QMessageBox.information(self, "Éxito", "Producto eliminado correctamente.")
                 self.accept()
+
             else:
                 QMessageBox.critical(self, "Error", f"No se pudo eliminar el producto. Código de estado: {response.status_code}")
+
         except requests.RequestException as e:
             QMessageBox.critical(self, "Error de conexión", f"No se pudo conectar con el servidor: {str(e)}")

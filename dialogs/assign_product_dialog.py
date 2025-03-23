@@ -1,19 +1,25 @@
-from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QLabel, QFormLayout, QComboBox, QLineEdit, QPushButton, QHBoxLayout, QSpinBox,
-    QScrollArea, QWidget, QSpacerItem, QSizePolicy, QMessageBox
-)
-from PyQt5.QtGui import QFont, QIcon, QPixmap
-from PyQt5.QtCore import Qt
 import requests
 
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont, QIcon, QPixmap
+from PyQt5.QtWidgets import (
+    QDialog, QVBoxLayout, QLabel, QComboBox, 
+    QLineEdit, QPushButton, QHBoxLayout, QSpinBox,
+    QScrollArea, QWidget, QMessageBox
+)
+
+# URL para la conexion con la api
 API_BASE_URL = "http://localhost:5000"
 
+# Dialog para asignar uno o varios productos a una direccion 
 class AssignProductDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.parent = parent
         self.setWindowTitle("Asignar Productos")
         self.setFixedSize(600, 600)
+
+        # estilo del dialog
         self.setStyleSheet(
             """
             QDialog {
@@ -62,7 +68,7 @@ class AssignProductDialog(QDialog):
         
         main_layout = QVBoxLayout(self)
         
-        # Logo de la empresa
+        # Logo
         logo = QLabel()
         logo_pixmap = QPixmap("images/logoDB_Blanco.png").scaled(100, 100, Qt.KeepAspectRatio)
         logo.setPixmap(logo_pixmap)
@@ -111,6 +117,8 @@ class AssignProductDialog(QDialog):
         
         main_layout.addLayout(btn_layout)
     
+
+    # Añadir el producto y su respectiva cantidad
     def add_product_entry(self):
         entry_layout = QHBoxLayout()
         product_dropdown = QComboBox()
@@ -127,6 +135,8 @@ class AssignProductDialog(QDialog):
         self.form_layout.addLayout(entry_layout)
         self.product_entries.append((product_dropdown, quantity_spinbox))
     
+
+    # Cargo todos los proctos creados
     def load_products(self, dropdown, spinbox):
         try:
             response = requests.get(f"{API_BASE_URL}/productos/listar")
@@ -141,11 +151,15 @@ class AssignProductDialog(QDialog):
         except requests.RequestException as e:
             QMessageBox.critical(self, "Error de conexión", f"No se pudo cargar la lista de productos: {str(e)}")
     
+
+    # Asigano uno o varios a una direccion
     def assign_products(self):
         asignaciones = []
+        
         for product_dropdown, quantity_spinbox in self.product_entries:
             producto_id = product_dropdown.currentData()
             cantidad = quantity_spinbox.value()
+            
             if cantidad > 0:
                 asignaciones.append({
                     "producto_id": producto_id,

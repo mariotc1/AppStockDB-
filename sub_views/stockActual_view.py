@@ -1,19 +1,26 @@
+import requests
+
+from PyQt5.QtCore import Qt
+
+from PyQt5.QtGui import QFont, QIcon, QPixmap
+
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
-    QLabel, QGridLayout, QFrame, QMessageBox, QDialog, 
-    QFormLayout, QLineEdit, QComboBox, QScrollArea,
-    QSpacerItem, QSizePolicy
+    QLabel, QGridLayout, QFrame, QMessageBox, 
+    QScrollArea, QSpacerItem, QSizePolicy
 )
-from PyQt5.QtGui import QFont, QIcon, QColor, QPixmap
-from PyQt5.QtCore import Qt, QSize
+
+# Imporatación de los cuadros de diálogos
 from dialogs.add_product_dialog import AddProductDialog
 from dialogs.assign_product_dialog import AssignProductDialog
 from dialogs.edit_product_dialog import EditProductDialog
 from dialogs.delete_product_dialog import DeleteProductDialog
-import requests
 
+# URL para la conexión con la base de datos
 API_BASE_URL = "http://localhost:5000"
 
+
+# Clase principal de la subvista de salida de stock
 class StockActualView(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -23,7 +30,7 @@ class StockActualView(QWidget):
     def initUI(self):
         main_layout = QVBoxLayout(self)
 
-        # 👉 Crear el área scrollable SOLO para las cards
+        # Area srollable para las cards
         scroll_area = QScrollArea(self)
         scroll_area.setWidgetResizable(True)
         scroll_area.setStyleSheet("""
@@ -42,11 +49,11 @@ class StockActualView(QWidget):
         scroll_layout = QVBoxLayout(self.scroll_content)
         scroll_area.setWidget(self.scroll_content)
 
-        # 👉 Crear el layout para las cards
+        # Layout para solo los cards
         self.grid_layout = QGridLayout()
         scroll_layout.addLayout(self.grid_layout)
 
-        # 👉 Sección FIJA para los botones (NO será parte del scroll)
+        # Sección fija para los botones, para que no estén en el scroll
         btn_layout = QHBoxLayout()
         self.btn_add = QPushButton(" Añadir Producto")
         self.btn_assign = QPushButton(" Asignar Producto a Mobiliario")
@@ -89,13 +96,12 @@ class StockActualView(QWidget):
         btn_layout.addWidget(self.btn_assign)
         btn_layout.addWidget(self.btn_export)
 
-        # 👉 Añadir los elementos principales al layout
-        main_layout.addWidget(scroll_area)  # ✅ Zona Scrollable
-        main_layout.addLayout(btn_layout)    # ✅ Zona Fija para los botones
+        main_layout.addWidget(scroll_area)
+        main_layout.addLayout(btn_layout)
 
         self.setLayout(main_layout)
 
-    
+    # Cargo de la base de datos los productos
     def load_stock_data(self):
         response = requests.get(f"{API_BASE_URL}/productos/listar")
         if response.status_code == 200:
@@ -196,9 +202,10 @@ class StockActualView(QWidget):
     
     def add_product(self):
         dialog = AddProductDialog(self)  # Crea la ventana de añadir producto
-        if dialog.exec_():  # Si el usuario confirma, recargamos los datos
+        if dialog.exec_():  # Si el usuario confirma se recargam los datos
             self.load_stock_data()
 
+    # Guardar los productos
     def save_product(self, dialog, nombre, cantidad, estado):
         if not nombre or not cantidad.isdigit():
             QMessageBox.warning(self, "Error", "Datos inválidos.")
@@ -215,11 +222,11 @@ class StockActualView(QWidget):
     def edit_product(self, producto):
         dialog = EditProductDialog(producto, self)
         if dialog.exec_():
-            self.load_stock_data()  # Recarga los datos si se ha editado con éxito
+            self.load_stock_data()  # Recarga los datos si se ha editado 
 
     def delete_product(self, producto_id):
         dialog = DeleteProductDialog(producto_id, self)
-        if dialog.exec_():  # Si el usuario confirma, recargamos los datos
+        if dialog.exec_():  # Si el usuario confirma se recargan los datos
             self.load_stock_data()
 
     def assign_product(self):
@@ -227,6 +234,7 @@ class StockActualView(QWidget):
         if dialog.exec_():  
             self.load_stock_data()
 
+    # Conexión con la api para exportar a excel el stock
     def export_to_excel(self):
         response = requests.get(f"{API_BASE_URL}/productos/exportar")
         if response.status_code == 200:

@@ -1,10 +1,11 @@
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QPushButton, QSlider, QHBoxLayout
-from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
-from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtCore import QUrl, Qt
 from PyQt5.QtGui import QIcon
-import os
 
+from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
+from PyQt5.QtMultimediaWidgets import QVideoWidget
+
+# Dialog para mostrar el video de InfoView
 class VideoPlayerDialog(QDialog):
     def __init__(self, video_path):
         super().__init__()
@@ -67,6 +68,8 @@ class VideoPlayerDialog(QDialog):
         # Iniciar el video automáticamente
         self.media_player.play()
 
+
+    # Funciones para pausar, reanudar y empezar el video
     def set_position(self, position):
         self.media_player.setPosition(int(position * self.media_player.duration() / 100))
 

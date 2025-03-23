@@ -1,46 +1,25 @@
-from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QFrame,
-    QSizePolicy, QPushButton
-)
-from PyQt5.QtGui import QFont, QPixmap, QPainter, QPen, QBrush
-from PyQt5.QtCore import Qt, QRect
-from dialogs.videoPlayer_dialog import VideoPlayerDialog
 import os
 
-class SimpleCard(QFrame):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setStyleSheet("""
-            SimpleCard {
-                background-color: rgba(255, 255, 255, 0.15);
-                border: 1px solid rgba(255, 255, 255, 0.3);
-                border-radius: 12px;
-            }
-        """)
+from PyQt5.QtGui import QFont
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (
+    QWidget, QVBoxLayout, QGridLayout, QLabel,
+    QSizePolicy, QPushButton
+)
 
-class CircularIcon(QLabel):
-    def __init__(self, icon_path, size=80):
-        super().__init__()
-        self.size = size
-        self.setFixedSize(size, size)
-        icon_size = int(size * 0.65)
-        self.pixmap = QPixmap(icon_path).scaled(icon_size, icon_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+from styles.simple_card import SimpleCard
+from styles.circular_icon import CircularIcon
 
-    def paintEvent(self, event):
-        painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
-        painter.setBrush(Qt.white)
-        painter.setPen(Qt.white)
-        painter.drawEllipse(0, 0, self.size, self.size)
-        x = (self.size - self.pixmap.width()) // 2
-        y = (self.size - self.pixmap.height()) // 2
-        painter.drawPixmap(x, y, self.pixmap)
+from dialogs.videoPlayer_dialog import VideoPlayerDialog
 
+
+# Clase de la vista - Información de la App
 class InfoView(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.initUI()
 
+    # Creo los card y les doy el formato: icono, título, texto y video explicativo
     def createCard(self, icon_path, title_text, content_text, video_file):
         card = SimpleCard()
         card.setMinimumSize(250, 280)
@@ -86,14 +65,16 @@ class InfoView(QWidget):
 
         return card
 
+    # Muestro el video (situados en la carpeta videos)
     def show_video(self, video_file):
         video_path = os.path.join('videos', video_file)
         if os.path.exists(video_path):
             video_dialog = VideoPlayerDialog(video_path)
             video_dialog.exec_()
         else:
-            print(f"[ERROR] No se encontró el archivo de video: {video_file}")
+            print(f"ERROR: No se encontró el archivo de video: {video_file}")
 
+    # Creo la interfaz de la vista
     def initUI(self):
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(20, 20, 20, 20)

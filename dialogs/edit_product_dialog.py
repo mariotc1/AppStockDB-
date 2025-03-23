@@ -1,12 +1,17 @@
-from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QLabel, QFormLayout, QLineEdit, QComboBox, QPushButton, QHBoxLayout, QSpacerItem, QSizePolicy, QMessageBox
-)
-from PyQt5.QtGui import QFont, QIcon, QPixmap
-from PyQt5.QtCore import Qt
 import requests
 
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont, QIcon, QPixmap
+from PyQt5.QtWidgets import (
+    QDialog, QVBoxLayout, QLabel, QFormLayout, 
+    QLineEdit, QComboBox, QPushButton, QHBoxLayout, 
+    QSpacerItem, QSizePolicy, QMessageBox
+)
+
+# URL para la conexion con la api
 API_BASE_URL = "http://localhost:5000"
 
+# Dialog para editar un producto (Stock Actual)
 class EditProductDialog(QDialog):
     def __init__(self, producto, parent=None):
         super().__init__(parent)
@@ -58,7 +63,7 @@ class EditProductDialog(QDialog):
 
         layout = QVBoxLayout(self)
 
-        # Logo de la empresa
+        # Logo
         logo = QLabel()
         logo_pixmap = QPixmap("images/logoDB_Blanco.png").scaled(100, 100, Qt.KeepAspectRatio)
         logo.setPixmap(logo_pixmap)
@@ -110,6 +115,8 @@ class EditProductDialog(QDialog):
 
         layout.addLayout(btn_layout)
 
+
+    #  Guardar los cambios de la edicion del producto
     def save_edited_product(self):
         nombre = self.input_nombre.text().strip()
         cantidad = self.input_cantidad.text().strip()
@@ -133,6 +140,8 @@ class EditProductDialog(QDialog):
         except requests.RequestException as e:
             QMessageBox.critical(self, "Error de conexión", f"No se pudo conectar con el servidor: {str(e)}")
 
+
+    # Eliminacion de un producto desde la edición
     def confirm_delete_product(self):
         reply = QMessageBox.question(
             self, "Confirmar Eliminación", "¿Estás seguro de que deseas eliminar este producto?",

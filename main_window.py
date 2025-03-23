@@ -3,19 +3,19 @@ import sys, math, requests
 from io import BytesIO  
 
 from PyQt5.QtCore import (
-    Qt, QTimer, QPropertyAnimation, QEasingCurve, QSize, 
-    QEvent, QRect, QPoint, QTimer,QCoreApplication
+    Qt, QPropertyAnimation, 
+    QEasingCurve, QEvent
 )
 
 from PyQt5.QtGui import (
-    QPainter, QPixmap, QTransform, QLinearGradient, QBrush, 
-    QColor, QFont, QIcon,QBitmap, QMovie
+    QPainter, QPixmap, QLinearGradient, QBrush, 
+    QColor, QFont, QIcon,QBitmap
 )
 
 from PyQt5.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QStackedWidget, QFrame, QGraphicsOpacityEffect, QSizePolicy, QTextEdit,
-    QDialog, QVBoxLayout, QMessageBox
+    QApplication, QWidget, QVBoxLayout, 
+    QHBoxLayout, QLabel, QStackedWidget, 
+    QGraphicsOpacityEffect, QVBoxLayout
 )
 
 # Importación de los efectos/animaciones

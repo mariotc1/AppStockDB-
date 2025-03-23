@@ -1,10 +1,14 @@
-from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QLabel, QFormLayout, QLineEdit, QComboBox, QPushButton, QHBoxLayout, QSpacerItem, QSizePolicy, QMessageBox
-)
-from PyQt5.QtGui import QFont, QIcon, QPixmap
-from PyQt5.QtCore import Qt
 import requests
 
+from PyQt5.QtGui import QFont, QIcon, QPixmap
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import (
+    QDialog, QVBoxLayout, QLabel, QFormLayout, 
+    QLineEdit, QComboBox, QPushButton, QHBoxLayout, 
+    QSpacerItem, QSizePolicy, QMessageBox
+)
+
+# URL para la conexión con la api rest
 API_BASE_URL = "http://localhost:5000"
 
 class AddProductDialog(QDialog):
@@ -12,6 +16,8 @@ class AddProductDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle("Añadir Producto")
         self.setFixedSize(500, 400)
+
+        # Estilo del dialog
         self.setStyleSheet(
             """
             QDialog {
@@ -56,13 +62,14 @@ class AddProductDialog(QDialog):
         
         layout = QVBoxLayout(self)
         
-        # Logo de la empresa
+        # Logo
         logo = QLabel()
         logo_pixmap = QPixmap("images/logoDB_Blanco.png").scaled(100, 100, Qt.KeepAspectRatio)
         logo.setPixmap(logo_pixmap)
         logo.setAlignment(Qt.AlignCenter)
         layout.addWidget(logo)
         
+        # Título del dialog
         title_label = QLabel("Añadir Nuevo Producto")
         title_label.setFont(QFont("Arial", 16))
         title_label.setAlignment(Qt.AlignCenter)
@@ -71,12 +78,15 @@ class AddProductDialog(QDialog):
         
         form_layout = QFormLayout()
         
+        # Campo del nombre del producto
         self.input_nombre = QLineEdit()
         self.input_nombre.setPlaceholderText("Ingrese el nombre del producto")
         
+        # Campo de cantidad del producto
         self.input_cantidad = QLineEdit()
         self.input_cantidad.setPlaceholderText("Ingrese la cantidad (solo números)")
         
+        # Estados a elegir en los que se encuentra el producto
         self.input_estado = QComboBox()
         self.input_estado.addItems(["Nuevo", "Usado", "Dañado"])
         
@@ -104,13 +114,15 @@ class AddProductDialog(QDialog):
         
         layout.addLayout(btn_layout)
 
+
+    # Conexión con la api para guardar el nuevo producto
     def save_product(self):
         nombre = self.input_nombre.text().strip()
         cantidad = self.input_cantidad.text().strip()
         estado = self.input_estado.currentText()
         
         if not nombre or not cantidad.isdigit():
-            QMessageBox.warning(self, "Error", "Por favor, ingrese un nombre válido y una cantidad numérica.")
+            QMessageBox.warning(self, "Error", "Por favor, ingrese un nombre válido y una cantidad numérica")
             return
         
         try:
@@ -122,7 +134,9 @@ class AddProductDialog(QDialog):
             if response.status_code == 201:
                 QMessageBox.information(self, "Éxito", "Producto guardado exitosamente.")
                 self.accept()
+
             else:
                 QMessageBox.warning(self, "Error", f"No se pudo guardar el producto. Código de estado: {response.status_code}")
+
         except requests.RequestException as e:
             QMessageBox.critical(self, "Error de conexión", f"No se pudo conectar con el servidor: {str(e)}")
