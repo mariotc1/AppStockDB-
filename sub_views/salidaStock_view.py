@@ -5,7 +5,8 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import QFont, QIcon, QPixmap
 from PyQt5.QtCore import Qt, QSize
 import requests
-
+from dialogs.return_product_dialog import ReturnProductDialog
+from dialogs.delete_selected_product_dialog import DeleteSelectedProductDialog
 API_BASE_URL = "http://localhost:5000"
 
 class SalidaStockView(QWidget):
@@ -61,7 +62,10 @@ class SalidaStockView(QWidget):
         self.btn_delete_lote = QPushButton(" Eliminar Seleccionados")
 
         self.btn_devolver_lote.setIcon(QIcon("images/return.png"))
+        self.btn_devolver_lote.clicked.connect(self.devolver_seleccionados)
+
         self.btn_delete_lote.setIcon(QIcon("images/delete.png"))
+        self.btn_delete_lote.clicked.connect(self.eliminar_seleccionados)
 
         self.btn_devolver_lote.setStyleSheet(self.button_style)
         self.btn_delete_lote.setStyleSheet(self.button_style)
@@ -190,6 +194,7 @@ class SalidaStockView(QWidget):
         btn_devolver.setIconSize(QSize(22, 22))
         btn_devolver.setMinimumWidth(180)
         btn_devolver.setFixedHeight(40)
+        btn_devolver.clicked.connect(lambda: self.show_return_dialog(salida))
         btn_devolver.setStyleSheet("""
             QPushButton {
                 background-color: #FFA500;
@@ -212,6 +217,7 @@ class SalidaStockView(QWidget):
         btn_delete.setIconSize(QSize(22, 22))
         btn_delete.setMinimumWidth(180)
         btn_delete.setFixedHeight(40)
+        btn_delete.clicked.connect(lambda: self.show_delete_dialog(salida))
         btn_delete.setStyleSheet("""
             QPushButton {
                 background-color: #FF0000;
@@ -246,60 +252,50 @@ class SalidaStockView(QWidget):
 
         return card
 
-
-    # Dialogo personalizado para devolver producto
     def show_return_dialog(self, salida):
-        dialog = QDialog(self)
-        dialog.setWindowTitle("Devolver Producto")
-        layout = QFormLayout(dialog)
-
-        cantidad_input = QLineEdit()
-        layout.addRow("Cantidad a devolver:", cantidad_input)
-
-        btn_confirmar = QPushButton("Confirmar")
-        btn_confirmar.clicked.connect(lambda: self.devolver_producto(salida['id'], cantidad_input.text(), dialog))
-        layout.addWidget(btn_confirmar)
-
-        dialog.exec_()
-
-    def devolver_producto(self, salida_id, cantidad, dialog):
-        try:
-            cantidad = int(cantidad)
-            response = requests.put(f"{API_BASE_URL}/salidas/devolver/{salida_id}", json={'cantidad': cantidad})
-            if response.status_code == 200:
-                QMessageBox.information(self, "Éxito", "Producto devuelto correctamente.")
-                dialog.accept()
-                self.load_salida_data()
-            else:
-                QMessageBox.critical(self, "Error", "No se pudo devolver el producto.")
-        except ValueError:
-            QMessageBox.warning(self, "Error", "Cantidad inválida.")
-
-    # Dialogo personalizado para eliminar producto
-    def show_delete_dialog(self, salida):
-        respuesta = QMessageBox.question(
-            self,
-            "Eliminar Producto",
-            f"¿Seguro que quieres eliminar el producto '{salida['producto']}'?",
-            QMessageBox.Yes | QMessageBox.No
-        )
-        if respuesta == QMessageBox.Yes:
-            self.eliminar_producto(salida['id'])
-
-    def eliminar_producto(self, salida_id):
-        response = requests.delete(f"{API_BASE_URL}/productos/eliminar/{salida_id}")
-        if response.status_code == 200:
-            QMessageBox.information(self, "Éxito", "Producto eliminado correctamente.")
+        dialog = ReturnProductDialog(salida, self)
+        if dialog.exec_():
             self.load_salida_data()
-        else:
-            QMessageBox.critical(self, "Error", "No se pudo eliminar el producto.")
 
+    # Recorro la lista de checkboxes y se almacenan en esta lista únicamente aquellos productos que estén marcados
     def devolver_seleccionados(self):
-        for checkbox, salida in self.checkboxes:
-            if checkbox.isChecked():
-                self.show_return_dialog(salida)
+        productos_seleccionados = [salida for checkbox, salida in self.checkboxes if checkbox.isChecked()]
+
+        if not productos_seleccionados:
+            QMessageBox.warning(self, "Aviso", "Por favor, seleccione al menos un producto para devolver.")
+            return
+
+        for salida in productos_seleccionados:
+            dialog = ReturnProductDialog(salida, self)
+            if dialog.exec_():
+                self.load_salida_data()  # Recarga los datos actualizados tras la devolución
+    
+    def show_delete_dialog(self, salida):
+        dialog = DeleteSelectedProductDialog(salida, self)
+        if dialog.exec_():
+            self.load_salida_data()  # Recarga los datos actualizados
 
     def eliminar_seleccionados(self):
-        for checkbox, salida in self.checkboxes:
-            if checkbox.isChecked():
-                self.eliminar_producto(salida['id'])
+        productos_seleccionados = [salida for checkbox, salida in self.checkboxes if checkbox.isChecked()]
+
+        if not productos_seleccionados:
+            QMessageBox.warning(self, "Aviso", "Por favor, seleccione al menos un producto para eliminar.")
+            return
+
+        confirmacion = QMessageBox.question(
+            self,
+            "Eliminar productos",
+            "⚠️ ¡Advertencia! Esta acción eliminará permanentemente los productos seleccionados. ¿Desea continuar?",
+            QMessageBox.Yes | QMessageBox.No
+        )
+
+        if confirmacion == QMessageBox.Yes:
+            for salida in productos_seleccionados:
+                try:
+                    response = requests.delete(f"{API_BASE_URL}/productos/eliminar/{salida['id']}")
+                    if response.status_code != 200:
+                        QMessageBox.warning(self, "Error", f"No se pudo eliminar el producto: {salida['producto']}")
+                except Exception as e:
+                    QMessageBox.critical(self, "Error", f"Error al eliminar el producto: {str(e)}")
+
+            self.load_salida_data()  # Recarga los datos actualizados
