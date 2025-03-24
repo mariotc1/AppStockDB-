@@ -64,8 +64,8 @@ class StockActualView(QWidget):
         self.btn_assign.setIcon(QIcon("images/asignar.png"))  
         self.btn_export.setIcon(QIcon("images/ConvertirExcel.png"))  
 
-        # Establece el tamaño del ícono  
-        icon_size = QSize(30, 30)  # Ajusta el tamaño aquí (anchura, altura)  
+        # Tamaño de lso iconos
+        icon_size = QSize(30, 30) 
         self.btn_add.setIconSize(icon_size)  
         self.btn_assign.setIconSize(icon_size)  
         self.btn_export.setIconSize(icon_size)  

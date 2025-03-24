@@ -45,7 +45,7 @@ class SalidaStockView(QWidget):
                 color: white;
                 font-size: 16px;
                 font-weight: bold;
-                border-radius: 15px;
+                border-radius: 10px;
                 padding: 10px;
                 transition: 0.3s;
             }
@@ -187,14 +187,55 @@ class SalidaStockView(QWidget):
         
         btn_devolver = QPushButton(" Devolver")
         btn_devolver.setIcon(QIcon("images/return.png"))
-        btn_devolver.setStyleSheet(self.button_style)
+        btn_devolver.setIconSize(QSize(22, 22))
+        btn_devolver.setMinimumWidth(180)
+        btn_devolver.setFixedHeight(40)
+        btn_devolver.setStyleSheet("""
+            QPushButton {
+                background-color: #FFA500;
+                color: white;
+                font-size: 14px;
+                font-weight: bold;
+                border-radius: 8px;
+                padding: 5px;
+                transition: 0.3s;
+                width: 100%;
+            }
+            QPushButton:hover {
+                background-color: #FF8C00;
+                transform: scale(1.03);
+            }
+        """)
 
         btn_delete = QPushButton(" Eliminar")
-        btn_delete.setIcon(QIcon("images/delete.png"))
-        btn_delete.setStyleSheet(self.button_style)
+        btn_delete.setIcon(QIcon("images/basura.png"))
+        btn_delete.setIconSize(QSize(22, 22))
+        btn_delete.setMinimumWidth(180)
+        btn_delete.setFixedHeight(40)
+        btn_delete.setStyleSheet("""
+            QPushButton {
+                background-color: #FF0000;
+                color: white;
+                font-size: 14px;
+                font-weight: bold;
+                border-radius: 8px;
+                padding: 5px;
+                transition: 0.3s;
+                width: 100%;
+            }
+            QPushButton:hover {
+                background-color: #CC0000;
+                transform: scale(1.03);
+            }
+        """)
 
+        # Layout horizontal para que estén en paralelo
+        btn_layout = QHBoxLayout()
         btn_layout.addWidget(btn_devolver)
         btn_layout.addWidget(btn_delete)
+        btn_layout.setSpacing(10)  # Espaciado entre botones
+        btn_layout.setAlignment(Qt.AlignCenter)
+
 
         layout.addLayout(layout_checkbox)
         layout.addLayout(row_direccion)
