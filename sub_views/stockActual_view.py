@@ -1,6 +1,6 @@
 import requests
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSize
 
 from PyQt5.QtGui import QFont, QIcon, QPixmap
 
@@ -55,17 +55,24 @@ class StockActualView(QWidget):
 
         # Sección fija para los botones, para que no estén en el scroll
         btn_layout = QHBoxLayout()
-        self.btn_add = QPushButton(" Añadir Producto")
-        self.btn_assign = QPushButton(" Asignar Producto a Mobiliario")
-        self.btn_export = QPushButton(" Exportar a Excel")
+        btn_layout = QHBoxLayout()  
+        self.btn_add = QPushButton(" Añadir Producto")  
+        self.btn_assign = QPushButton(" Asignar Producto a Mobiliario")  
+        self.btn_export = QPushButton(" Exportar a Excel")  
 
-        self.btn_add.setIcon(QIcon("images/add.png"))
-        self.btn_assign.setIcon(QIcon("images/assign.png"))
-        self.btn_export.setIcon(QIcon("images/excel.png"))
+        self.btn_add.setIcon(QIcon("images/agregar.png"))  
+        self.btn_assign.setIcon(QIcon("images/asignar.png"))  
+        self.btn_export.setIcon(QIcon("images/ConvertirExcel.png"))  
 
-        self.btn_add.setFixedSize(200, 50)
-        self.btn_assign.setFixedSize(300, 50)
-        self.btn_export.setFixedSize(200, 50)
+        # Establece el tamaño del ícono  
+        icon_size = QSize(30, 30)  # Ajusta el tamaño aquí (anchura, altura)  
+        self.btn_add.setIconSize(icon_size)  
+        self.btn_assign.setIconSize(icon_size)  
+        self.btn_export.setIconSize(icon_size)  
+
+        self.btn_add.setFixedSize(200, 50)  
+        self.btn_assign.setFixedSize(400, 50)  
+        self.btn_export.setFixedSize(200, 50)  
 
         # Estilos de botones
         button_style = """
@@ -174,25 +181,59 @@ class StockActualView(QWidget):
         row_cantidad.addWidget(icon_cantidad)
         row_cantidad.addWidget(label_cantidad)
         
-        # Botones de acción más juntos
-        btn_edit = QPushButton()
+        # Botones de acción 
+        btn_edit = QPushButton(" Editar")
         btn_edit.setIcon(QIcon("images/edit.png"))
-        btn_edit.setFixedSize(40, 40)
-        btn_edit.setStyleSheet("border: none; background-color: transparent;")
+        btn_edit.setIconSize(QSize(22, 22))  
+        btn_edit.setMinimumWidth(180)   
+        btn_edit.setStyleSheet("""
+            QPushButton {
+                background-color: #FFA500;
+                color: white;
+                font-size: 14px;
+                font-weight: bold;
+                border-radius: 8px;
+                padding: 5px;
+                transition: 0.3s;
+                width: 100%; /* Para que ocupe el ancho completo */
+            }
+            QPushButton:hover {
+                background-color: #FF8C00;
+                transform: scale(1.03);
+            }
+        """)
         btn_edit.clicked.connect(lambda: self.edit_product(producto))
-        
-        btn_delete = QPushButton()
-        btn_delete.setIcon(QIcon("images/delete.png"))
-        btn_delete.setFixedSize(38, 38)
-        btn_delete.setStyleSheet("border: none; background-color: transparent;")
+
+        btn_delete = QPushButton(" Eliminar")
+        btn_delete.setIcon(QIcon("images/basura.png"))
+        btn_delete.setIconSize(QSize(22, 22))  
+        btn_delete.setMinimumWidth(180)  
+        btn_delete.setStyleSheet("""
+            QPushButton {
+                background-color: #FF0000;
+                color: white;
+                font-size: 14px;
+                font-weight: bold;
+                border-radius: 8px;
+                padding: 5px;
+                transition: 0.3s;
+                width: 100%; /* Para que ocupe el ancho completo */
+            }
+            QPushButton:hover {
+                background-color: #CC0000;
+                transform: scale(1.03);
+            }
+        """)
         btn_delete.clicked.connect(lambda: self.delete_product(producto['id']))
-        
+
+        # Layout horizontal para mantenerlos en paralelo y al ancho completo del card
         btn_layout = QHBoxLayout()
         btn_layout.addWidget(btn_edit)
         btn_layout.addWidget(btn_delete)
-        btn_layout.setSpacing(5)  # Espacio reducido entre botones
-        btn_layout.setAlignment(Qt.AlignRight)
-        
+        btn_layout.setSpacing(10)  # Espacio moderado entre botones
+        btn_layout.setAlignment(Qt.AlignCenter)
+
+            
         layout.addLayout(row_nombre)
         layout.addLayout(row_estado)
         layout.addLayout(row_cantidad)

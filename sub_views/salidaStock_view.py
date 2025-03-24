@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import (
     QFrame, QScrollArea, QSpacerItem, QSizePolicy, QCheckBox, QDialog, QLineEdit, QFormLayout
 )
 from PyQt5.QtGui import QFont, QIcon, QPixmap
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSize
 import requests
 
 API_BASE_URL = "http://localhost:5000"
@@ -66,8 +66,13 @@ class SalidaStockView(QWidget):
         self.btn_devolver_lote.setStyleSheet(self.button_style)
         self.btn_delete_lote.setStyleSheet(self.button_style)
 
-        self.btn_devolver_lote.setFixedSize(240, 50)  # Botones más anchos
-        self.btn_delete_lote.setFixedSize(240, 50)
+        # Establece el tamaño del ícono  
+        icon_size = QSize(30, 30)  # Ajusta el tamaño aquí (anchura, altura)  
+        self.btn_devolver_lote.setIconSize(icon_size)  
+        self.btn_delete_lote.setIconSize(icon_size)  
+
+        self.btn_devolver_lote.setFixedSize(260, 50)
+        self.btn_delete_lote.setFixedSize(260, 50)
 
         self.btn_devolver_lote.clicked.connect(self.devolver_seleccionados)
         self.btn_delete_lote.clicked.connect(self.eliminar_seleccionados)
