@@ -18,13 +18,13 @@ class DeleteSelectedProductDialog(QDialog):
             "QDialog {"
             "background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #2C3E50, stop:1 #1F1F1F);"
             "border-radius: 20px;"
-            "}"
-            "QLabel { color: #FFFFFF; font-size: 18px; }"
-            "QRadioButton { color: #FFFFFF; font-size: 16px; }"
-            "QPushButton#btn_confirmar { background-color: #27AE60; color: #FFFFFF; border-radius: 10px; padding: 10px; font-size: 16px; }"
-            "QPushButton#btn_confirmar:hover { background-color: #229954; }"
-            "QPushButton#btn_cancelar { background-color: #E74C3C; color: #FFFFFF; border-radius: 10px; padding: 10px; font-size: 16px; }"
-            "QPushButton#btn_cancelar:hover { background-color: #C0392B; }"
+            "} "
+            "QLabel { color: #FFFFFF; font-size: 18px; } "
+            "QRadioButton { color: #FFFFFF; font-size: 16px; } "
+            "QPushButton#btn_confirmar { background-color: #27AE60; color: #FFFFFF; border-radius: 10px; padding: 10px; font-size: 16px; } "
+            "QPushButton#btn_confirmar:hover { background-color: #229954; } "
+            "QPushButton#btn_cancelar { background-color: #E74C3C; color: #FFFFFF; border-radius: 10px; padding: 10px; font-size: 16px; } "
+            "QPushButton#btn_cancelar:hover { background-color: #C0392B; } "
             "QSpinBox { background-color: #FFFFFF; color: #000000; padding: 8px; border-radius: 8px; font-size: 20px; }"
         )
 
@@ -56,10 +56,10 @@ class DeleteSelectedProductDialog(QDialog):
         self.cantidad_input.setMaximum(cantidad_total)
         self.cantidad_input.setValue(cantidad_total)
 
-        # Botones de opción para eliminar total o parcial
+        # Opciones de eliminación
         self.opcion_total = QRadioButton("Eliminar toda la cantidad")
         self.opcion_parcial = QRadioButton("Eliminar cantidad parcial")
-        self.opcion_total.setChecked(True)  # Por defecto, eliminar toda la cantidad
+        self.opcion_total.setChecked(True)
 
         self.opcion_group = QButtonGroup(self)
         self.opcion_group.addButton(self.opcion_total)
@@ -70,7 +70,6 @@ class DeleteSelectedProductDialog(QDialog):
 
         layout.addWidget(self.opcion_total)
         layout.addWidget(self.opcion_parcial)
-
         layout.addWidget(QLabel("Cantidad a eliminar:"))
         layout.addWidget(self.cantidad_input)
 
@@ -92,26 +91,18 @@ class DeleteSelectedProductDialog(QDialog):
         layout.addLayout(btn_layout)
 
     def toggle_cantidad(self, enabled):
-        if enabled:
-            self.cantidad_input.setEnabled(True)
-        else:
-            self.cantidad_input.setValue(self.salida['cantidad'])
-            self.cantidad_input.setEnabled(False)
+        self.cantidad_input.setEnabled(enabled)
 
     def confirmar_eliminacion(self):
-        confirmacion = QMessageBox.question(
-            self,
+        self.mostrar_mensaje(
             "Confirmar Eliminación",
             "¿Estás seguro de que deseas eliminar este producto? Esta acción no se puede deshacer.",
-            QMessageBox.Yes | QMessageBox.No
+            "confirm"
         )
-
-        if confirmacion == QMessageBox.Yes:
-            self.eliminar_producto()
 
     def eliminar_producto(self):
         if self.opcion_total.isChecked():
-            cantidad_a_eliminar = self.salida['cantidad']  # Eliminar toda la cantidad
+            cantidad_a_eliminar = self.salida['cantidad']
         else:
             cantidad_a_eliminar = self.cantidad_input.value()
 
@@ -119,9 +110,40 @@ class DeleteSelectedProductDialog(QDialog):
             response = requests.delete(f"{API_BASE_URL}/productos/eliminar/{self.salida['id']}",
                                         json={'cantidad': cantidad_a_eliminar})
             if response.status_code == 200:
-                QMessageBox.information(self, "Éxito", "Producto eliminado correctamente.")
+                self.mostrar_mensaje("Éxito", "Producto eliminado correctamente.", "success")
                 self.accept()
             else:
-                QMessageBox.critical(self, "Error", "No se pudo eliminar el producto.")
+                self.mostrar_mensaje("Error", "No se pudo eliminar el producto.", "error")
         except Exception as e:
-            QMessageBox.critical(self, "Error", f"Error al eliminar el producto: {str(e)}")
+            self.mostrar_mensaje("Error", f"Error al eliminar el producto: {str(e)}", "error")
+
+    def mostrar_mensaje(self, titulo, mensaje, tipo):
+        msg_box = QMessageBox(self)
+        msg_box.setWindowTitle(titulo)
+        msg_box.setText(mensaje)
+
+        btn_aceptar = QPushButton("Aceptar")
+        btn_aceptar.setStyleSheet("background-color: #3498DB; color: #FFFFFF; padding: 8px 16px; border-radius: 8px;")
+        btn_aceptar.clicked.connect(msg_box.accept)
+
+        btn_si = QPushButton("Sí")
+        btn_si.setStyleSheet("background-color: #27AE60; color: #FFFFFF; padding: 8px 16px; border-radius: 8px;")
+
+        btn_no = QPushButton("No")
+        btn_no.setStyleSheet("background-color: #E74C3C; color: #FFFFFF; padding: 8px 16px; border-radius: 8px;")
+
+        if tipo == "success":
+            msg_box.setIcon(QMessageBox.Information)
+            msg_box.addButton(btn_aceptar, QMessageBox.AcceptRole)
+
+        elif tipo == "error":
+            msg_box.setIcon(QMessageBox.Critical)
+            msg_box.addButton(btn_aceptar, QMessageBox.AcceptRole)
+
+        elif tipo == "confirm":
+            msg_box.setIcon(QMessageBox.Question)
+            msg_box.addButton(btn_si, QMessageBox.YesRole)
+            msg_box.addButton(btn_no, QMessageBox.NoRole)
+            btn_si.clicked.connect(self.eliminar_producto)
+
+        msg_box.exec_()
