@@ -92,7 +92,14 @@ class ReturnProductDialog(QDialog):
             response = requests.put(f"{API_BASE_URL}/salidas/devolver/{self.salida['id']}",
                                     json={'cantidad': cantidad_a_devolver})
             if response.status_code == 200:
-                self.mostrar_mensaje("Éxito", "Producto devuelto correctamente.", "success")
+                data = response.json()
+                nueva_cantidad = data.get('nueva_cantidad')
+
+                if nueva_cantidad == 0:
+                    self.mostrar_mensaje("Éxito", "Producto devuelto completamente y eliminado de salidas.", "success")
+                else:
+                    self.mostrar_mensaje("Éxito", f"Producto devuelto parcialmente. Nueva cantidad en salidas: {nueva_cantidad}", "success")
+
                 self.accept()
             else:
                 self.mostrar_mensaje("Error", "No se pudo devolver el producto.", "error")

@@ -331,26 +331,39 @@ def devolver_producto(id):
         cnx = get_db_connection()
         cursor = cnx.cursor()
 
-        # Obtener información de la salida
-        cursor.execute("SELECT producto_id, cantidad, devuelto FROM salidas_stock WHERE id = %s", (id,))
+        # Obtener información actual de la salida
+        cursor.execute("SELECT producto_id, cantidad FROM salidas_stock WHERE id = %s", (id,))
         salida = cursor.fetchone()
 
         if not salida:
             return jsonify({'error': 'Salida no encontrada.'}), 404
 
-        producto_id, cantidad, devuelto = salida
+        producto_id, cantidad_actual = salida
+        data = request.get_json()
+        cantidad_devolver = data.get('cantidad')
 
-        if devuelto:
-            return jsonify({'error': 'Este producto ya fue devuelto al almacén.'}), 400
+        if not cantidad_devolver or cantidad_devolver <= 0:
+            return jsonify({'error': 'Cantidad no válida.'}), 400
 
-        # Devolver al almacén (sumar al stock original)
-        cursor.execute("UPDATE productos SET cantidad = cantidad + %s WHERE id = %s", (cantidad, producto_id))
+        if cantidad_devolver > cantidad_actual:
+            return jsonify({'error': 'No puedes devolver más cantidad de la que salió.'}), 400
 
-        # Marcar como devuelto
-        cursor.execute("UPDATE salidas_stock SET devuelto = TRUE WHERE id = %s", (id,))
+        # 1. Actualizar stock del producto
+        cursor.execute("UPDATE productos SET cantidad = cantidad + %s WHERE id = %s", (cantidad_devolver, producto_id))
+
+        # 2. Actualizar la salida
+        nueva_cantidad = cantidad_actual - cantidad_devolver
+
+        if nueva_cantidad == 0:
+            cursor.execute("DELETE FROM salidas_stock WHERE id = %s", (id,))
+        else:
+            cursor.execute("UPDATE salidas_stock SET cantidad = %s WHERE id = %s", (nueva_cantidad, id))
 
         cnx.commit()
-        return jsonify({'message': 'Producto devuelto al almacén correctamente.'}), 200
+        return jsonify({
+            'message': 'Producto devuelto correctamente.',
+            'nueva_cantidad': nueva_cantidad
+        }), 200
 
     except mysql.connector.Error as err:
         return jsonify({'error': str(err)}), 500
