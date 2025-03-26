@@ -107,8 +107,11 @@ class DeleteSelectedProductDialog(QDialog):
             cantidad_a_eliminar = self.cantidad_input.value()
 
         try:
-            response = requests.delete(f"{API_BASE_URL}/productos/eliminar/{self.salida['id']}",
-                                        json={'cantidad': cantidad_a_eliminar})
+            response = requests.delete(
+                f"{API_BASE_URL}/salidas/eliminar/{self.salida['id']}",
+                json={'cantidad': cantidad_a_eliminar}
+            )
+
             if response.status_code == 200:
                 self.mostrar_mensaje("Éxito", "Producto eliminado correctamente.", "success")
                 self.accept()

@@ -372,6 +372,48 @@ def devolver_producto(id):
         cnx.close()
 
 
+# Endpoint para eliminar salidas de stock
+@app.route('/salidas/eliminar/<int:id>', methods=['DELETE'])
+def eliminar_salida(id):
+    try:
+        cnx = get_db_connection()
+        cursor = cnx.cursor()
+
+        data = request.get_json()
+        cantidad_a_eliminar = data.get('cantidad')
+
+        # Obtener cantidad actual
+        cursor.execute("SELECT cantidad FROM salidas_stock WHERE id = %s", (id,))
+        result = cursor.fetchone()
+
+        if not result:
+            return jsonify({'error': 'Salida no encontrada'}), 404
+
+        cantidad_actual = result[0]
+
+        if cantidad_a_eliminar <= 0 or cantidad_a_eliminar > cantidad_actual:
+            return jsonify({'error': 'Cantidad inválida'}), 400
+
+        nueva_cantidad = cantidad_actual - cantidad_a_eliminar
+
+        if nueva_cantidad == 0:
+            cursor.execute("DELETE FROM salidas_stock WHERE id = %s", (id,))
+        else:
+            cursor.execute("UPDATE salidas_stock SET cantidad = %s WHERE id = %s", (nueva_cantidad, id))
+
+        cnx.commit()
+        return jsonify({
+            'message': 'Producto eliminado correctamente',
+            'nueva_cantidad': nueva_cantidad
+        }), 200
+
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+    finally:
+        cursor.close()
+        cnx.close()
+        
+
 # Endpoint para Actualizar el Perfil del usuario
 @app.route('/update-profile', methods=['POST'])
 def update_profile():

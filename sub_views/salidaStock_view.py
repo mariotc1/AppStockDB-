@@ -7,6 +7,8 @@ from PyQt5.QtCore import Qt, QSize
 import requests
 from dialogs.return_product_dialog import ReturnProductDialog
 from dialogs.delete_selected_product_dialog import DeleteSelectedProductDialog
+from dialogs.delete_multiple_dialog import DeleteMultipleDialog
+
 API_BASE_URL = "http://localhost:5000"
 
 class SalidaStockView(QWidget):
@@ -279,23 +281,40 @@ class SalidaStockView(QWidget):
         productos_seleccionados = [salida for checkbox, salida in self.checkboxes if checkbox.isChecked()]
 
         if not productos_seleccionados:
-            QMessageBox.warning(self, "Aviso", "Por favor, seleccione al menos un producto para eliminar.")
+            QMessageBox.warning(self, "Aviso", "Seleccione al menos un producto para eliminar.")
             return
 
-        confirmacion = QMessageBox.question(
-            self,
-            "Eliminar productos",
-            "⚠️ ¡Advertencia! Esta acción eliminará permanentemente los productos seleccionados. ¿Desea continuar?",
-            QMessageBox.Yes | QMessageBox.No
-        )
+        dialog = DeleteMultipleDialog(productos_seleccionados, self)
+        if dialog.exec_():
+            eliminados = 0
+            errores = []
 
-        if confirmacion == QMessageBox.Yes:
             for salida in productos_seleccionados:
+                cantidad = dialog.resultados.get(salida['id'], 0)
                 try:
-                    response = requests.delete(f"{API_BASE_URL}/productos/eliminar/{salida['id']}")
-                    if response.status_code != 200:
-                        QMessageBox.warning(self, "Error", f"No se pudo eliminar el producto: {salida['producto']}")
+                    response = requests.delete(
+                        f"{API_BASE_URL}/salidas/eliminar/{salida['id']}",
+                        json={'cantidad': cantidad}
+                    )
+                    if response.status_code == 200:
+                        eliminados += 1
+                    else:
+                        errores.append(salida['producto'])
                 except Exception as e:
-                    QMessageBox.critical(self, "Error", f"Error al eliminar el producto: {str(e)}")
+                    errores.append(salida['producto'])
 
-            self.load_salida_data()  # Recarga los datos actualizados
+            self.load_salida_data()
+
+            if eliminados > 0:
+                QMessageBox.information(
+                    self,
+                    "Éxito",
+                    f"✅ Se han eliminado correctamente {eliminados} producto(s) del sistema."
+                )
+
+            if errores:
+                QMessageBox.warning(
+                    self,
+                    "Errores al eliminar",
+                    f"❌ No se pudieron eliminar los siguientes productos:\n- " + "\n- ".join(errores)
+                )
