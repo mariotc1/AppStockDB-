@@ -95,6 +95,18 @@ class ReturnProductDialog(QDialog):
                 data = response.json()
                 nueva_cantidad = data.get('nueva_cantidad')
 
+                movimiento = {
+                    "producto_id": self.salida['id'],
+                    "tipo_movimiento": "Entrada",
+                    "cantidad": cantidad_a_devolver,
+                    "direccion": self.salida.get('direccion'),
+                    "detalles": "Devolución desde ReturnProductDialog"
+                }
+                try:
+                    requests.post(f"{API_BASE_URL}/historial/registrar", json=movimiento)
+                except requests.RequestException as e:
+                    print(f"[WARN] No se pudo registrar el movimiento de entrada: {e}")
+
                 if nueva_cantidad == 0:
                     self.mostrar_mensaje("Éxito", "Producto devuelto completamente y eliminado de salidas.", "success")
                 else:

@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import QFont, QIcon, QPixmap
 from PyQt5.QtCore import Qt, QSize
 import requests
+from dialogs.delete_movimiento_dialog import DeleteMovimientoDialog
 
 API_BASE_URL = "http://localhost:5000"
 
@@ -16,25 +17,79 @@ class HistorialMovimientosView(QWidget):
     def initUI(self):
         layout = QVBoxLayout(self)
 
-        # Filtros superiores
+        # Filtros
         filtros_layout = QHBoxLayout()
+        filtros_layout.setSpacing(15)
+
         self.tipo_combo = QComboBox()
         self.tipo_combo.addItems(["Todos", "Entrada", "Salida"])
-        self.tipo_combo.setFixedWidth(150)
+        self.tipo_combo.setFixedWidth(180)
+        self.tipo_combo.setStyleSheet("""
+            QComboBox {
+                background-color: #ffffff;
+                color: #000000;
+                border: 2px solid #FFA500;
+                border-radius: 10px;
+                padding: 8px 30px 8px 8px;
+                font-size: 14px;
+            }
+            QComboBox::drop-down {
+                subcontrol-origin: padding;
+                subcontrol-position: top right;
+                width: 25px;
+                border-left: 1px solid #FFA500;
+            }
+            QComboBox::down-arrow {
+                image: url(images/desplegable.png);
+                width: 16px;
+                height: 16px;
+            }
+            QComboBox QAbstractItemView {
+                background-color: white;
+                selection-background-color: #FFA500;
+                font-size: 14px;
+            }
+        """)
 
         self.nombre_input = QLineEdit()
-        self.nombre_input.setPlaceholderText("Buscar por producto...")
+        self.nombre_input.setPlaceholderText("🔍 Buscar por producto...")
         self.nombre_input.setFixedWidth(250)
+        self.nombre_input.setStyleSheet("""
+            QLineEdit {
+                background-color: #ffffff;
+                color: #000000;
+                border: 2px solid #FFA500;
+                border-radius: 10px;
+                padding: 8px;
+                font-size: 14px;
+            }
+        """)
 
-        self.btn_filtrar = QPushButton("Filtrar")
-        self.btn_filtrar.setFixedHeight(30)
+        self.btn_filtrar = QPushButton(" Filtrar")
+        self.btn_filtrar.setIcon(QIcon("images/filtrar.png"))
+        self.btn_filtrar.setIconSize(QSize(18, 18))
+        self.btn_filtrar.setFixedSize(140, 40)
         self.btn_filtrar.clicked.connect(self.filtrar_movimientos)
+        self.btn_filtrar.setStyleSheet("""
+            QPushButton {
+                background-color: #FFA500;
+                color: white;
+                font-size: 14px;
+                font-weight: bold;
+                border-radius: 10px;
+                padding: 5px;
+            }
+            QPushButton:hover {
+                background-color: #FF8C00;
+            }
+        """)
 
         filtros_layout.addWidget(self.tipo_combo)
         filtros_layout.addWidget(self.nombre_input)
         filtros_layout.addWidget(self.btn_filtrar)
         filtros_layout.addStretch()
         layout.addLayout(filtros_layout)
+
 
         # Scroll invisible con estilo
         scroll_area = QScrollArea(self)
@@ -59,7 +114,7 @@ class HistorialMovimientosView(QWidget):
         # Botón refrescar
         btn_layout = QHBoxLayout()
         self.btn_refresh = QPushButton(" Refrescar Datos")
-        self.btn_refresh.setIcon(QIcon("images/refresh.png"))
+        self.btn_refresh.setIcon(QIcon("images/refrescar.png"))
         self.btn_refresh.setFixedSize(200, 50)
         self.btn_refresh.clicked.connect(self.cargar_movimientos)
 
@@ -194,11 +249,9 @@ class HistorialMovimientosView(QWidget):
         return card
 
     def eliminar_movimiento(self, mov_id):
-        response = requests.delete(f"{API_BASE_URL}/historial/eliminar/{mov_id}")
-        if response.status_code == 200:
+        dialog = DeleteMovimientoDialog(mov_id, self)
+        if dialog.exec_():
             self.cargar_movimientos()
-        else:
-            QMessageBox.warning(self, "Error", "No se pudo eliminar el movimiento")
 
     def filtrar_movimientos(self):
         tipo_filtro = self.tipo_combo.currentText()

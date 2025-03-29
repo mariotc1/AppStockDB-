@@ -598,10 +598,11 @@ def eliminar_movimiento(id):
 @app.route('/historial/registrar', methods=['POST'])
 def registrar_movimiento():
     data = request.get_json()
+    print("[DEBUG] Datos recibidos para historial:", data)
     producto_id = data.get('producto_id')
     tipo_movimiento = data.get('tipo_movimiento')  # "Entrada" o "Salida"
     cantidad = data.get('cantidad')
-    usuario_id = data.get('usuario_id')
+    usuario_id = data.get('usuario_id') if 'usuario_id' in data else None
     direccion = data.get('direccion')
     detalles = data.get('detalles', '')
 

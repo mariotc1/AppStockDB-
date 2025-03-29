@@ -155,18 +155,18 @@ class AssignProductDialog(QDialog):
     # Asigano uno o varios a una direccion
     def assign_products(self):
         asignaciones = []
-        
+
         for product_dropdown, quantity_spinbox in self.product_entries:
             producto_id = product_dropdown.currentData()
             cantidad = quantity_spinbox.value()
-            
+
             if cantidad > 0:
                 asignaciones.append({
                     "producto_id": producto_id,
                     "cantidad": cantidad,
                     "direccion": self.input_direccion.text()
                 })
-        
+
         if not asignaciones:
             QMessageBox.warning(self, "Error", "Por favor, seleccione al menos un producto y especifique una cantidad.")
             return
@@ -176,20 +176,35 @@ class AssignProductDialog(QDialog):
             return
 
         try:
+            # Primero: Asignar productos al destino (salida de stock)
             response = requests.post(
                 f"{API_BASE_URL}/productos/asignar_multiples",
                 json={"asignaciones": asignaciones}
             )
             response.raise_for_status()
+
+            # Segundo: Registrar cada asignación como movimiento de salida en historial
+            for asignacion in asignaciones:
+                movimiento = {
+                    "producto_id": asignacion["producto_id"],
+                    "tipo_movimiento": "Salida",
+                    "cantidad": asignacion["cantidad"],
+                    "direccion": asignacion["direccion"],
+                    "detalles": "Asignación registrada automáticamente"
+                }
+                try:
+                    requests.post(f"{API_BASE_URL}/historial/registrar", json=movimiento)
+                except requests.RequestException as e:
+                    print(f"[WARN] No se pudo registrar en historial: {e}")
+
             QMessageBox.information(self, "Éxito", "Productos asignados correctamente.")
             self.accept()
 
-            # Cambio directo a la vista de salida de stock
+            # Recargar vista de salida de stock si existe
             if self.parent and hasattr(self.parent, 'show_salida_stock'):
                 self.parent.show_salida_stock()
                 if hasattr(self.parent, 'load_salida_data'):
-                    self.parent.load_salida_data()  # Recarga los datos actualizados
-
+                    self.parent.load_salida_data()
 
         except requests.RequestException as e:
             QMessageBox.critical(self, "Error", f"No se pudieron asignar los productos: {str(e)}")
