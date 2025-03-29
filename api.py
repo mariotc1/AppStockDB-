@@ -629,6 +629,38 @@ def registrar_movimiento():
         cnx.close()
 
 
+# Exportar historial de movimientos a Excel
+@app.route('/historial/exportar', methods=['GET'])
+def exportar_historial():
+    try:
+        cnx = get_db_connection()
+        cursor = cnx.cursor(dictionary=True)
+        cursor.execute("""
+            SELECT 
+                h.id,
+                h.tipo_movimiento,
+                h.cantidad,
+                h.fecha_movimiento,
+                h.direccion,
+                h.detalles,
+                p.nombre AS producto
+            FROM historial_movimientos h
+            JOIN productos p ON h.producto_id = p.id
+            ORDER BY h.fecha_movimiento DESC
+        """)
+        historial = cursor.fetchall()
+
+        df = pd.DataFrame(historial)
+
+        file_path = "historial_export.xlsx"
+        df.to_excel(file_path, index=False)
+
+        return send_file(file_path, as_attachment=True)
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 # Endpoint para Forzar que todas la respuestas sean JSON
 @app.after_request
 def add_headers(response):

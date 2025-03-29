@@ -277,8 +277,50 @@ class StockActualView(QWidget):
 
     # Conexión con la api para exportar a excel el stock
     def export_to_excel(self):
-        response = requests.get(f"{API_BASE_URL}/productos/exportar")
-        if response.status_code == 200:
-            QMessageBox.information(self, "Éxito", "Exportación a Excel completada correctamente.")
-        else:
-            QMessageBox.critical(self, "Error", "No se pudo exportar a Excel.")
+        try:
+            response = requests.get(f"{API_BASE_URL}/productos/exportar")
+            if response.status_code == 200:
+                with open("StockExport.xlsx", "wb") as f:
+                    f.write(response.content)
+                self.mostrar_mensaje("Éxito", "Exportación a Excel completada correctamente.", "info")
+            else:
+                self.mostrar_mensaje("Error", "No se pudo exportar a Excel.", "error")
+        except Exception as e:
+            self.mostrar_mensaje("Error", f"Error durante la exportación: {str(e)}", "error")
+
+    
+    def mostrar_mensaje(self, titulo, mensaje, tipo="info"):
+        msg_box = QMessageBox(self)
+        msg_box.setWindowTitle(titulo)
+        msg_box.setText(mensaje)
+
+        # Icono según el tipo
+        if tipo == "info":
+            msg_box.setIcon(QMessageBox.Information)
+        elif tipo == "error":
+            msg_box.setIcon(QMessageBox.Critical)
+        elif tipo == "warning":
+            msg_box.setIcon(QMessageBox.Warning)
+
+        # Personalización visual elegante
+        msg_box.setStyleSheet("""
+            QMessageBox {
+                background-color: white;
+                font-size: 14px;
+            }
+            QLabel {
+                color: black;
+            }
+            QPushButton {
+                background-color: #FFA500;
+                color: black;
+                padding: 6px 14px;
+                font-weight: bold;
+                border-radius: 8px;
+            }
+            QPushButton:hover {
+                background-color: #FF8C00;
+            }
+        """)
+
+        msg_box.exec_()

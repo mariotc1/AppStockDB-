@@ -111,12 +111,18 @@ class HistorialMovimientosView(QWidget):
         scroll_area.setWidget(self.scroll_content)
         layout.addWidget(scroll_area)
 
-        # Botón refrescar
+        # Botón refrescar y exportar a excel
         btn_layout = QHBoxLayout()
+
         self.btn_refresh = QPushButton(" Refrescar Datos")
         self.btn_refresh.setIcon(QIcon("images/refrescar.png"))
         self.btn_refresh.setFixedSize(200, 50)
         self.btn_refresh.clicked.connect(self.cargar_movimientos)
+
+        self.btn_export = QPushButton(" Exportar a Excel")
+        self.btn_export.setIcon(QIcon("images/ConvertirExcel.png"))
+        self.btn_export.setFixedSize(200, 50)
+        self.btn_export.clicked.connect(self.exportar_excel)
 
         self.btn_refresh.setStyleSheet("""
             QPushButton {
@@ -126,13 +132,34 @@ class HistorialMovimientosView(QWidget):
                 font-weight: bold;
                 border-radius: 10px;
                 padding: 10px;
+                transition: 0.3s;
             }
             QPushButton:hover {
                 background-color: #FF8C00;
+                transform: scale(1.05);
             }
         """)
+
+        self.btn_export.setStyleSheet("""
+            QPushButton {
+                background-color: #FFA500;
+                color: white;
+                font-size: 16px;
+                font-weight: bold;
+                border-radius: 10px;
+                padding: 10px;
+                transition: 0.3s;
+            }
+            QPushButton:hover {
+                background-color: #FF8C00;
+                transform: scale(1.05);
+            }
+        """)
+
         btn_layout.addWidget(self.btn_refresh)
+        btn_layout.addWidget(self.btn_export)
         layout.addLayout(btn_layout)
+
 
         self.setLayout(layout)
         self.cargar_movimientos()
@@ -265,3 +292,51 @@ class HistorialMovimientosView(QWidget):
             if nombre_filtro:
                 movimientos = [m for m in movimientos if nombre_filtro in m['producto'].lower()]
             self.populate_movimiento_cards(movimientos)
+
+    def exportar_excel(self):
+        try:
+            response = requests.get(f"{API_BASE_URL}/historial/exportar")
+            if response.status_code == 200:
+                with open("HistorialMovimientos.xlsx", "wb") as f:
+                    f.write(response.content)
+                self.mostrar_mensaje("Éxito", "Historial exportado correctamente a 'HistorialMovimientos.xlsx'", "info")
+            else:
+                QMessageBox.warning(self, "Error", "No se pudo exportar el historial.")
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Error al exportar: {str(e)}")
+
+    def mostrar_mensaje(self, titulo, mensaje, tipo="info"):
+        msg_box = QMessageBox(self)
+        msg_box.setWindowTitle(titulo)
+        msg_box.setText(mensaje)
+
+        # Icono según el tipo
+        if tipo == "info":
+            msg_box.setIcon(QMessageBox.Information)
+        elif tipo == "error":
+            msg_box.setIcon(QMessageBox.Critical)
+        elif tipo == "warning":
+            msg_box.setIcon(QMessageBox.Warning)
+
+        # Personalización visual elegante
+        msg_box.setStyleSheet("""
+            QMessageBox {
+                background-color: white;
+                font-size: 14px;
+            }
+            QLabel {
+                color: black;
+            }
+            QPushButton {
+                background-color: #FFA500;
+                color: black;
+                padding: 6px 14px;
+                font-weight: bold;
+                border-radius: 8px;
+            }
+            QPushButton:hover {
+                background-color: #FF8C00;
+            }
+        """)
+
+        msg_box.exec_()
