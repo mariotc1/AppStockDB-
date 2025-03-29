@@ -29,13 +29,16 @@ CREATE TABLE IF NOT EXISTS salidas_stock (
     FOREIGN KEY (producto_id) REFERENCES productos(id) ON DELETE CASCADE
 );
 
+
 CREATE TABLE IF NOT EXISTS historial_movimientos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     producto_id INT NOT NULL,
     tipo_movimiento ENUM('Entrada', 'Salida') NOT NULL,
     cantidad INT NOT NULL,
-    usuario VARCHAR(100) NOT NULL,
+    usuario_id INT,
+    direccion VARCHAR(255), -- NULL para entradas
     fecha_movimiento TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     detalles TEXT,
-    FOREIGN KEY (producto_id) REFERENCES productos(id) ON DELETE CASCADE
+    FOREIGN KEY (producto_id) REFERENCES productos(id) ON DELETE CASCADE,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL
 );
