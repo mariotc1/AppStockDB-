@@ -536,6 +536,98 @@ def get_user(user_id):
         cnx.close()
 
 
+# Endpoint para listar todos los movimientos 
+@app.route('/historial/listar', methods=['GET'])
+def listar_historial_movimientos():
+    try:
+        cnx = get_db_connection()
+        cursor = cnx.cursor(dictionary=True)
+
+        cursor.execute("""
+            SELECT 
+                h.id,
+                h.tipo_movimiento,
+                h.cantidad,
+                h.fecha_movimiento,
+                h.direccion,
+                h.detalles,
+                p.nombre AS producto,
+                u.username AS usuario
+            FROM historial_movimientos h
+            JOIN productos p ON h.producto_id = p.id
+            LEFT JOIN usuarios u ON h.usuario_id = u.id
+            ORDER BY h.fecha_movimiento DESC
+        """)
+
+        movimientos = cursor.fetchall()
+        return jsonify(movimientos), 200
+
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+
+    finally:
+        cursor.close()
+        cnx.close()
+
+
+# Endpoint para eliminar un movmiento
+@app.route('/historial/eliminar/<int:id>', methods=['DELETE'])
+def eliminar_movimiento(id):
+    try:
+        cnx = get_db_connection()
+        cursor = cnx.cursor()
+
+        # Verificamos si existe
+        cursor.execute("SELECT id FROM historial_movimientos WHERE id = %s", (id,))
+        if not cursor.fetchone():
+            return jsonify({'error': 'Movimiento no encontrado.'}), 404
+
+        cursor.execute("DELETE FROM historial_movimientos WHERE id = %s", (id,))
+        cnx.commit()
+        return jsonify({'message': 'Movimiento eliminado correctamente.'}), 200
+
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+
+    finally:
+        cursor.close()
+        cnx.close()
+
+
+# Endpoint para registar un moviemnto de entrada/salida en el historial de movimientos
+@app.route('/historial/registrar', methods=['POST'])
+def registrar_movimiento():
+    data = request.get_json()
+    producto_id = data.get('producto_id')
+    tipo_movimiento = data.get('tipo_movimiento')  # "Entrada" o "Salida"
+    cantidad = data.get('cantidad')
+    usuario_id = data.get('usuario_id')
+    direccion = data.get('direccion')
+    detalles = data.get('detalles', '')
+
+    if not all([producto_id, tipo_movimiento, cantidad]):
+        return jsonify({'error': 'Faltan campos obligatorios.'}), 400
+
+    try:
+        cnx = get_db_connection()
+        cursor = cnx.cursor()
+        cursor.execute("""
+            INSERT INTO historial_movimientos (
+                producto_id, tipo_movimiento, cantidad, usuario_id, direccion, detalles
+            ) VALUES (%s, %s, %s, %s, %s, %s)
+        """, (producto_id, tipo_movimiento, cantidad, usuario_id, direccion, detalles))
+
+        cnx.commit()
+        return jsonify({'message': 'Movimiento registrado correctamente.'}), 201
+
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+
+    finally:
+        cursor.close()
+        cnx.close()
+
+
 # Endpoint para Forzar que todas la respuestas sean JSON
 @app.after_request
 def add_headers(response):
