@@ -13,9 +13,10 @@ API_BASE_URL = "http://localhost:5000"
 
 # Dialog para asignar uno o varios productos a una direccion 
 class AssignProductDialog(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, categoria=None):
         super().__init__(parent)
         self.parent = parent
+        self.categoria = categoria  # Nueva categoría
         self.setWindowTitle("Asignar Productos")
         self.setFixedSize(600, 600)
 
@@ -142,7 +143,11 @@ class AssignProductDialog(QDialog):
             response = requests.get(f"{API_BASE_URL}/productos/listar")
             response.raise_for_status()
             productos = response.json()
-            dropdown.clear()  
+            dropdown.clear()
+
+            # Filtrar productos por categoría si se ha pasado una
+            if self.categoria:
+                productos = [p for p in productos if p['categoria'] == self.categoria]
 
             for producto in productos:
                 dropdown.addItem(f"{producto['nombre']} (Disponible: {producto['cantidad']})", producto["id"])

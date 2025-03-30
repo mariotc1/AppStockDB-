@@ -22,8 +22,9 @@ API_BASE_URL = "http://localhost:5000"
 
 # Clase principal de la subvista de salida de stock
 class StockActualView(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, categoria, parent=None):
         super().__init__(parent)
+        self.categoria = categoria
         self.initUI()
         self.load_stock_data()
 
@@ -108,12 +109,15 @@ class StockActualView(QWidget):
 
         self.setLayout(main_layout)
 
-    # Cargo de la base de datos los productos
+    # Cargo de la base de datos los productos y por categoria para saber de que vista es el producto
     def load_stock_data(self):
         response = requests.get(f"{API_BASE_URL}/productos/listar")
         if response.status_code == 200:
             productos = response.json()
-            self.populate_stock_cards(productos)
+            # Filtramos por la categoría actual
+            productos_filtrados = [p for p in productos if p["categoria"] == self.categoria]
+            self.populate_stock_cards(productos_filtrados)
+
     
     def populate_stock_cards(self, productos):
         while self.grid_layout.count():
@@ -242,7 +246,7 @@ class StockActualView(QWidget):
         return card
     
     def add_product(self):
-        dialog = AddProductDialog(self)  # Crea la ventana de añadir producto
+        dialog = AddProductDialog(self, categoria=self.categoria)  # Crea la ventana de añadir producto
         if dialog.exec_():  # Si el usuario confirma se recargam los datos
             self.load_stock_data()
 
@@ -252,7 +256,13 @@ class StockActualView(QWidget):
             QMessageBox.warning(self, "Error", "Datos inválidos.")
             return
         
-        response = requests.post(f"{API_BASE_URL}/productos/agregar", json={"nombre": nombre, "cantidad": cantidad, "estado": estado, "categoria": "Habitaciones"})
+        response = requests.post(f"{API_BASE_URL}/productos/agregar", json={
+            "nombre": nombre,
+            "cantidad": cantidad,
+            "estado": estado,
+            "categoria": self.categoria
+        })
+
         if response.status_code == 201:
             QMessageBox.information(self, "Éxito", "Producto añadido correctamente.")
             dialog.accept()
@@ -271,7 +281,7 @@ class StockActualView(QWidget):
             self.load_stock_data()
 
     def assign_product(self):
-        dialog = AssignProductDialog(self)
+        dialog = AssignProductDialog(self, categoria=self.categoria)
         if dialog.exec_():  
             self.load_stock_data()
 

@@ -12,8 +12,9 @@ from PyQt5.QtWidgets import (
 API_BASE_URL = "http://localhost:5000"
 
 class AddProductDialog(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, categoria=None):
         super().__init__(parent)
+        self.categoria = categoria
         self.setWindowTitle("Añadir Producto")
         self.setFixedSize(500, 400)
 
@@ -128,7 +129,7 @@ class AddProductDialog(QDialog):
         try:
             response = requests.post(
                 f"{API_BASE_URL}/productos/agregar",
-                json={"nombre": nombre, "cantidad": int(cantidad), "estado": estado, "categoria": "Habitaciones"}
+                json={"nombre": nombre, "cantidad": int(cantidad), "estado": estado, "categoria": self.categoria}
             )
             
             if response.status_code == 201:

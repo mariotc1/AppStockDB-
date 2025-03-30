@@ -18,8 +18,9 @@ API_BASE_URL = "http://localhost:5000"
 
 # Clase principal de la svista de Habitaciones
 class HabitacionesView(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, categoria, parent=None):
         super().__init__(parent)
+        self.categoria = categoria
         self.chat_popup = None
         self.initUI()
     
@@ -76,9 +77,9 @@ class HabitacionesView(QWidget):
         self.content_stack = QStackedWidget()
         self.content_stack.setStyleSheet("background: transparent;")
         
-        self.stock_widget = StockActualView()
-        self.salida_widget = SalidaStockView()
-        self.historial_widget = HistorialMovimientosView()
+        self.stock_widget = StockActualView(categoria=self.categoria)
+        self.salida_widget = SalidaStockView(categoria=self.categoria)
+        self.historial_widget = HistorialMovimientosView(categoria=self.categoria)
         
         self.content_stack.addWidget(self.stock_widget)
         self.content_stack.addWidget(self.salida_widget)

@@ -9,9 +9,10 @@ from PyQt5.QtCore import Qt
 API_BASE_URL = "http://localhost:5000"
 
 class ReturnProductDialog(QDialog):
-    def __init__(self, salida, parent=None):
+    def __init__(self, salida, parent=None, categoria=None):
         super().__init__(parent)
         self.salida = salida
+        self.categoria = categoria
         self.setWindowTitle("Devolver Producto")
         self.setFixedSize(500, 450)
         self.setStyleSheet(
@@ -96,7 +97,7 @@ class ReturnProductDialog(QDialog):
                 nueva_cantidad = data.get('nueva_cantidad')
 
                 movimiento = {
-                    "producto_id": self.salida['id'],
+                    "producto_id": self.salida['producto_id'],
                     "tipo_movimiento": "Entrada",
                     "cantidad": cantidad_a_devolver,
                     "direccion": self.salida.get('direccion'),

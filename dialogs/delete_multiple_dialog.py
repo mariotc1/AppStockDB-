@@ -5,11 +5,12 @@ from PyQt5.QtGui import QFont, QIcon, QPixmap
 from PyQt5.QtCore import Qt
 
 class DeleteMultipleDialog(QDialog):
-    def __init__(self, salidas, parent=None):
+    def __init__(self, salidas, parent=None, categoria=None):
         super().__init__(parent)
         self.setWindowTitle("Eliminar Productos Seleccionados")
         self.setFixedSize(600, 600)
         self.salidas = salidas
+        self.categoria = categoria
         self.resultados = {}
 
         self.setStyleSheet("""

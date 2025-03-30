@@ -302,11 +302,13 @@ def exportar_stock():
 @app.route('/salidas/listar', methods=['GET'])
 def listar_salidas():
     try:
+        categoria = request.args.get("categoria")
         cnx = get_db_connection()
         cursor = cnx.cursor(dictionary=True)
-        cursor.execute("""
+        query = """
             SELECT 
                 s.id, 
+                s.producto_id,
                 p.nombre AS producto, 
                 s.cantidad, 
                 s.destino AS direccion,
@@ -314,7 +316,9 @@ def listar_salidas():
                 s.estado
             FROM salidas_stock s
             JOIN productos p ON s.producto_id = p.id
-        """)
+            WHERE p.categoria = %s
+        """
+        cursor.execute(query, (categoria,))
         salidas = cursor.fetchall()
         return jsonify(salidas), 200
     except mysql.connector.Error as err:
@@ -540,10 +544,11 @@ def get_user(user_id):
 @app.route('/historial/listar', methods=['GET'])
 def listar_historial_movimientos():
     try:
+        categoria = request.args.get('categoria')
         cnx = get_db_connection()
         cursor = cnx.cursor(dictionary=True)
 
-        cursor.execute("""
+        query = """
             SELECT 
                 h.id,
                 h.tipo_movimiento,
@@ -556,9 +561,16 @@ def listar_historial_movimientos():
             FROM historial_movimientos h
             JOIN productos p ON h.producto_id = p.id
             LEFT JOIN usuarios u ON h.usuario_id = u.id
-            ORDER BY h.fecha_movimiento DESC
-        """)
+        """
 
+        params = []
+        if categoria:
+            query += " WHERE p.categoria = %s"
+            params.append(categoria)
+
+        query += " ORDER BY h.fecha_movimiento DESC"
+
+        cursor.execute(query, tuple(params))
         movimientos = cursor.fetchall()
         return jsonify(movimientos), 200
 

@@ -10,8 +10,9 @@ from dialogs.delete_movimiento_dialog import DeleteMovimientoDialog
 API_BASE_URL = "http://localhost:5000"
 
 class HistorialMovimientosView(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, categoria, parent=None):
         super().__init__(parent)
+        self.categoria = categoria
         self.initUI()
 
     def initUI(self):
@@ -165,7 +166,7 @@ class HistorialMovimientosView(QWidget):
         self.cargar_movimientos()
 
     def cargar_movimientos(self):
-        response = requests.get(f"{API_BASE_URL}/historial/listar")
+        response = requests.get(f"{API_BASE_URL}/historial/listar", params={"categoria": self.categoria})
         if response.status_code == 200:
             movimientos = response.json()
             self.populate_movimiento_cards(movimientos)
@@ -276,7 +277,7 @@ class HistorialMovimientosView(QWidget):
         return card
 
     def eliminar_movimiento(self, mov_id):
-        dialog = DeleteMovimientoDialog(mov_id, self)
+        dialog = DeleteMovimientoDialog(mov_id, self, categoria=self.categoria)
         if dialog.exec_():
             self.cargar_movimientos()
 
@@ -284,7 +285,7 @@ class HistorialMovimientosView(QWidget):
         tipo_filtro = self.tipo_combo.currentText()
         nombre_filtro = self.nombre_input.text().lower()
 
-        response = requests.get(f"{API_BASE_URL}/historial/listar")
+        response = requests.get(f"{API_BASE_URL}/historial/listar", params={"categoria": self.categoria})
         if response.status_code == 200:
             movimientos = response.json()
             if tipo_filtro != "Todos":

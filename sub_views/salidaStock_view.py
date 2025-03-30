@@ -12,8 +12,9 @@ from dialogs.delete_multiple_dialog import DeleteMultipleDialog
 API_BASE_URL = "http://localhost:5000"
 
 class SalidaStockView(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, categoria, parent=None):
         super().__init__(parent)
+        self.categoria = categoria
         self.initUI()
         self.load_salida_data()
 
@@ -91,7 +92,7 @@ class SalidaStockView(QWidget):
         self.setLayout(layout)
 
     def load_salida_data(self):
-        response = requests.get(f"{API_BASE_URL}/salidas/listar")
+        response = requests.get(f"{API_BASE_URL}/salidas/listar", params={"categoria": self.categoria})
         if response.status_code == 200:
             salidas = response.json()
             if salidas:
@@ -255,7 +256,7 @@ class SalidaStockView(QWidget):
         return card
 
     def show_return_dialog(self, salida):
-        dialog = ReturnProductDialog(salida, self)
+        dialog = ReturnProductDialog(salida, self, categoria=self.categoria)
         if dialog.exec_():
             self.load_salida_data()
 
@@ -273,7 +274,7 @@ class SalidaStockView(QWidget):
                 self.load_salida_data()  # Recarga los datos actualizados tras la devolución
     
     def show_delete_dialog(self, salida):
-        dialog = DeleteSelectedProductDialog(salida, self)
+        dialog = DeleteSelectedProductDialog(salida, self, categoria=self.categoria)
         if dialog.exec_():
             self.load_salida_data()  # Recarga los datos actualizados
 
@@ -284,7 +285,7 @@ class SalidaStockView(QWidget):
             QMessageBox.warning(self, "Aviso", "Seleccione al menos un producto para eliminar.")
             return
 
-        dialog = DeleteMultipleDialog(productos_seleccionados, self)
+        dialog = DeleteMultipleDialog(productos_seleccionados, self, categoria=self.categoria)
         if dialog.exec_():
             eliminados = 0
             errores = []

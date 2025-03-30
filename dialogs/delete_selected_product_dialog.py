@@ -9,9 +9,10 @@ from PyQt5.QtCore import Qt
 API_BASE_URL = "http://localhost:5000"
 
 class DeleteSelectedProductDialog(QDialog):
-    def __init__(self, salida, parent=None):
+    def __init__(self, salida, parent=None, categoria=None):
         super().__init__(parent)
         self.salida = salida
+        self.categoria = categoria
         self.setWindowTitle("Eliminar Producto")
         self.setFixedSize(500, 500)
         self.setStyleSheet(
@@ -113,6 +114,18 @@ class DeleteSelectedProductDialog(QDialog):
             )
 
             if response.status_code == 200:
+                movimiento = {
+                    "producto_id": self.salida['producto_id'],  # ¡IMPORTANTE! Asegúrate que tienes el campo correcto.
+                    "tipo_movimiento": "Salida",
+                    "cantidad": cantidad_a_eliminar,
+                    "direccion": self.salida.get("direccion", "Sin dirección"),
+                    "detalles": "Eliminación manual de producto desde DeleteSelectedProductDialog"
+                }
+                try:
+                    requests.post(f"{API_BASE_URL}/historial/registrar", json=movimiento)
+                except requests.RequestException as e:
+                    print(f"[WARN] No se pudo registrar el movimiento de eliminación: {e}")
+
                 self.mostrar_mensaje("Éxito", "Producto eliminado correctamente.", "success")
                 self.accept()
             else:

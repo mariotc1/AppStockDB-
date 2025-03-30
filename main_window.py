@@ -151,10 +151,10 @@ class MainWindow(QWidget):
         # Añado las vistas (situadas en la carpeta views)
         self.info_view = InfoView()
         self.miPerfil_view = MiPerfilView(user_id=self.user_id)  
-        self.habitaciones_view = HabitacionesView()
-        self.electrodomesticos_view = ElectrodomesticosView()
-        self.zonas_comunes_view = ZonasComunesView()
-        self.bano_view = BanoView()
+        self.habitaciones_view = HabitacionesView(categoria="Habitaciones")
+        self.electrodomesticos_view = ElectrodomesticosView(categoria="Electrodomésticos")
+        self.zonas_comunes_view = ZonasComunesView(categoria="Zonas Comunes")
+        self.bano_view = BanoView(categoria="Baños")
 
         # Diccionario de vistas
         self.views = {
