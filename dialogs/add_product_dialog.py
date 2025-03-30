@@ -1,16 +1,16 @@
 import requests
 
-from PyQt5.QtGui import QFont, QIcon, QPixmap
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont, QIcon, QPixmap
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QLabel, QFormLayout, 
-    QLineEdit, QComboBox, QPushButton, QHBoxLayout, 
-    QSpacerItem, QSizePolicy, QMessageBox
+    QDialog, QVBoxLayout, QLabel, QFormLayout, QLineEdit, 
+    QComboBox, QPushButton, QHBoxLayout, QSpacerItem, QSizePolicy, QMessageBox
 )
 
 # URL para la conexión con la api rest
 API_BASE_URL = "http://localhost:5000"
 
+# Cuadro de diálogo para añadir un producto en la subvista de Stock Actual
 class AddProductDialog(QDialog):
     def __init__(self, parent=None, categoria=None):
         super().__init__(parent)

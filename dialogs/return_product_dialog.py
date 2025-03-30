@@ -1,13 +1,16 @@
 import requests
+
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont, QIcon, QPixmap
 from PyQt5.QtWidgets import (
     QDialog, QVBoxLayout, QLabel, QSpinBox, QRadioButton, QButtonGroup,
     QPushButton, QHBoxLayout, QMessageBox
 )
-from PyQt5.QtGui import QFont, QIcon, QPixmap
-from PyQt5.QtCore import Qt
 
+# URL para la conexión con la api rest
 API_BASE_URL = "http://localhost:5000"
 
+# Cuadro de diálogo para devolver los productos
 class ReturnProductDialog(QDialog):
     def __init__(self, salida, parent=None, categoria=None):
         super().__init__(parent)
@@ -87,6 +90,7 @@ class ReturnProductDialog(QDialog):
     def toggle_cantidad(self, enabled):
         self.cantidad_input.setEnabled(enabled)
 
+
     def devolver_producto(self):
         cantidad_a_devolver = self.cantidad_input.value()
         try:
@@ -119,12 +123,12 @@ class ReturnProductDialog(QDialog):
         except Exception as e:
             self.mostrar_mensaje("Error", f"Error al devolver el producto: {str(e)}", "error")
 
+
     def mostrar_mensaje(self, titulo, mensaje, tipo):
         msg_box = QMessageBox(self)
         msg_box.setWindowTitle(titulo)
         msg_box.setText(mensaje)
 
-        # Personalización de botones
         btn_aceptar = QPushButton("Aceptar")
         btn_aceptar.setStyleSheet(
             "QPushButton {"

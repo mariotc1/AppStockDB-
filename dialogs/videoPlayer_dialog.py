@@ -1,6 +1,8 @@
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QPushButton, QSlider, QHBoxLayout
-from PyQt5.QtCore import QUrl, Qt
 from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import QUrl, Qt
+from PyQt5.QtWidgets import (
+    QDialog, QVBoxLayout, QPushButton, QSlider, QHBoxLayout
+)
 
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtMultimediaWidgets import QVideoWidget

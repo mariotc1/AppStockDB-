@@ -1,4 +1,4 @@
-import sys, math, requests
+import sys, requests
 
 from io import BytesIO  
 

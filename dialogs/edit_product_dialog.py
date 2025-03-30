@@ -8,10 +8,11 @@ from PyQt5.QtWidgets import (
     QSpacerItem, QSizePolicy, QMessageBox
 )
 
-# URL para la conexion con la api
+# URL para la conexion con la API
 API_BASE_URL = "http://localhost:5000"
 
-# Dialog para editar un producto (Stock Actual)
+
+# Dialog para editar un producto en Stock Actual
 class EditProductDialog(QDialog):
     def __init__(self, producto, parent=None):
         super().__init__(parent)

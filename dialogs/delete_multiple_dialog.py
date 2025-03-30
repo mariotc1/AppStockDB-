@@ -1,9 +1,12 @@
-from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QLabel, QHBoxLayout, QPushButton, QSpinBox, QScrollArea, QWidget, QMessageBox, QSizePolicy
-)
-from PyQt5.QtGui import QFont, QIcon, QPixmap
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont, QIcon, QPixmap
+from PyQt5.QtWidgets import (
+    QDialog, QVBoxLayout, QLabel, QHBoxLayout, 
+    QPushButton, QSpinBox, QScrollArea, 
+    QWidget, QMessageBox, QSizePolicy
+)
 
+# Cuadro de diálogo para eliminar varios productos a la vez
 class DeleteMultipleDialog(QDialog):
     def __init__(self, salidas, parent=None, categoria=None):
         super().__init__(parent)
@@ -13,6 +16,7 @@ class DeleteMultipleDialog(QDialog):
         self.categoria = categoria
         self.resultados = {}
 
+        # estilo del cuadro de diálogo
         self.setStyleSheet("""
             QDialog {
                 background: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #2C3E50, stop:1 #1F1F1F);

@@ -16,7 +16,7 @@ from sub_views.historialMovimientos_view import HistorialMovimientosView
 # URL para la conexión con la api rest
 API_BASE_URL = "http://localhost:5000"
 
-# Clase principal de la svista de Habitaciones
+# Clase principal de la subvista de las zonas cimunes
 class ZonasComunesView(QWidget):
     def __init__(self, categoria, parent=None):
         super().__init__(parent)

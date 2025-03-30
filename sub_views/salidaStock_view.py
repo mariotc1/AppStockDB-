@@ -1,16 +1,22 @@
-from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QGridLayout, QMessageBox,
-    QFrame, QScrollArea, QSpacerItem, QSizePolicy, QCheckBox, QDialog, QLineEdit, QFormLayout
-)
-from PyQt5.QtGui import QFont, QIcon, QPixmap
-from PyQt5.QtCore import Qt, QSize
 import requests
+
+from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtGui import QFont, QIcon, QPixmap
+from PyQt5.QtWidgets import (
+    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
+    QLabel, QGridLayout, QMessageBox, QFrame, 
+    QScrollArea, QSpacerItem, QSizePolicy, QCheckBox,
+)
+
+# Importato los cuadros de dialogos (hay operaciones CRUD importantes)
 from dialogs.return_product_dialog import ReturnProductDialog
 from dialogs.delete_selected_product_dialog import DeleteSelectedProductDialog
 from dialogs.delete_multiple_dialog import DeleteMultipleDialog
 
+# Url para la conexión con la api rest
 API_BASE_URL = "http://localhost:5000"
 
+# Clase para la subvista de Salida de Stock
 class SalidaStockView(QWidget):
     def __init__(self, categoria, parent=None):
         super().__init__(parent)
@@ -91,12 +97,14 @@ class SalidaStockView(QWidget):
 
         self.setLayout(layout)
 
+
     def load_salida_data(self):
         response = requests.get(f"{API_BASE_URL}/salidas/listar", params={"categoria": self.categoria})
         if response.status_code == 200:
             salidas = response.json()
             if salidas:
                 self.populate_salida_cards(salidas)
+
 
     def populate_salida_cards(self, salidas):
         while self.grid_layout.count():
@@ -111,6 +119,7 @@ class SalidaStockView(QWidget):
             self.grid_layout.addWidget(card, i // 3, i % 3)
 
         self.grid_layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
+
 
     def create_salida_card(self, salida):
         def create_icon_label(image_path):
@@ -260,6 +269,7 @@ class SalidaStockView(QWidget):
         if dialog.exec_():
             self.load_salida_data()
 
+
     # Recorro la lista de checkboxes y se almacenan en esta lista únicamente aquellos productos que estén marcados
     def devolver_seleccionados(self):
         productos_seleccionados = [salida for checkbox, salida in self.checkboxes if checkbox.isChecked()]
@@ -273,10 +283,12 @@ class SalidaStockView(QWidget):
             if dialog.exec_():
                 self.load_salida_data()  # Recarga los datos actualizados tras la devolución
     
+
     def show_delete_dialog(self, salida):
         dialog = DeleteSelectedProductDialog(salida, self, categoria=self.categoria)
         if dialog.exec_():
             self.load_salida_data()  # Recarga los datos actualizados
+
 
     def eliminar_seleccionados(self):
         productos_seleccionados = [salida for checkbox, salida in self.checkboxes if checkbox.isChecked()]
@@ -310,12 +322,12 @@ class SalidaStockView(QWidget):
                 QMessageBox.information(
                     self,
                     "Éxito",
-                    f"✅ Se han eliminado correctamente {eliminados} producto(s) del sistema."
+                    f"Se han eliminado correctamente {eliminados} producto(s) del sistema."
                 )
 
             if errores:
                 QMessageBox.warning(
                     self,
                     "Errores al eliminar",
-                    f"❌ No se pudieron eliminar los siguientes productos:\n- " + "\n- ".join(errores)
+                    f"No se pudieron eliminar los siguientes productos:\n- " + "\n- ".join(errores)
                 )

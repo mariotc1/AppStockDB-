@@ -2,17 +2,23 @@ import requests
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QIcon, QPixmap
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QMessageBox
+from PyQt5.QtWidgets import (
+    QDialog, QVBoxLayout, QLabel, 
+    QPushButton, QHBoxLayout, QMessageBox
+)
 
+# URL para la conexión con la API
 API_BASE_URL = "http://localhost:5000"
 
-# Diálogo para eliminar un movimiento del historial
+
+# Diálogo para eliminar un movimiento de la subvista historial
 class DeleteMovimientoDialog(QDialog):
     def __init__(self, movimiento_id, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Eliminar Movimiento")
         self.setFixedSize(420, 310)
 
+        # estilo del cuadro de diálogo
         self.setStyleSheet(
             """
             QDialog {

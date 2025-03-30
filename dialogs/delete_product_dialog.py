@@ -2,7 +2,10 @@ import requests
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QIcon, QPixmap
-from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel, QPushButton, QHBoxLayout, QMessageBox
+from PyQt5.QtWidgets import (
+    QDialog, QVBoxLayout, QLabel, 
+    QPushButton, QHBoxLayout, QMessageBox
+)
 
 # URL para la conexion con la api
 API_BASE_URL = "http://localhost:5000"

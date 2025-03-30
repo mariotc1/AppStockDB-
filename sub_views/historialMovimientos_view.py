@@ -1,14 +1,18 @@
-from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QLabel, QHBoxLayout, QPushButton, QScrollArea,
-    QFrame, QComboBox, QLineEdit, QMessageBox, QGridLayout, QSpacerItem, QSizePolicy
-)
-from PyQt5.QtGui import QFont, QIcon, QPixmap
-from PyQt5.QtCore import Qt, QSize
 import requests
+
+from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtGui import QFont, QIcon, QPixmap
+from PyQt5.QtWidgets import (
+    QWidget, QVBoxLayout, QLabel, QHBoxLayout, 
+    QPushButton, QScrollArea, QFrame, QComboBox, 
+    QLineEdit, QMessageBox, QGridLayout, QSpacerItem, QSizePolicy
+)
+
 from dialogs.delete_movimiento_dialog import DeleteMovimientoDialog
 
 API_BASE_URL = "http://localhost:5000"
 
+# Clase de la subvista de Historial de movmientos
 class HistorialMovimientosView(QWidget):
     def __init__(self, categoria, parent=None):
         super().__init__(parent)

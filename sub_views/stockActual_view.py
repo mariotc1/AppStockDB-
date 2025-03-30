@@ -114,7 +114,8 @@ class StockActualView(QWidget):
         response = requests.get(f"{API_BASE_URL}/productos/listar")
         if response.status_code == 200:
             productos = response.json()
-            # Filtramos por la categoría actual
+            
+            # Filtro por la categoría actual (habitaciones/electrodomesticos/Baño/ZonasComunes)
             productos_filtrados = [p for p in productos if p["categoria"] == self.categoria]
             self.populate_stock_cards(productos_filtrados)
 

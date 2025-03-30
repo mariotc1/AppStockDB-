@@ -287,8 +287,8 @@ class RegisterWindow(QWidget):
             strength += 20
         return min(strength, 100)
 
+    # Validar si el correo tiene formato correto con una regex
     def is_valid_email(self, email):
-        """Validar si el correo tiene un formato correcto."""
         pattern = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
         return re.match(pattern, email)
 
@@ -327,14 +327,14 @@ class RegisterWindow(QWidget):
         try:
             with smtplib.SMTP('smtp.gmail.com', 587) as server:
                 server.starttls()
-                server.login(sender_email, "tjjw gvdp tlot rege")  # Configura tu contraseña correctamente
+                server.login(sender_email, "tjjw gvdp tlot rege")  # Contraseña generada para este proeycto
                 server.sendmail(sender_email, recipient_email, msg.as_string())
                 print("Correo de bienvenida enviado con éxito.")
         except Exception as e:
             print(f"Error al enviar el correo: {e}")
 
+    # Manejo del registro con validación del correo y envío de correo de bienvenida
     def register(self):
-        """Manejo del registro con validación de email y envío de correo."""
         name = self.name_field.itemAt(1).widget().text().strip()
         email = self.email_field.itemAt(1).widget().text().strip()
         password = self.password_field.itemAt(1).widget().text()
@@ -363,7 +363,7 @@ class RegisterWindow(QWidget):
             response = requests.post(url, json=data)
             if response.status_code == 201:
                 response_data = response.json()
-                user_id = response_data.get("user_id", "")  # ✅ Captura el 'user_id'
+                user_id = response_data.get("user_id", "")
                 
                 if not user_id:
                     self.showDialog("Error", "No se recibió el ID del usuario en la respuesta.", QMessageBox.Critical)
@@ -373,7 +373,7 @@ class RegisterWindow(QWidget):
                 self.send_welcome_email(email)  # Enviar correo de bienvenida
                 
                 from main_window import MainWindow
-                self.main_window = MainWindow(user_id)  # ✅ Ahora se pasa el 'user_id' correctamente
+                self.main_window = MainWindow(user_id)
                 self.main_window.show()
                 self.close()
 
@@ -437,11 +437,13 @@ class RegisterWindow(QWidget):
     def paintEvent(self, event):
         painter = QPainter(self)
         rect = self.rect()
+        
         # Fondo degradado: de negro a naranja
         gradient = QLinearGradient(0, 0, 0, rect.height())
         gradient.setColorAt(0.0, QColor(0, 0, 0))
         gradient.setColorAt(1.0, QColor(255, 140, 0))
         painter.fillRect(rect, QBrush(gradient))
+        
         # Logo giratorio dentro del área del logo_container
         if hasattr(self, 'logo_container'):
             geo = self.logo_container.geometry()

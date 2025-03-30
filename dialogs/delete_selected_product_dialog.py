@@ -1,13 +1,17 @@
 import requests
-from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QLabel, QSpinBox, QPushButton, QHBoxLayout, 
-    QRadioButton, QButtonGroup, QMessageBox
-)
-from PyQt5.QtGui import QFont, QIcon, QPixmap
-from PyQt5.QtCore import Qt
 
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont, QIcon, QPixmap
+from PyQt5.QtWidgets import (
+    QDialog, QVBoxLayout, QLabel, QSpinBox,
+    QPushButton, QHBoxLayout, QRadioButton, QButtonGroup, QMessageBox
+)
+
+# URL para la conexión con la API
 API_BASE_URL = "http://localhost:5000"
 
+
+# Eliminar los productos seleccionados
 class DeleteSelectedProductDialog(QDialog):
     def __init__(self, salida, parent=None, categoria=None):
         super().__init__(parent)
@@ -91,8 +95,10 @@ class DeleteSelectedProductDialog(QDialog):
 
         layout.addLayout(btn_layout)
 
+
     def toggle_cantidad(self, enabled):
         self.cantidad_input.setEnabled(enabled)
+
 
     def confirmar_eliminacion(self):
         self.mostrar_mensaje(
@@ -100,6 +106,7 @@ class DeleteSelectedProductDialog(QDialog):
             "¿Estás seguro de que deseas eliminar este producto? Esta acción no se puede deshacer.",
             "confirm"
         )
+
 
     def eliminar_producto(self):
         if self.opcion_total.isChecked():
@@ -115,7 +122,7 @@ class DeleteSelectedProductDialog(QDialog):
 
             if response.status_code == 200:
                 movimiento = {
-                    "producto_id": self.salida['producto_id'],  # ¡IMPORTANTE! Asegúrate que tienes el campo correcto.
+                    "producto_id": self.salida['producto_id'],
                     "tipo_movimiento": "Salida",
                     "cantidad": cantidad_a_eliminar,
                     "direccion": self.salida.get("direccion", "Sin dirección"),
@@ -132,6 +139,7 @@ class DeleteSelectedProductDialog(QDialog):
                 self.mostrar_mensaje("Error", "No se pudo eliminar el producto.", "error")
         except Exception as e:
             self.mostrar_mensaje("Error", f"Error al eliminar el producto: {str(e)}", "error")
+
 
     def mostrar_mensaje(self, titulo, mensaje, tipo):
         msg_box = QMessageBox(self)

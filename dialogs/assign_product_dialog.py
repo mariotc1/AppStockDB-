@@ -3,20 +3,20 @@ import requests
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QIcon, QPixmap
 from PyQt5.QtWidgets import (
-    QDialog, QVBoxLayout, QLabel, QComboBox, 
-    QLineEdit, QPushButton, QHBoxLayout, QSpinBox,
-    QScrollArea, QWidget, QMessageBox
+    QDialog, QVBoxLayout, QLabel, QComboBox, QLineEdit,
+    QPushButton, QHBoxLayout, QSpinBox, QScrollArea, QWidget, QMessageBox
 )
 
 # URL para la conexion con la api
 API_BASE_URL = "http://localhost:5000"
+
 
 # Dialog para asignar uno o varios productos a una direccion 
 class AssignProductDialog(QDialog):
     def __init__(self, parent=None, categoria=None):
         super().__init__(parent)
         self.parent = parent
-        self.categoria = categoria  # Nueva categoría
+        self.categoria = categoria
         self.setWindowTitle("Asignar Productos")
         self.setFixedSize(600, 600)
 
@@ -86,7 +86,9 @@ class AssignProductDialog(QDialog):
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
         scroll_content = QWidget()
+        
         self.form_layout = QVBoxLayout(scroll_content)
+        
         scroll_area.setWidget(scroll_content)
         main_layout.addWidget(scroll_area)
         
