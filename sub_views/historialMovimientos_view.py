@@ -108,8 +108,13 @@ class HistorialMovimientosView(QWidget):
         """)
 
         self.scroll_content = QWidget()
-        self.grid_layout = QGridLayout(self.scroll_content)
+        scroll_layout = QVBoxLayout(self.scroll_content)  # NUEVO layout vertical contenedor
+
+        self.grid_layout = QGridLayout()
+        scroll_layout.addLayout(self.grid_layout)  # Mete el grid dentro
+
         scroll_area.setWidget(self.scroll_content)
+
         layout.addWidget(scroll_area)
 
         # Botón refrescar y exportar a excel
@@ -195,9 +200,10 @@ class HistorialMovimientosView(QWidget):
         tipo = mov['tipo_movimiento']
         color_border = "#27ae60" if tipo == "Entrada" else "#e74c3c"
         icon_path = "images/up.png" if tipo == "Entrada" else "images/down.png"
-        titulo_text = "Devolución a Almacén" if tipo == "Entrada" else "Salida de Stock"
+        titulo_text = "DEVOLUCIÓN A ALMACÉN" if tipo == "Entrada" else "SALIDA DEL ALMACÉN"
 
         card = QFrame()
+        card.setMaximumWidth(590)
         card.setStyleSheet(f"""
             QFrame {{
                 background-color: rgba(255, 255, 255, 0.2);
@@ -209,7 +215,7 @@ class HistorialMovimientosView(QWidget):
                 background-color: rgba(255, 255, 255, 0.4);
             }}
         """)
-
+        card.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
         layout = QVBoxLayout(card)
         font_bold = QFont()
         font_bold.setPointSize(12)
@@ -218,26 +224,26 @@ class HistorialMovimientosView(QWidget):
         layout_icon_title = QHBoxLayout()
         icon_label = self.create_icon_label(icon_path)
         title = QLabel(titulo_text)
-        title.setFont(QFont("Arial", 14, QFont.Bold))
+        title.setFont(QFont("Arial", 12, QFont.Bold))
         layout_icon_title.addWidget(icon_label)
         layout_icon_title.addWidget(title)
         layout.addLayout(layout_icon_title)
 
         row_producto = QHBoxLayout()
         producto_label = QLabel(f" Producto: {mov['producto']}")
-        producto_label.setFont(font_bold)
+        producto_label.setFont(QFont("Arial", 12))
         row_producto.addWidget(self.create_icon_label("images/product.png"))
         row_producto.addWidget(producto_label)
 
         row_cantidad = QHBoxLayout()
         cantidad_label = QLabel(f" Cantidad: {mov['cantidad']}")
-        cantidad_label.setFont(font_bold)
+        cantidad_label.setFont(QFont("Arial", 12))
         row_cantidad.addWidget(self.create_icon_label("images/cantidad.png"))
         row_cantidad.addWidget(cantidad_label)
 
         row_fecha = QHBoxLayout()
         fecha_label = QLabel(f" Fecha/Hora: {mov['fecha_movimiento']}")
-        fecha_label.setFont(font_bold)
+        fecha_label.setFont(QFont("Arial", 12))
         row_fecha.addWidget(self.create_icon_label("images/calendar.png"))
         row_fecha.addWidget(fecha_label)
 
@@ -248,7 +254,7 @@ class HistorialMovimientosView(QWidget):
         if mov['direccion']:
             row_dir = QHBoxLayout()
             direccion_label = QLabel(f" Dirección: {mov['direccion']}")
-            direccion_label.setFont(font_bold)
+            direccion_label.setFont(QFont("Arial", 12))
             row_dir.addWidget(self.create_icon_label("images/location.png"))
             row_dir.addWidget(direccion_label)
             layout.addLayout(row_dir)

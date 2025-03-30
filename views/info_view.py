@@ -97,7 +97,7 @@ class InfoView(QWidget):
                                      "• Acceso rápido a todas las secciones\n"
                                      "• Atajos de teclado personalizables\n"
                                      "• Historial de navegación integrado\n", 
-                                     "navegacionInteligente.mp4")
+                                     "navegacionApp.mp4")
         grid_layout.addWidget(card_nav, 0, 0)
 
         # Card Personalización de tu Perfil: explicación + video
@@ -108,7 +108,7 @@ class InfoView(QWidget):
                                 "• Edita tu nombre de usuario\n"
                                 "• Consulta el correo con el que está registrado\n"
                                 "• Cambia tu contraseña si lo necesitas!", 
-                                "usomiPerfil.mp4")
+                                "perfil.mp4")
 
         grid_layout.addWidget(card_op, 0, 1)
 
@@ -119,7 +119,7 @@ class InfoView(QWidget):
                                    "• Seguimiento en tiempo real de la ubicación\n"
                                    "• Sistema de etiquetado avanzado\n"
                                    "• Seguimiento en tiempo real", 
-                                   "video3.mp4")
+                                   "stock.mp4")
         grid_layout.addWidget(card_mob, 1, 0)
 
         # Card Chat Bot: explicación + video
