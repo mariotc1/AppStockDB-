@@ -1,13 +1,13 @@
 import requests
 
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt, QSize, QStringListModel
 
 from PyQt5.QtGui import QFont, QIcon, QPixmap
 
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
-    QLabel, QGridLayout, QFrame, QMessageBox, 
-    QScrollArea, QSpacerItem, QSizePolicy
+    QLabel, QGridLayout, QFrame, QMessageBox, QCompleter,
+    QScrollArea, QSpacerItem, QSizePolicy, QLineEdit
 )
 
 # Imporatación de los cuadros de diálogos
@@ -25,11 +25,58 @@ class StockActualView(QWidget):
     def __init__(self, categoria, parent=None):
         super().__init__(parent)
         self.categoria = categoria
+        self.all_productos = []  # Lista para almacenar todos los productos
+        self.suggestions = []  # Lista para almacenar sugerencias
+        self.completer = QCompleter(self.suggestions, self)
+        self.completer.setCaseSensitivity(Qt.CaseInsensitive)
         self.initUI()
         self.load_stock_data()
 
+
     def initUI(self):
         main_layout = QVBoxLayout(self)
+
+        # FILTROS - INICIO
+        filter_layout = QHBoxLayout()
+        filter_layout.setSpacing(15)
+
+        self.line_edit_filtro = QLineEdit()
+        self.line_edit_filtro.setPlaceholderText("🔍 Buscar producto...")
+        self.line_edit_filtro.setFixedWidth(250)
+        self.line_edit_filtro.setStyleSheet("""
+            QLineEdit {
+                background-color: #ffffff;
+                color: #000000;
+                border: 2px solid #FFA500;
+                border-radius: 10px;
+                padding: 8px;
+                font-size: 14px;
+            }
+        """)
+        self.line_edit_filtro.setCompleter(self.completer)  # Asigna el completer al line edit
+        filter_layout.addWidget(self.line_edit_filtro)
+
+        self.btn_filtrar = QPushButton(" Filtrar")
+        self.btn_filtrar.setIcon(QIcon("images/filtrar.png"))
+        self.btn_filtrar.setIconSize(QSize(18, 18))
+        self.btn_filtrar.setFixedSize(140, 40)
+        self.btn_filtrar.setStyleSheet("""
+            QPushButton {
+                background-color: #FFA500;
+                color: white;
+                font-size: 14px;
+                font-weight: bold;
+                border-radius: 10px;
+                padding: 5px;
+            }
+            QPushButton:hover {
+                background-color: #FF8C00;
+            }
+        """)
+        filter_layout.addWidget(self.btn_filtrar)
+        filter_layout.addStretch()
+
+        main_layout.addLayout(filter_layout)
 
         # Area srollable para las cards
         scroll_area = QScrollArea(self)
@@ -100,6 +147,9 @@ class StockActualView(QWidget):
         self.btn_assign.clicked.connect(self.assign_product)
         self.btn_export.clicked.connect(self.export_to_excel)
 
+        self.btn_filtrar.clicked.connect(self.filtrar_productos)
+        self.line_edit_filtro.textChanged.connect(self.update_suggestions)
+
         btn_layout.addWidget(self.btn_add)
         btn_layout.addWidget(self.btn_assign)
         btn_layout.addWidget(self.btn_export)
@@ -117,9 +167,11 @@ class StockActualView(QWidget):
             
             # Filtro por la categoría actual (habitaciones/electrodomesticos/Baño/ZonasComunes)
             productos_filtrados = [p for p in productos if p["categoria"] == self.categoria]
+
+            # Almacena todos los productos filtrados
+            self.all_productos = productos_filtrados
             self.populate_stock_cards(productos_filtrados)
 
-    
     def populate_stock_cards(self, productos):
         while self.grid_layout.count():
             item = self.grid_layout.takeAt(0)
@@ -131,6 +183,40 @@ class StockActualView(QWidget):
             self.grid_layout.addWidget(card, i // 3, i % 3)
         
         self.grid_layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
+
+    # Método para filtrar los productos según el texto ingresado
+    def filtrar_productos(self):
+        filter_text = self.line_edit_filtro.text().strip().lower()
+
+        if not filter_text:
+            self.load_stock_data()  # Si no hay texto, cargar todos los productos
+            return
+
+        productos_filtrados = [
+            producto for producto in self.all_productos
+            if filter_text in producto['nombre'].lower()
+        ]
+
+        if productos_filtrados:
+            self.populate_stock_cards(productos_filtrados)
+        else:
+            QMessageBox.information(self, "Información", "No se encontraron productos con este filtro.")
+
+    # Método para actualizar las sugerencias del autocompletar
+    def update_suggestions(self, text):
+        text = text.strip().lower()
+
+        suggestions = [
+            producto['nombre'] for producto in self.all_productos
+            if text in producto['nombre'].lower()
+        ]
+
+        # Eliminar duplicados
+        self.suggestions = list(dict.fromkeys(suggestions))
+
+        # Actualizar el modelo del QCompleter
+        model = QStringListModel(self.suggestions)
+        self.completer.setModel(model)
 
     def create_product_card(self, producto):
         card = QFrame()
