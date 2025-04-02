@@ -1,11 +1,11 @@
 import requests
 
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt, QSize, QStringListModel
 from PyQt5.QtGui import QFont, QIcon, QPixmap
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, 
-    QLabel, QGridLayout, QMessageBox, QFrame, 
-    QScrollArea, QSpacerItem, QSizePolicy, QCheckBox,
+    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit,
+    QLabel, QGridLayout, QMessageBox, QFrame, QCalendarWidget,
+    QScrollArea, QSpacerItem, QSizePolicy, QCheckBox, QComboBox, QCompleter
 )
 
 # Importato los cuadros de dialogos (hay operaciones CRUD importantes)
@@ -21,11 +21,93 @@ class SalidaStockView(QWidget):
     def __init__(self, categoria, parent=None):
         super().__init__(parent)
         self.categoria = categoria
+        self.all_salidas = []
+        self.suggestions = []  # Lista para almacenar sugerencias
+        self.completer = QCompleter(self.suggestions, self)
+        self.completer.setCaseSensitivity(Qt.CaseInsensitive)
         self.initUI()
         self.load_salida_data()
 
+
     def initUI(self):
         layout = QVBoxLayout(self)
+
+        # FILTROS - INICIO
+        filter_layout = QHBoxLayout()
+        filter_layout.setSpacing(15)
+
+        self.combo_filtro = QComboBox()
+        self.combo_filtro.addItems(["Dirección", "Producto", "Fecha"])
+        self.combo_filtro.setFixedWidth(180)
+        self.combo_filtro.setStyleSheet("""
+            QComboBox {
+                background-color: #ffffff;
+                color: #000000;
+                border: 2px solid #FFA500;
+                border-radius: 10px;
+                padding: 8px 30px 8px 8px;
+                font-size: 14px;
+            }
+            QComboBox::drop-down {
+                subcontrol-origin: padding;
+                subcontrol-position: top right;
+                width: 25px;
+                border-left: 1px solid #FFA500;
+            }
+            QComboBox::down-arrow {
+                image: url(images/desplegable.png);
+                width: 16px;
+                height: 16px;
+            }
+            QComboBox QAbstractItemView {
+                background-color: white;
+                selection-background-color: #FFA500;
+                font-size: 14px;
+            }
+        """)
+        filter_layout.addWidget(self.combo_filtro)
+
+        self.line_edit_filtro = QLineEdit()
+        self.line_edit_filtro.setPlaceholderText("🔍 Buscar...")
+        self.line_edit_filtro.setFixedWidth(250)
+        self.line_edit_filtro.setStyleSheet("""
+            QLineEdit {
+                background-color: #ffffff;
+                color: #000000;
+                border: 2px solid #FFA500;
+                border-radius: 10px;
+                padding: 8px;
+                font-size: 14px;
+            }
+        """)
+        self.line_edit_filtro.setCompleter(self.completer)  # Asigna el completer al line edit
+        filter_layout.addWidget(self.line_edit_filtro)
+
+        self.calendar_widget = QCalendarWidget()
+        self.calendar_widget.setVisible(False)
+        filter_layout.addWidget(self.calendar_widget)
+
+        self.btn_filtrar = QPushButton(" Filtrar")
+        self.btn_filtrar.setIcon(QIcon("images/filtrar.png"))
+        self.btn_filtrar.setIconSize(QSize(18, 18))
+        self.btn_filtrar.setFixedSize(140, 40)
+        self.btn_filtrar.setStyleSheet("""
+            QPushButton {
+                background-color: #FFA500;
+                color: white;
+                font-size: 14px;
+                font-weight: bold;
+                border-radius: 10px;
+                padding: 5px;
+            }
+            QPushButton:hover {
+                background-color: #FF8C00;
+            }
+        """)
+        filter_layout.addWidget(self.btn_filtrar)
+        filter_layout.addStretch()
+
+        layout.addLayout(filter_layout)
 
         # Área scrollable con scroll invisible
         scroll_area = QScrollArea(self)
@@ -90,6 +172,13 @@ class SalidaStockView(QWidget):
         self.btn_devolver_lote.clicked.connect(self.devolver_seleccionados)
         self.btn_delete_lote.clicked.connect(self.eliminar_seleccionados)
 
+        # Conexiones
+        self.combo_filtro.currentIndexChanged.connect(self.update_filter_input)
+        self.btn_filtrar.clicked.connect(self.filtrar_salidas)
+        self.line_edit_filtro.textChanged.connect(self.update_suggestions)
+
+        self.suggestions = []  # Lista para almacenar sugerencias
+
         btn_layout.addWidget(self.btn_devolver_lote)
         btn_layout.addWidget(self.btn_delete_lote)
 
@@ -103,8 +192,9 @@ class SalidaStockView(QWidget):
         if response.status_code == 200:
             salidas = response.json()
             if salidas:
+                # Almacena todas las salidas
+                self.all_salidas = salidas
                 self.populate_salida_cards(salidas)
-
 
     def populate_salida_cards(self, salidas):
         while self.grid_layout.count():
@@ -268,6 +358,70 @@ class SalidaStockView(QWidget):
         dialog = ReturnProductDialog(salida, self, categoria=self.categoria)
         if dialog.exec_():
             self.load_salida_data()
+
+    def update_filter_input(self):
+        selected_filter = self.combo_filtro.currentText()
+        if selected_filter == "Dirección":
+            self.line_edit_filtro.setVisible(True)
+            self.calendar_widget.setVisible(False)
+            self.line_edit_filtro.setPlaceholderText("🔍 Buscar por dirección...")
+        elif selected_filter == "Producto":
+            self.line_edit_filtro.setVisible(True)
+            self.calendar_widget.setVisible(False)
+            self.line_edit_filtro.setPlaceholderText("🔍 Buscar por producto...")
+        elif selected_filter == "Fecha":
+            self.line_edit_filtro.setVisible(False)
+            self.calendar_widget.setVisible(True)
+
+    def filtrar_salidas(self):
+        selected_filter = self.combo_filtro.currentText()
+        filter_text = self.line_edit_filtro.text().strip()
+        selected_date = self.calendar_widget.selectedDate().toString("yyyy-MM-dd")
+
+        # Si no hay texto en el filtro, cargar todos los datos
+        if not filter_text and selected_filter != "Fecha":
+            self.load_salida_data()
+            return
+
+        filtered_salidas = []
+        for salida in self.all_salidas:
+            if selected_filter == "Dirección" and filter_text.lower() in salida['direccion'].lower():
+                filtered_salidas.append(salida)
+            elif selected_filter == "Producto" and filter_text.lower() in salida['producto'].lower():
+                filtered_salidas.append(salida)
+            elif selected_filter == "Fecha" and salida['fecha_salida'].startswith(selected_date):
+                filtered_salidas.append(salida)
+
+        if filtered_salidas:
+            self.populate_salida_cards(filtered_salidas)
+        else:
+            QMessageBox.information(self, "Información", "No se encontraron salidas con este filtro.")
+
+    def update_suggestions(self, text):
+        selected_filter = self.combo_filtro.currentText()
+        text = text.strip().lower()
+
+        if selected_filter in ["Dirección", "Producto"]:
+            suggestions = []
+            if selected_filter == "Dirección":
+                suggestions = [salida['direccion'] for salida in self.all_salidas if text in salida['direccion'].lower()]
+            elif selected_filter == "Producto":
+                suggestions = [salida['producto'] for salida in self.all_salidas if text in salida['producto'].lower()]
+
+            # Eliminar duplicados
+            self.suggestions = list(dict.fromkeys(suggestions))
+
+            # Actualizar el modelo del QCompleter
+            model = QStringListModel(self.suggestions)
+            self.completer.setModel(model)
+
+    def show_suggestions(self):
+        if self.suggestions:
+            # Aquí deberías implementar un widget para mostrar las sugerencias
+            # Puedes usar QListWidget o QCompleter
+            print("Sugerencias:", self.suggestions)
+        else:
+            print("No hay sugerencias")
 
 
     # Recorro la lista de checkboxes y se almacenan en esta lista únicamente aquellos productos que estén marcados

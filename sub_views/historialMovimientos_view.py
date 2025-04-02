@@ -112,7 +112,7 @@ class HistorialMovimientosView(QWidget):
         """)
 
         self.scroll_content = QWidget()
-        scroll_layout = QVBoxLayout(self.scroll_content)  # NUEVO layout vertical contenedor
+        scroll_layout = QVBoxLayout(self.scroll_content)
 
         self.grid_layout = QGridLayout()
         scroll_layout.addLayout(self.grid_layout)  # Mete el grid dentro
@@ -204,7 +204,7 @@ class HistorialMovimientosView(QWidget):
         tipo = mov['tipo_movimiento']
         color_border = "#27ae60" if tipo == "Entrada" else "#e74c3c"
         icon_path = "images/up.png" if tipo == "Entrada" else "images/down.png"
-        titulo_text = "DEVOLUCIÓN A ALMACÉN" if tipo == "Entrada" else "SALIDA DEL ALMACÉN"
+        titulo_text = "ENTRADA A ALMACÉN" if tipo == "Entrada" else "SALIDA DEL ALMACÉN"
 
         card = QFrame()
         card.setMaximumWidth(590)
