@@ -56,8 +56,38 @@ class HistorialMovimientosView(QWidget):
             }
         """)
 
+        self.criterio_combo = QComboBox()
+        self.criterio_combo.addItems(["Producto", "Dirección", "Fecha"])
+        self.criterio_combo.setFixedWidth(180)
+        self.criterio_combo.setStyleSheet("""
+            QComboBox {
+                background-color: #ffffff;
+                color: #000000;
+                border: 2px solid #FFA500;
+                border-radius: 10px;
+                padding: 8px 30px 8px 8px;
+                font-size: 14px;
+            }
+            QComboBox::drop-down {
+                subcontrol-origin: padding;
+                subcontrol-position: top right;
+                width: 25px;
+                border-left: 1px solid #FFA500;
+            }
+            QComboBox::down-arrow {
+                image: url(images/desplegable.png);
+                width: 16px;
+                height: 16px;
+            }
+            QComboBox QAbstractItemView {
+                background-color: white;
+                selection-background-color: #FFA500;
+                font-size: 14px;
+            }
+        """)
+
         self.nombre_input = QLineEdit()
-        self.nombre_input.setPlaceholderText("🔍 Buscar por producto...")
+        self.nombre_input.setPlaceholderText("🔍 Buscar...")
         self.nombre_input.setFixedWidth(250)
         self.nombre_input.setStyleSheet("""
             QLineEdit {
@@ -90,6 +120,7 @@ class HistorialMovimientosView(QWidget):
         """)
 
         filtros_layout.addWidget(self.tipo_combo)
+        filtros_layout.addWidget(self.criterio_combo) 
         filtros_layout.addWidget(self.nombre_input)
         filtros_layout.addWidget(self.btn_filtrar)
         filtros_layout.addStretch()
@@ -116,6 +147,8 @@ class HistorialMovimientosView(QWidget):
 
         self.grid_layout = QGridLayout()
         scroll_layout.addLayout(self.grid_layout)  # Mete el grid dentro
+        self.criterio_combo.currentIndexChanged.connect(self.cargar_movimientos)
+
 
         scroll_area.setWidget(self.scroll_content)
 
@@ -179,6 +212,22 @@ class HistorialMovimientosView(QWidget):
         if response.status_code == 200:
             movimientos = response.json()
             self.populate_movimiento_cards(movimientos)
+            
+            # Preparar autocompletado dinámico según criterio seleccionado
+            criterio = self.criterio_combo.currentText().lower()
+            sugerencias = []
+
+            if criterio == "producto":
+                sugerencias = list({m["producto"] for m in movimientos})
+            elif criterio == "dirección":
+                sugerencias = list({m["direccion"] for m in movimientos if m["direccion"]})
+            elif criterio == "fecha":
+                sugerencias = list({m["fecha_movimiento"].split(" ")[0] for m in movimientos})
+
+            from PyQt5.QtWidgets import QCompleter
+            completer = QCompleter(sugerencias)
+            completer.setCaseSensitivity(Qt.CaseInsensitive)
+            self.nombre_input.setCompleter(completer)
 
     def populate_movimiento_cards(self, movimientos):
         while self.grid_layout.count():
@@ -293,15 +342,24 @@ class HistorialMovimientosView(QWidget):
 
     def filtrar_movimientos(self):
         tipo_filtro = self.tipo_combo.currentText()
+        criterio = self.criterio_combo.currentText().lower()
         nombre_filtro = self.nombre_input.text().lower()
 
         response = requests.get(f"{API_BASE_URL}/historial/listar", params={"categoria": self.categoria})
         if response.status_code == 200:
             movimientos = response.json()
+
             if tipo_filtro != "Todos":
                 movimientos = [m for m in movimientos if m['tipo_movimiento'] == tipo_filtro]
+
             if nombre_filtro:
-                movimientos = [m for m in movimientos if nombre_filtro in m['producto'].lower()]
+                if criterio == "producto":
+                    movimientos = [m for m in movimientos if nombre_filtro in m['producto'].lower()]
+                elif criterio == "dirección":
+                    movimientos = [m for m in movimientos if m['direccion'] and nombre_filtro in m['direccion'].lower()]
+                elif criterio == "fecha":
+                    movimientos = [m for m in movimientos if nombre_filtro in m['fecha_movimiento'].split(" ")[0].lower()]
+                    
             self.populate_movimiento_cards(movimientos)
 
     def exportar_excel(self):
