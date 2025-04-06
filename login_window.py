@@ -301,10 +301,13 @@ class LoginWindow(QWidget):
 
                 self.showDialog("Inicio de Sesión", f"Inicio de sesión exitoso. ¡Bienvenido, {user_data.get('username', '')}!", QMessageBox.Information)
 
-                from main_window import MainWindow
-                self.main_window = MainWindow(user_id)
-                self.main_window.show()
-                self.close()
+                # Muestra Loading Screen
+                from dialogs.loading_screen import LoadingScreen
+                self.loading_screen = LoadingScreen()
+                self.loading_screen.show()
+
+                # Carga MainWindow con un pequeño delay para permitir la animación
+                QTimer.singleShot(100, lambda: self.openMainWindow(user_id))
 
             else:
                 error_message = response.json().get("error", "Error desconocido.")
@@ -312,6 +315,15 @@ class LoginWindow(QWidget):
 
         except Exception as e:
             self.showDialog("Error de Conexión", str(e), QMessageBox.Critical)
+
+
+    def openMainWindow(self, user_id):
+        from main_window import MainWindow
+        self.main_window = MainWindow(user_id)
+        self.main_window.show()
+        self.loading_screen.close()
+        self.close()
+
 
 
     # Dialog personalizado: muestra un cuadro de diálogo con un título, mensaje y logo
