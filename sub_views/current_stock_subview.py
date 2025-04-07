@@ -21,7 +21,7 @@ API_BASE_URL = "http://localhost:5000"
 
 
 # Clase principal de la subvista de salida de stock
-class StockActualView(QWidget):
+class CurrentStockSubview(QWidget):
     def __init__(self, categoria, parent=None):
         super().__init__(parent)
         self.categoria = categoria

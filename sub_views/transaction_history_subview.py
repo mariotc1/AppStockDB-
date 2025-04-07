@@ -13,7 +13,7 @@ from dialogs.delete_movimiento_dialog import DeleteMovimientoDialog
 API_BASE_URL = "http://localhost:5000"
 
 # Clase de la subvista de Historial de movmientos
-class HistorialMovimientosView(QWidget):
+class TransactionHistorySubview(QWidget):
     def __init__(self, categoria, parent=None):
         super().__init__(parent)
         self.categoria = categoria

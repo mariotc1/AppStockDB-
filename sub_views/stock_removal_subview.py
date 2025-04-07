@@ -17,7 +17,7 @@ from dialogs.delete_multiple_dialog import DeleteMultipleDialog
 API_BASE_URL = "http://localhost:5000"
 
 # Clase para la subvista de Salida de Stock
-class SalidaStockView(QWidget):
+class StockRemovalSubview(QWidget):
     def __init__(self, categoria, parent=None):
         super().__init__(parent)
         self.categoria = categoria

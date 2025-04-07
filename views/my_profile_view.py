@@ -16,7 +16,7 @@ API_BASE_URL = "http://localhost:5000"
 
 
 # Clase principal de la vista Mi Perfil
-class MiPerfilView(QWidget):
+class MyProfileView(QWidget):
     profile_pic_updated = pyqtSignal(str)
 
     def __init__(self, user_id, parent=None):

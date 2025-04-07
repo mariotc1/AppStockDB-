@@ -23,12 +23,12 @@ from animations.lateral_menu_button import LateralMenuButton
 from animations.rotating_logo_mw import RotatingLogo
 
 # Importación de las vistas
-from views.habitaciones_view import HabitacionesView
-from views.electrodomesticos_view import ElectrodomesticosView
-from views.zonas_comunes_view import ZonasComunesView
-from views.bano_view import BanoView
+from views.room_view import RoomView
+from views.appliances_view import AppliancesView
+from views.common_areas_view import CommonAreasView
+from views.bathroom_view import BathroomView
 from views.info_view import InfoView
-from views.miPerfil_view import MiPerfilView
+from views.my_profile_view import MyProfileView
 
 # URL para la conexión y uso de la api rest
 API_BASE_URL = "http://localhost:5000"
@@ -150,11 +150,11 @@ class MainWindow(QWidget):
 
         # Añado las vistas (situadas en la carpeta views)
         self.info_view = InfoView()
-        self.miPerfil_view = MiPerfilView(user_id=self.user_id)  
-        self.habitaciones_view = HabitacionesView(categoria="Habitaciones")
-        self.electrodomesticos_view = ElectrodomesticosView(categoria="Electrodomésticos")
-        self.zonas_comunes_view = ZonasComunesView(categoria="Zonas Comunes")
-        self.bano_view = BanoView(categoria="Baños")
+        self.miPerfil_view = MyProfileView(user_id=self.user_id)  
+        self.habitaciones_view = RoomView(categoria="Habitaciones")
+        self.electrodomesticos_view = AppliancesView(categoria="Electrodomésticos")
+        self.zonas_comunes_view = CommonAreasView(categoria="Zonas Comunes")
+        self.bano_view = BathroomView(categoria="Baños")
 
         # Diccionario de vistas
         self.views = {

@@ -23,7 +23,7 @@ class LoadingScreen(QDialog):
         self.spinner.setPixmap(pixmap)
 
         # Texto de carga
-        self.label = QLabel("Cargando datos...\nPor favor espera un momento", self)
+        self.label = QLabel("Cargando datos...\nPor favor espere", self)
         self.label.setFont(QFont("Arial", 16, QFont.Bold))
         self.label.setStyleSheet("""
             color: white;

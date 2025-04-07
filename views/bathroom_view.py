@@ -9,15 +9,15 @@ from PyQt5.QtWidgets import (
 from chatbot.chat_popup import ChatPopup  
 
 # Importación de las subvistas
-from sub_views.stockActual_view import StockActualView
-from sub_views.salidaStock_view import SalidaStockView
-from sub_views.historialMovimientos_view import HistorialMovimientosView
+from sub_views.current_stock_subview import CurrentStockSubview
+from sub_views.stock_removal_subview import StockRemovalSubview
+from sub_views.transaction_history_subview import TransactionHistorySubview
 
 # URL para la conexión con la api rest
 API_BASE_URL = "http://localhost:5000"
 
-# Clase principal de la subvista de las zonas cimunes
-class ZonasComunesView(QWidget):
+# Clase principal de la svista de Habitaciones
+class BathroomView(QWidget):
     def __init__(self, categoria, parent=None):
         super().__init__(parent)
         self.categoria = categoria
@@ -30,7 +30,7 @@ class ZonasComunesView(QWidget):
         main_layout.setContentsMargins(20, 20, 20, 20)
         main_layout.setSpacing(20)
         
-        title = QLabel("Mobiliario de Zonas Comunes")
+        title = QLabel("Mobiliario de Baños")
         title.setAlignment(Qt.AlignLeft)
         title.setStyleSheet("color: white; font-size: 28px; font-weight: bold;")
         main_layout.addWidget(title)
@@ -77,9 +77,9 @@ class ZonasComunesView(QWidget):
         self.content_stack = QStackedWidget()
         self.content_stack.setStyleSheet("background: transparent;")
         
-        self.stock_widget = StockActualView(categoria=self.categoria)
-        self.salida_widget = SalidaStockView(categoria=self.categoria)
-        self.historial_widget = HistorialMovimientosView(categoria=self.categoria)
+        self.stock_widget = CurrentStockSubview(categoria=self.categoria)
+        self.salida_widget = StockRemovalSubview(categoria=self.categoria)
+        self.historial_widget = TransactionHistorySubview(categoria=self.categoria)
         
         self.content_stack.addWidget(self.stock_widget)
         self.content_stack.addWidget(self.salida_widget)
