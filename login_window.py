@@ -23,12 +23,9 @@ from PyQt5.QtWidgets import (
 class LoginWindow(QWidget):
     def __init__(self):
         super().__init__()
+
         # Inicializo la lista de animaciones
         self.animations = []
-        
-        # Configuro la ventana sin bordes y en pantalla completa
-        self.setWindowFlags(Qt.FramelessWindowHint)
-        self.showFullScreen()
 
         # Cargo el logo y lo escalo
         self.logo = QPixmap("images/logoDB_Blanco.png")
@@ -42,47 +39,14 @@ class LoginWindow(QWidget):
 
         self.initUI()
 
+        # Ahora que todo está creado, recién ahora maximizas
+        self.showMaximized()
+
     # Creacion de la interfaz
     def initUI(self):
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(20, 20, 20, 20)
         main_layout.setSpacing(10)
-
-        # Barra superior con los botones de refrescar y cerrar
-        top_buttons_layout = QHBoxLayout()
-        refresh_button = QPushButton(QIcon("images/refrescar.png"), "")
-        close_button = QPushButton(QIcon("images/cerrar.png"), "")
-        
-        refresh_button.setFixedSize(40, 40)
-        close_button.setFixedSize(40, 40)
-        
-        refresh_button.clicked.connect(self.refreshApp)
-        close_button.clicked.connect(self.close)
-        
-        # Estilo de los botones
-        btn_top_style = """
-            QPushButton {
-                background-color: rgba(255, 255, 255, 50);
-                border: none;
-                border-radius: 20px;
-            }
-            QPushButton:hover {
-                background-color: rgba(255, 255, 255, 100);
-            }
-        """
-
-        refresh_button.setStyleSheet(btn_top_style)
-        close_button.setStyleSheet(btn_top_style)
-        
-        top_buttons_layout.addStretch()
-        top_buttons_layout.addWidget(refresh_button)
-        top_buttons_layout.addWidget(close_button)
-        
-        self.applyShadow(refresh_button)
-        self.applyShadow(close_button)
-        main_layout.addLayout(top_buttons_layout)
-
-        main_layout.addSpacing(50)
 
         # Contenedor para el logo
         logo_container = QWidget()
@@ -435,14 +399,6 @@ class LoginWindow(QWidget):
 
         except ValueError:
             self.showDialog("Error", "Respuesta inválida del servidor", QMessageBox.Critical)
-
-
-    # Refrescar la aplicación
-    def refreshApp(self):
-        print("Refrescando la aplicación...")
-        self.logo = QPixmap("images/logoDB_Blanco.png")
-        self.logo = self.logo.scaled(200, 200, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        self.update()
 
 
     # Mostrar un mensaje de error
