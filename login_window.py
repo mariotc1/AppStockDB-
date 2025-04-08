@@ -39,7 +39,7 @@ class LoginWindow(QWidget):
 
         self.initUI()
 
-        # Ahora que todo está creado, recién ahora maximizas
+        # Pantalla maximizada
         self.showMaximized()
 
     # Creacion de la interfaz

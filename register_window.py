@@ -27,8 +27,6 @@ class RegisterWindow(QWidget):
         
         # Inicializo la lista de animaciones
         self.animations = []
-        self.setWindowFlags(Qt.FramelessWindowHint)
-        self.showFullScreen()
 
         # Cargo y escalo el logo
         self.logo = QPixmap("images/logoDB_Blanco.png")
@@ -42,38 +40,12 @@ class RegisterWindow(QWidget):
 
         self.initUI()
 
+        self.showMaximized()
+
     def initUI(self):
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(20, 20, 20, 20)
         main_layout.setSpacing(10)
-
-        # Botones de Refrescar y Cerrar (estilo mejorado)
-        top_buttons_layout = QHBoxLayout()
-        refresh_button = QPushButton(QIcon("images/refrescar.png"), "")
-        close_button = QPushButton(QIcon("images/cerrar.png"), "")
-        refresh_button.setFixedSize(40, 40)
-        close_button.setFixedSize(40, 40)
-        refresh_button.clicked.connect(self.refreshApp)
-        close_button.clicked.connect(self.close)
-        btn_top_style = """
-            QPushButton {
-                background-color: rgba(255, 255, 255, 50);
-                border: none;
-                border-radius: 20px;
-            }
-            QPushButton:hover {
-                background-color: rgba(255, 255, 255, 100);
-            }
-        """
-        refresh_button.setStyleSheet(btn_top_style)
-        close_button.setStyleSheet(btn_top_style)
-        top_buttons_layout.addStretch()
-        top_buttons_layout.addWidget(refresh_button)
-        top_buttons_layout.addWidget(close_button)
-        self.applyShadow(refresh_button)
-        self.applyShadow(close_button)
-        main_layout.addLayout(top_buttons_layout)
-        main_layout.addSpacing(50)
 
         # Contenedor para el logo giratorio
         logo_container = QWidget()
@@ -110,6 +82,7 @@ class RegisterWindow(QWidget):
         self.strength_bar.setValue(0)
         self.strength_bar.setTextVisible(False)
         self.strength_bar.setFixedHeight(10)
+        
         # Estilo inicial (se actualizará según la fuerza)
         self.strength_bar.setStyleSheet("""
             QProgressBar {
@@ -164,12 +137,14 @@ class RegisterWindow(QWidget):
         self.btn_back.setStyleSheet(btn_style)
         self.applyShadow(self.btn_register)
         self.applyShadow(self.btn_back)
+        
         bottom_buttons_layout.addWidget(self.btn_register)
         bottom_buttons_layout.addWidget(self.btn_back)
         main_layout.addLayout(bottom_buttons_layout)
 
         # Enlace "Ya tengo cuenta. Iniciar Sesión" justo debajo de los botones de registrar y volver
         account_layout = QHBoxLayout()
+        
         self.btn_already_account = QToolButton()
         self.btn_already_account.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
         self.btn_already_account.setText("Ya tengo cuenta. Iniciar Sesión")
@@ -177,10 +152,13 @@ class RegisterWindow(QWidget):
         self.btn_already_account.setIconSize(QSize(48, 48))
         self.btn_already_account.setAutoRaise(True)
         self.btn_already_account.clicked.connect(self.openLogin)
+        
         account_layout.addStretch()
         account_layout.addWidget(self.btn_already_account)
         account_layout.addStretch()
+        
         self.fadeInWidget(self.btn_already_account, 2500, QEasingCurve.OutCubic)
+        
         main_layout.addLayout(account_layout)
 
         # Agrego un stretch para empujar el footer hacia abajo
@@ -203,17 +181,22 @@ class RegisterWindow(QWidget):
 
         self.setLayout(main_layout)
 
+
+    # Creo un campo de entrada con icono y placeholder
     def createInputField(self, placeholder, icon_path, is_password):
         layout = QHBoxLayout()
         layout.setSpacing(10)
+        
         icon_label = QLabel()
         icon_pixmap = QPixmap(icon_path)
         icon_pixmap = icon_pixmap.scaled(24, 24, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         icon_label.setPixmap(icon_pixmap)
+        
         layout.addWidget(icon_label)
 
         line_edit = QLineEdit()
         line_edit.setPlaceholderText(placeholder)
+        
         line_edit.setStyleSheet("""
             QLineEdit {
                 padding: 8px;
@@ -226,6 +209,7 @@ class RegisterWindow(QWidget):
                 border: 2px solid #FF8C00;
             }
         """)
+        
         if is_password:
             line_edit.setEchoMode(QLineEdit.Password)
             eye_button = QPushButton()
@@ -240,6 +224,8 @@ class RegisterWindow(QWidget):
             layout.addWidget(line_edit)
         return layout
 
+
+    # Cambia la visibilidad de la contraseña al hacer clic en el botón
     def togglePasswordVisibility(self, checked, line_edit, button):
         if checked:
             line_edit.setEchoMode(QLineEdit.Normal)
@@ -248,9 +234,12 @@ class RegisterWindow(QWidget):
             line_edit.setEchoMode(QLineEdit.Password)
             button.setIcon(QIcon("images/icon_eye_off.png"))
 
+
+    # Actualiza la barra de fuerza de contraseña y el texto informativo
     def updateStrengthBar(self, text):
         strength = self.calculatePasswordStrength(text)
         self.strength_bar.setValue(strength)
+        
         # Actualiza color y texto según la fuerza
         if strength < 40:
             color = "#FF0000"  # rojo para débil
@@ -261,6 +250,7 @@ class RegisterWindow(QWidget):
         else:
             color = "#00FF00"  # verde para fuerte
             mensaje = "Contraseña fuerte"
+        
         self.strength_bar.setStyleSheet(f"""
             QProgressBar {{
                 background-color: #555;
@@ -273,6 +263,8 @@ class RegisterWindow(QWidget):
         """)
         self.strength_label.setText(mensaje)
 
+
+    # Calculo la fuerza de la contraseña
     def calculatePasswordStrength(self, password):
         strength = 0
         if len(password) >= 8:
@@ -287,11 +279,14 @@ class RegisterWindow(QWidget):
             strength += 20
         return min(strength, 100)
 
+
     # Validar si el correo tiene formato correto con una regex
     def is_valid_email(self, email):
         pattern = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
         return re.match(pattern, email)
 
+
+    # Enviar un correo de bienvenida al usuario tras el registro
     def send_welcome_email(self, recipient_email):
         """Envía un correo de bienvenida tras el registro con imagen y datos de contacto."""
         sender_email = "gestionstockdb@gmail.com"
@@ -321,6 +316,7 @@ class RegisterWindow(QWidget):
                 img = MIMEImage(img_file.read())
                 img.add_header('Content-ID', '<thanks_image>')
                 msg.attach(img)
+
         except Exception as e:
             print(f"No se pudo adjuntar la imagen: {e}")
 
@@ -332,6 +328,7 @@ class RegisterWindow(QWidget):
                 print("Correo de bienvenida enviado con éxito.")
         except Exception as e:
             print(f"Error al enviar el correo: {e}")
+
 
     # Manejo del registro con validación del correo y envío de correo de bienvenida
     def register(self):
@@ -383,6 +380,7 @@ class RegisterWindow(QWidget):
         except Exception as e:
             self.showDialog("Error de Conexión", str(e), QMessageBox.Critical)
 
+
     def showDialog(self, title, message, icon=QMessageBox.Information):
         msg_box = QMessageBox(self)
         msg_box.setWindowTitle(title)
@@ -404,12 +402,6 @@ class RegisterWindow(QWidget):
         self.login_window = LoginWindow()
         self.login_window.show()
         self.close()
-
-    def refreshApp(self):
-        print("Refrescando la aplicación...")
-        self.logo = QPixmap("images/logoDB_Blanco.png")
-        self.logo = self.logo.scaled(200, 200, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        self.update()
 
     def fadeInWidget(self, widget, duration=2000, easing=QEasingCurve.InOutQuad):
         effect = QGraphicsOpacityEffect(widget)
