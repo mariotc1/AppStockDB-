@@ -21,58 +21,22 @@ from animations.typewriter_label import TypewriterLabel
 
 # Ruta de las imágenes: logo, cerrar y refrescar
 LOGO_PATH = "images/logoDB_Blanco.png"
-REFRESH_ICON_PATH = "images/refrescar.png"
-CLOSE_ICON_PATH = "images/cerrar.png"
 
 # Pantalla de Bienvenida 
 class WelcomeWindow(QWidget):
+
     def __init__(self):
         super().__init__()
         self.animations = []
-        self.setWindowFlags(Qt.FramelessWindowHint)
-        self.setAttribute(Qt.WA_TranslucentBackground)
-        self.showFullScreen() 
+        self.setAttribute(Qt.WA_TranslucentBackground)  
+        self.showMaximized()
         self.initUI()
+    
 
     # Creacion de la interfaz
     def initUI(self):
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(20, 20, 20, 20)
-
-        # Layout para los botones de la parte superior
-        top_buttons_layout = QHBoxLayout()
-        self.refresh_button = QPushButton(QIcon(REFRESH_ICON_PATH), "")
-        self.close_button = QPushButton(QIcon(CLOSE_ICON_PATH), "")
-        
-        self.refresh_button.setFixedSize(40, 40)
-        self.close_button.setFixedSize(40, 40)
-        
-        self.refresh_button.clicked.connect(self.refreshApp)
-        self.close_button.clicked.connect(self.close)
-        
-        # Estilo de los botones de refrescar y cerrar
-        btn_style = """
-            QPushButton {
-                background-color: rgba(255, 255, 255, 50);
-                border: none;
-                border-radius: 20px;
-            }
-            QPushButton:hover {
-                background-color: rgba(255, 255, 255, 100);
-            }
-        """
-        
-        self.refresh_button.setStyleSheet(btn_style)
-        self.close_button.setStyleSheet(btn_style)
-        
-        self.applyShadow(self.refresh_button)
-        self.applyShadow(self.close_button)
-        
-        top_buttons_layout.addStretch()
-        top_buttons_layout.addWidget(self.refresh_button)
-        top_buttons_layout.addWidget(self.close_button)
-        
-        main_layout.addLayout(top_buttons_layout)
 
         # Logo con el efecto de giro 360º
         self.rotating_logo = RotatingLogoWidget(LOGO_PATH)
@@ -229,12 +193,6 @@ class WelcomeWindow(QWidget):
         self.register_window = RegisterWindow()
         self.register_window.show()
         self.close()
-
-
-    # Refreca la app
-    def refreshApp(self):
-        print("Refrescando la aplicación...")
-        self.update()
 
 
     # 'Pinto' el fondo de la pantalla con un degradado de negro a naranja
