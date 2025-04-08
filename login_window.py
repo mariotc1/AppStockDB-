@@ -40,6 +40,7 @@ class LoginWindow(QWidget):
         self.initUI()
 
         # Pantalla maximizada
+        self.setWindowTitle("AppStockDB")
         self.showMaximized()
 
     # Creacion de la interfaz

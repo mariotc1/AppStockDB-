@@ -29,6 +29,7 @@ class WelcomeWindow(QWidget):
         super().__init__()
         self.animations = []
         self.setAttribute(Qt.WA_TranslucentBackground)  
+        self.setWindowTitle("AppStockDB")
         self.showMaximized()
         self.initUI()
     

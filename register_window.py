@@ -39,7 +39,8 @@ class RegisterWindow(QWidget):
         self.timer.start(50)
 
         self.initUI()
-
+        
+        self.setWindowTitle("AppStockDB")
         self.showMaximized()
 
     def initUI(self):
