@@ -30,6 +30,7 @@ class WelcomeWindow(QWidget):
         self.animations = []
         self.setAttribute(Qt.WA_TranslucentBackground)  
         self.setWindowTitle("AppStockDB")
+        self.setWindowIcon(QIcon("images/logoDB_Blanco.png"))
         self.showMaximized()
         self.initUI()
     

@@ -39,8 +39,9 @@ class RegisterWindow(QWidget):
         self.timer.start(50)
 
         self.initUI()
-        
+
         self.setWindowTitle("AppStockDB")
+        self.setWindowIcon(QIcon("images/logoDB_Blanco.png"))
         self.showMaximized()
 
     def initUI(self):
