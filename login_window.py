@@ -19,6 +19,9 @@ from PyQt5.QtWidgets import (
     QGraphicsDropShadowEffect, QMessageBox, QToolButton
 )
 
+# estilo para los botones
+from styles.styled_button import StyledButton
+
 # Pantalla de inicio de sesión
 class LoginWindow(QWidget):
     def __init__(self):
@@ -37,12 +40,22 @@ class LoginWindow(QWidget):
         self.timer.timeout.connect(self.updateRotation)
         self.timer.start(50)  # velocidad del giro
 
+        # Veo si la app está en modo claro/oscuro desde el archivo de configuración
+        import json
+        try:
+            with open("config/settings.json", "r") as f:
+                config = json.load(f)
+                self.current_theme = config.get("theme", "light")
+        except (FileNotFoundError, json.JSONDecodeError):
+            self.current_theme = "light"
+
         self.initUI()
 
         # Pantalla maximizada
         self.setWindowTitle("AppStockDB")
         self.setWindowIcon(QIcon("images/logoDB_Blanco.png"))
         self.showMaximized()
+
 
     # Creacion de la interfaz
     def initUI(self):
@@ -68,44 +81,19 @@ class LoginWindow(QWidget):
         fields_layout.setSpacing(15)
 
         # Campo: Correo
-        self.email_field = self.createInputField("Correo", "images/icon_email.png", is_password=False)
+        self.email_field = self.createInputField("Correo", "images/b_iconMail.png", is_password=False)
         fields_layout.addLayout(self.email_field)
 
         # Campo: Contraseña
-        self.password_field = self.createInputField("Contraseña", "images/icon_password.png", is_password=True)
+        self.password_field = self.createInputField("Contraseña", "images/b_iconPass.png", is_password=True)
         fields_layout.addLayout(self.password_field)
 
         main_layout.addLayout(fields_layout)
 
         # Botones de Iniciar Sesión y Volver (pantalla de bienvenida)
         bottom_buttons_layout = QHBoxLayout()
-        self.btn_login = QPushButton("INICIAR SESIÓN")
-        self.btn_back = QPushButton("VOLVER")
-
-        # Estilo de lso botones
-        btn_style = """
-            QPushButton {
-                background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                  stop:0 #FFA500, stop:1 #FF8C00);
-                color: white;
-                border: none;
-                border-radius: 15px;
-                padding: 12px 24px;
-                font-size: 16px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                  stop:0 #FFB52E, stop:1 #FFA500);
-            }
-            QPushButton:pressed {
-                background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                  stop:0 #FF8C00, stop:1 #FFA500);
-            }
-        """
-
-        self.btn_login.setStyleSheet(btn_style)
-        self.btn_back.setStyleSheet(btn_style)
+        self.btn_login = StyledButton("Iniciar Sesión", theme=self.current_theme)
+        self.btn_back = StyledButton("Volver", theme=self.current_theme)
         
         self.applyShadow(self.btn_login)
         self.applyShadow(self.btn_back)
@@ -124,14 +112,16 @@ class LoginWindow(QWidget):
         self.btn_no_account = QToolButton()
         self.btn_no_account.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
         self.btn_no_account.setText("¿No tienes cuenta?\nRegístrate")
-        self.btn_no_account.setIcon(QIcon("images/registrate.png"))
+        self.btn_no_account.setStyleSheet("color: white; font-weight: bold;")
+        self.btn_no_account.setIcon(QIcon("images/b_registrate.png"))
         self.btn_no_account.setIconSize(QSize(48, 48))
         self.btn_no_account.setAutoRaise(True)
         
         self.btn_forgot_password = QToolButton()
         self.btn_forgot_password.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
         self.btn_forgot_password.setText("¿Has olvidado la\ncontraseña?")
-        self.btn_forgot_password.setIcon(QIcon("images/olvido.png"))
+        self.btn_forgot_password.setStyleSheet("color: white; font-weight: bold;")
+        self.btn_forgot_password.setIcon(QIcon("images/b_olvido.png"))
         self.btn_forgot_password.setIconSize(QSize(48, 48))
         self.btn_forgot_password.setAutoRaise(True)
         
@@ -191,19 +181,6 @@ class LoginWindow(QWidget):
 
         line_edit = QLineEdit()
         line_edit.setPlaceholderText(placeholder)
-        line_edit.setStyleSheet("""
-            QLineEdit {
-                padding: 8px;
-                border: 2px solid #FFA500;
-                border-radius: 10px;
-                color: #333;
-                font-size: 16px;
-            }
-            QLineEdit:focus {
-                border: 2px solid #FF8C00;
-            }
-        """)
-
         if is_password:
             line_edit.setEchoMode(QLineEdit.Password)
             eye_button = QPushButton()
@@ -290,15 +267,27 @@ class LoginWindow(QWidget):
         self.loading_screen.close()
         self.close()
 
-
-
     # Dialog personalizado: muestra un cuadro de diálogo con un título, mensaje y logo
     def showDialog(self, title, message, icon=QMessageBox.Information):
+        import json
+        try:
+            with open("config/settings.json", "r") as f:
+                config = json.load(f)
+                current_theme = config.get("theme", "light")
+        except (FileNotFoundError, json.JSONDecodeError):
+            current_theme = "light"
+
         msg_box = QMessageBox(self)
         msg_box.setWindowTitle(title)
         msg_box.setText(message)
         msg_box.setIcon(icon)
-        logo = QPixmap("images/logoDB_Negro.png").scaled(64, 64, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+
+        # Logo dinámico según tema
+        if current_theme == "dark":
+            logo = QPixmap("images/logoDB_Blanco.png").scaled(64, 64, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        else:
+            logo = QPixmap("images/logoDB_Negro.png").scaled(64, 64, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+
         msg_box.setIconPixmap(logo)
         msg_box.exec_()
 
@@ -323,7 +312,6 @@ class LoginWindow(QWidget):
 
     # Enviar un correo de recuperción de la contraseña
     def send_recovery_email(self, recipient_email, recovery_code):
-        """Envía un correo de recuperación de contraseña con un código temporal."""
         sender_email = "gestionstockdb@gmail.com"
         subject = "Recuperación de Contraseña - Gestión de Stock"
         body = f"""
@@ -424,18 +412,22 @@ class LoginWindow(QWidget):
         painter = QPainter(self)
         rect = self.rect()
         
-        # Degradado de negro a naranja
         gradient = QLinearGradient(0, 0, 0, rect.height())
-        gradient.setColorAt(0.0, QColor(0, 0, 0))
-        gradient.setColorAt(1.0, QColor(255, 140, 0))
+
+        if self.current_theme == "dark":
+            gradient.setColorAt(0.0, QColor(10, 10, 10)) 
+            gradient.setColorAt(1.0, QColor(30, 30, 30))
+        else:
+            gradient.setColorAt(0.0, QColor(0, 0, 0))
+            gradient.setColorAt(1.0, QColor(255, 140, 0))
+
         painter.fillRect(rect, QBrush(gradient))
 
-        # 'Dibujo' el logo giratorio usando la geometría del logo_container si existe
+        # Pintamos el logo giratorio
         if hasattr(self, 'logo_container'):
             geo = self.logo_container.geometry()
             center_x = geo.center().x()
             center_y = geo.center().y()
-        
         else:
             center_x = rect.width() // 2
             center_y = rect.height() // 3
@@ -470,6 +462,23 @@ class LoginWindow(QWidget):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+
+    # Cargo el tema ligth/dark desde settings
+    import json
+    try:
+        with open("config/settings.json", "r") as f:
+            config = json.load(f)
+            theme = config.get("theme", "light")
+    except (FileNotFoundError, json.JSONDecodeError):
+        theme = "light"
+
+    if theme == "dark":
+        with open("themes/dark.qss", "r") as f:
+            app.setStyleSheet(f.read())
+    else:
+        with open("themes/light.qss", "r") as f:
+            app.setStyleSheet(f.read())
+
     window = LoginWindow()
     window.show()
     sys.exit(app.exec_())

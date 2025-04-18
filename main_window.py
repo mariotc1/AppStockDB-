@@ -29,6 +29,7 @@ from views.common_areas_view import CommonAreasView
 from views.bathroom_view import BathroomView
 from views.info_view import InfoView
 from views.my_profile_view import MyProfileView
+from views.settings_view import SettingsView
 
 # URL para la conexión y uso de la api rest
 API_BASE_URL = "http://localhost:5000"
@@ -40,6 +41,15 @@ class MainWindow(QWidget):
         super().__init__()
         self.user_id = user_id 
         
+        # Veo si la app está en modo claro/oscuro desde el archivo de configuración
+        import json
+        try:
+            with open("config/settings.json", "r") as f:
+                config = json.load(f)
+                self.current_theme = config.get("theme", "light")
+        except (FileNotFoundError, json.JSONDecodeError):
+            self.current_theme = "light"
+
         self.setWindowFlags(Qt.FramelessWindowHint)
         self.showFullScreen()
         
@@ -73,15 +83,17 @@ class MainWindow(QWidget):
                       "Mobiliario Habitaciones", 
                       "Mobiliario Electrodomesticos", 
                       "Mobiliario Zonas Comunes", 
-                      "Mobiliario Baño"]
+                      "Mobiliario Baño",
+                      "Ajustes/Soporte"]
 
         menu_icons = {
             "Información del programa": "images/informacion.png",
-            "Mi Perfil": "images/usuario.png",
-            "Mobiliario Habitaciones": "images/mobiliario_Habitaciones.png",
-            "Mobiliario Electrodomesticos": "images/mobiliario_Electrodomesticos.png",
-            "Mobiliario Zonas Comunes": "images/zonas_comunes.png",
-            "Mobiliario Baño": "images/mobiliario_Bano.png"
+            "Mi Perfil": "images/b_usuario.png",
+            "Mobiliario Habitaciones": "images/b_habitaciones.jpg",
+            "Mobiliario Electrodomesticos": "images/b_electodomesticos.png",
+            "Mobiliario Zonas Comunes": "images/b_zonasComunes.png",
+            "Mobiliario Baño": "images/b_bano.png",
+            "Ajustes/Soporte": "images/b_ajustes.png"
         }
 
         self.menu_buttons = []
@@ -93,8 +105,8 @@ class MainWindow(QWidget):
         self.menu_buttons.append(info_button)
 
         # Creo el botón de la vista Mi Perfil
-        self.user_icon_button = LateralMenuButton("Mi Perfil", "images/usuario.png", is_main_view=True)
-        self.user_icon_button.setIcon(self.createCircularIcon("images/usuario.png"))
+        self.user_icon_button = LateralMenuButton("Mi Perfil", "images/b_usuario.png", is_main_view=True)
+        self.user_icon_button.setIcon(self.createCircularIcon("images/b_usuario.png"))
         self.user_icon_button.clicked.connect(lambda: self.showView("Mi Perfil"))
         lateral_layout.addWidget(self.user_icon_button)
         self.menu_buttons.append(self.user_icon_button)
@@ -110,12 +122,14 @@ class MainWindow(QWidget):
         lateral_layout.addStretch()
 
         # Botones para salir y volver
-        self.btn_volver = LateralMenuButton("Volver - pantalla bienvenida", "images/volver.png", is_main_view=False)
+        self.btn_volver = LateralMenuButton("Volver - pantalla bienvenida", "images/b_volver.png", is_main_view=False)
+        self.btn_volver.setFont(QFont("Arial", 12, QFont.Bold))
         self.btn_volver.clicked.connect(self.volverWelcome)
         lateral_layout.addWidget(self.btn_volver)
         self.menu_buttons.append(self.btn_volver)
 
         self.btn_cerrar = LateralMenuButton("Salir del programa", "images/salir.png", is_main_view=False)
+        self.btn_cerrar.setFont(QFont("Arial", 12, QFont.Bold))
         self.btn_cerrar.clicked.connect(self.closeApp)
         lateral_layout.addWidget(self.btn_cerrar)
         self.menu_buttons.append(self.btn_cerrar)
@@ -134,8 +148,7 @@ class MainWindow(QWidget):
         header_layout.setContentsMargins(5, 5, 5, 5)
         header_layout.setSpacing(10)
         self.title_label = QLabel("Gestión de Stock DB Inmuebles")
-        self.title_label.setFont(QFont("Arial", 20, QFont.Bold))
-        self.title_label.setStyleSheet("color: white; letter-spacing: 1px;")
+        self.title_label.setStyleSheet("color: white; font-size: 20px; font-weight: bold;")
         header_layout.addWidget(self.title_label)
         header_layout.addStretch()
         content_layout.addWidget(header)
@@ -155,7 +168,8 @@ class MainWindow(QWidget):
         self.electrodomesticos_view = AppliancesView(categoria="Electrodomésticos")
         self.zonas_comunes_view = CommonAreasView(categoria="Zonas Comunes")
         self.bano_view = BathroomView(categoria="Baños")
-
+        self.settings_view = SettingsView()
+        
         # Diccionario de vistas
         self.views = {
             "Información del programa": self.info_view,
@@ -163,7 +177,8 @@ class MainWindow(QWidget):
             "Mobiliario Habitaciones": self.habitaciones_view,
             "Mobiliario Electrodomesticos": self.electrodomesticos_view,
             "Mobiliario Zonas Comunes": self.zonas_comunes_view,
-            "Mobiliario Baño": self.bano_view
+            "Mobiliario Baño": self.bano_view,
+            "Ajustes/Soporte": self.settings_view
         }
 
         # Añadir vistas al QStackedWidget
@@ -195,7 +210,7 @@ class MainWindow(QWidget):
 
         except Exception as e:
             print(f"Error al actualizar el icono del usuario: {e}")
-            self.user_icon_button.setIcon(self.createCircularIcon("images/usuario.png"))  # Imagen por defecto
+            self.user_icon_button.setIcon(self.createCircularIcon("images/b_usuario.png"))  # Imagen por defecto
 
 
     # Cargo la foto de perfil del usuario desde la API al iniciar la app
@@ -214,15 +229,15 @@ class MainWindow(QWidget):
                     self.updateUserIcon(profile_pic_url)
 
                 else:
-                    self.updateUserIcon("images/usuario.png")  # Imagen por defecto si no hay personalizada
+                    self.updateUserIcon("images/b_usuario.png")  # Imagen por defecto si no hay personalizada
 
             else:
                 print("Error al obtener datos del usuario.")
-                self.updateUserIcon("images/usuario.png")  # Imagen por defecto en caso de error en la API
+                self.updateUserIcon("images/b_usuario.png")  # Imagen por defecto en caso de error en la API
 
         except Exception as e:
             print(f"Error al cargar la imagen de perfil al iniciar la app: {e}")
-            self.updateUserIcon("images/usuario.png")
+            self.updateUserIcon("images/b_usuario.png")
 
 
     # Creo un icono circular a partir de una imagen
@@ -319,16 +334,41 @@ class MainWindow(QWidget):
     # 'Pinto' el fondo de la pantalla con un degradado de negro a naranja
     def paintEvent(self, event):
         painter = QPainter(self)
-        painter.setRenderHint(QPainter.Antialiasing)
         rect = self.rect()
         gradient = QLinearGradient(0, 0, 0, rect.height())
-        gradient.setColorAt(0.0, QColor(0, 0, 0))
-        gradient.setColorAt(1.0, QColor(255, 140, 0))
+
+        if self.current_theme == "dark":
+            # Fondo oscuro
+            gradient.setColorAt(0.0, QColor(10, 10, 10))  
+            gradient.setColorAt(1.0, QColor(30, 30, 30))  
+        else:
+            # Fondo claro
+            gradient.setColorAt(0.0, QColor(0, 0, 0))
+            gradient.setColorAt(1.0, QColor(255, 140, 0))
+
         painter.fillRect(rect, QBrush(gradient))
+        super().paintEvent(event)
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    
+    # Cargo el tema desde settings
+    import json
+    try:
+        with open("config/settings.json", "r") as f:
+            config = json.load(f)
+            theme = config.get("theme", "light")
+    except (FileNotFoundError, json.JSONDecodeError):
+        theme = "light"
+
+    if theme == "dark":
+        with open("themes/dark.qss", "r") as f:
+            app.setStyleSheet(f.read())
+    else:
+        with open("themes/light.qss", "r") as f:
+            app.setStyleSheet(f.read())
+
     window = MainWindow()
     window.show()
     sys.exit(app.exec_())

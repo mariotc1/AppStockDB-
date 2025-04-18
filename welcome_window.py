@@ -1,4 +1,4 @@
-import sys
+import sys, json
 
 from PyQt5.QtCore import (
     Qt, QPropertyAnimation, QEasingCurve, QPoint, 
@@ -18,8 +18,9 @@ from PyQt5.QtWidgets import (
 from animations.rotating_logo import RotatingLogoWidget
 from animations.typewriter_label import TypewriterLabel
 
+from styles.styled_button import StyledButton
 
-# Ruta de las imágenes: logo, cerrar y refrescar
+# Ruta de la imagen del logo
 LOGO_PATH = "images/logoDB_Blanco.png"
 
 # Pantalla de Bienvenida 
@@ -27,13 +28,23 @@ class WelcomeWindow(QWidget):
 
     def __init__(self):
         super().__init__()
+        
         self.animations = []
         self.setAttribute(Qt.WA_TranslucentBackground)  
         self.setWindowTitle("AppStockDB")
         self.setWindowIcon(QIcon("images/logoDB_Blanco.png"))
+
+        # Veo si la app está en modo claro/oscuro desde el archivo de configuración
+        import json
+        try:
+            with open("config/settings.json", "r") as f:
+                config = json.load(f)
+                self.current_theme = config.get("theme", "light")
+        except (FileNotFoundError, json.JSONDecodeError):
+            self.current_theme = "light"
+
         self.showMaximized()
         self.initUI()
-    
 
     # Creacion de la interfaz
     def initUI(self):
@@ -60,31 +71,9 @@ class WelcomeWindow(QWidget):
 
         # Layout para los botones de inicio de sesión y registro
         button_layout = QHBoxLayout()
-        self.btn_login = QPushButton("INICIAR SESIÓN")
-        self.btn_register = QPushButton("REGISTRARSE")
-        btn_gradient_style = """
-            QPushButton {
-                background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                  stop:0 #FFA500, stop:1 #FF8C00);
-                color: white;
-                border: none;
-                border-radius: 15px;
-                padding: 12px 24px;
-                font-size: 16px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                  stop:0 #FFB52E, stop:1 #FFA500);
-            }
-            QPushButton:pressed {
-                background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                  stop:0 #FF8C00, stop:1 #FFA500);
-            }
-        """
-        self.btn_login.setStyleSheet(btn_gradient_style)
-        self.btn_register.setStyleSheet(btn_gradient_style)
-        
+        self.btn_login = StyledButton("Iniciar Sesión", theme=self.current_theme)
+        self.btn_register = StyledButton("Registrarse", theme=self.current_theme)
+
         self.applyShadow(self.btn_login)
         self.applyShadow(self.btn_register)
         
@@ -109,6 +98,20 @@ class WelcomeWindow(QWidget):
         main_layout.addLayout(content_layout)
         main_layout.addStretch()
 
+        from themes.theme_manager import ThemeManager
+        self.theme_button = QPushButton()
+        self.theme_button.setFixedSize(40, 40)
+        self.updateThemeIcon()  # Icono inicial correcto
+        self.theme_button.setStyleSheet("border: none;")
+        self.theme_button.clicked.connect(self.toggleTheme)
+
+        # Layout flotante arriba a la derecha
+        top_layout = QHBoxLayout()
+        top_layout.addStretch()
+        top_layout.addWidget(self.theme_button)
+
+        main_layout.insertLayout(0, top_layout)  # Insertarlo en la parte superior
+
         # Footer
         footer_label = QLabel("© 2025 DB Inmuebles. Todos los derechos reservados.")
         footer_label.setStyleSheet("color: white; font-size: 18px;")
@@ -124,6 +127,42 @@ class WelcomeWindow(QWidget):
         # Configuración de las animaciones
         self.setupAnimations()
 
+
+    # Cambia el tema y recarga la ventana de bienvenida
+    def toggleTheme(self):
+        from themes.theme_manager import ThemeManager
+        app = QApplication.instance()
+        ThemeManager.toggle_theme(app)
+        self.updateThemeIcon()
+
+        # Actualizamos el tema actual leído del archivo
+        try:
+            with open("config/settings.json", "r") as f:
+                config = json.load(f)
+                self.current_theme = config.get("theme", "light")
+        except (FileNotFoundError, json.JSONDecodeError):
+            self.current_theme = "light"
+
+        self.updateThemeIcon()
+        self.reopen()
+
+    # Actualiza el icono del botón según el tema actual
+    def updateThemeIcon(self):
+        try:
+            with open("config/settings.json", "r") as f:
+                theme = json.load(f).get("theme", "light")
+        except FileNotFoundError:
+            theme = "light"
+        
+        icon_path = "images/claro.png" if theme == "light" else "images/oscuro.png"
+        self.theme_button.setIcon(QIcon(icon_path))
+        self.theme_button.setIconSize(self.theme_button.size())
+
+    # Reabre la ventana de bienvenida después de cambiar el tema
+    def reopen(self):
+        self.new_window = WelcomeWindow()
+        self.new_window.show()
+        self.close()
 
     # Configuro las animaciones de los elementos de la ventana
     def setupAnimations(self):
@@ -199,12 +238,19 @@ class WelcomeWindow(QWidget):
 
     # 'Pinto' el fondo de la pantalla con un degradado de negro a naranja
     def paintEvent(self, event):
-        """Pinta el fondo con un degradado."""
         painter = QPainter(self)
         rect = self.rect()
         gradient = QLinearGradient(0, 0, 0, rect.height())
-        gradient.setColorAt(0.0, QColor(0, 0, 0))
-        gradient.setColorAt(1.0, QColor(255, 140, 0))
+
+        if self.current_theme == "dark":
+            # Fondo oscuro
+            gradient.setColorAt(0.0, QColor(10, 10, 10))
+            gradient.setColorAt(1.0, QColor(30, 30, 30))
+        else:
+            # Fondo claro
+            gradient.setColorAt(0.0, QColor(0, 0, 0))
+            gradient.setColorAt(1.0, QColor(255, 140, 0))
+
         painter.fillRect(rect, QBrush(gradient))
         super().paintEvent(event)
 

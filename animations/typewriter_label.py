@@ -5,12 +5,15 @@ from PyQt5.QtWidgets import QLabel
 class TypewriterLabel(QLabel):
     def __init__(self, text, parent=None):
         super().__init__(parent)
+        
         self.full_text = text
         self.current_text = ""
+        
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.updateText)
         self.timer.start(50)
 
+    # Método para iniciar el efecto de máquina de escribir
     def updateText(self):
         if len(self.current_text) < len(self.full_text):
             self.current_text += self.full_text[len(self.current_text)]

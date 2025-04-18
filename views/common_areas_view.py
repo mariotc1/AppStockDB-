@@ -41,9 +41,9 @@ class CommonAreasView(QWidget):
         icon_menu_layout.setSpacing(30)
         
         icons = [
-            ("en_stock.png", "Stock Actual"),
-            ("salida.png", "Salida de Stock"),
-            ("historial.png", "Historial de movimientos")
+            ("b_stock.png", "Stock Actual"),
+            ("b_salida.png", "Salida de Stock"),
+            ("b_historial.png", "Historial de movimientos")
         ]
 
         self.icon_buttons = []

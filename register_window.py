@@ -20,6 +20,9 @@ from PyQt5.QtWidgets import (
     QLineEdit, QProgressBar, QGraphicsDropShadowEffect, QMessageBox
 )
 
+# Estilos para los botones
+from styles.styled_button import StyledButton
+
 # Clase de Registro
 class RegisterWindow(QWidget):
     def __init__(self):
@@ -38,11 +41,22 @@ class RegisterWindow(QWidget):
         self.timer.timeout.connect(self.updateRotation)
         self.timer.start(50)
 
-        self.initUI()
+        import json
 
+        # Leer el tema actual
+        try:
+            with open("config/settings.json", "r") as f:
+                config = json.load(f)
+                self.current_theme = config.get("theme", "light")
+        except (FileNotFoundError, json.JSONDecodeError):
+            self.current_theme = "light"
+
+
+        self.initUI()
         self.setWindowTitle("AppStockDB")
         self.setWindowIcon(QIcon("images/logoDB_Blanco.png"))
         self.showMaximized()
+
 
     def initUI(self):
         main_layout = QVBoxLayout(self)
@@ -66,16 +80,16 @@ class RegisterWindow(QWidget):
         fields_layout = QVBoxLayout()
         fields_layout.setSpacing(15)
 
-        self.name_field = self.createInputField("Nombre", "images/icon_name.png", is_password=False)
+        self.name_field = self.createInputField("Nombre", "images/b_iconName.png", is_password=False)
         fields_layout.addLayout(self.name_field)
 
-        self.email_field = self.createInputField("Correo", "images/icon_email.png", is_password=False)
+        self.email_field = self.createInputField("Correo", "images/b_iconMail.png", is_password=False)
         fields_layout.addLayout(self.email_field)
 
-        self.password_field = self.createInputField("Contraseña", "images/icon_password.png", is_password=True)
+        self.password_field = self.createInputField("Contraseña", "images/b_iconPass.png", is_password=True)
         fields_layout.addLayout(self.password_field)
 
-        self.confirm_password_field = self.createInputField("Confirmar Contraseña", "images/icon_password.png", is_password=True)
+        self.confirm_password_field = self.createInputField("Confirmar Contraseña", "images/b_iconPass.png", is_password=True)
         fields_layout.addLayout(self.confirm_password_field)
 
         # Barra de fuerza de contraseña
@@ -113,30 +127,9 @@ class RegisterWindow(QWidget):
 
         # Botones de Registrar y Volver
         bottom_buttons_layout = QHBoxLayout()
-        self.btn_register = QPushButton("REGISTRAR")
-        self.btn_back = QPushButton("VOLVER")
-        btn_style = """
-            QPushButton {
-                background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                  stop:0 #FFA500, stop:1 #FF8C00);
-                color: white;
-                border: none;
-                border-radius: 15px;
-                padding: 12px 24px;
-                font-size: 16px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                  stop:0 #FFB52E, stop:1 #FFA500);
-            }
-            QPushButton:pressed {
-                background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                  stop:0 #FF8C00, stop:1 #FFA500);
-            }
-        """
-        self.btn_register.setStyleSheet(btn_style)
-        self.btn_back.setStyleSheet(btn_style)
+        self.btn_register = StyledButton("Registrar", theme=self.current_theme)
+        self.btn_back = StyledButton("Volver", theme=self.current_theme)
+
         self.applyShadow(self.btn_register)
         self.applyShadow(self.btn_back)
         
@@ -150,7 +143,8 @@ class RegisterWindow(QWidget):
         self.btn_already_account = QToolButton()
         self.btn_already_account.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
         self.btn_already_account.setText("Ya tengo cuenta. Iniciar Sesión")
-        self.btn_already_account.setIcon(QIcon("images/login_icon.png"))
+        self.btn_already_account.setStyleSheet("color: white; font-weight: bold;")
+        self.btn_already_account.setIcon(QIcon("images/b_loginIcon.png"))
         self.btn_already_account.setIconSize(QSize(48, 48))
         self.btn_already_account.setAutoRaise(True)
         self.btn_already_account.clicked.connect(self.openLogin)
@@ -198,20 +192,7 @@ class RegisterWindow(QWidget):
 
         line_edit = QLineEdit()
         line_edit.setPlaceholderText(placeholder)
-        
-        line_edit.setStyleSheet("""
-            QLineEdit {
-                padding: 8px;
-                border: 2px solid #FFA500;
-                border-radius: 10px;
-                color: #333;
-                font-size: 16px;
-            }
-            QLineEdit:focus {
-                border: 2px solid #FF8C00;
-            }
-        """)
-        
+              
         if is_password:
             line_edit.setEchoMode(QLineEdit.Password)
             eye_button = QPushButton()
@@ -290,7 +271,6 @@ class RegisterWindow(QWidget):
 
     # Enviar un correo de bienvenida al usuario tras el registro
     def send_welcome_email(self, recipient_email):
-        """Envía un correo de bienvenida tras el registro con imagen y datos de contacto."""
         sender_email = "gestionstockdb@gmail.com"
         subject = "¡Bienvenido a Gestión de Stock!"
         body = """
@@ -371,10 +351,13 @@ class RegisterWindow(QWidget):
                 self.showDialog("Registro Exitoso", "Usuario registrado exitosamente.", QMessageBox.Information)
                 self.send_welcome_email(email)  # Enviar correo de bienvenida
                 
-                from main_window import MainWindow
-                self.main_window = MainWindow(user_id)
-                self.main_window.show()
-                self.close()
+                # Muestra Loading Screen
+                from dialogs.loading_screen import LoadingScreen
+                self.loading_screen = LoadingScreen()
+                self.loading_screen.show()
+
+                # Carga MainWindow con un pequeño delay para permitir la animación
+                QTimer.singleShot(100, lambda: self.openMainWindow(user_id))
 
             else:
                 error_message = response.json().get("error", "Error desconocido.")
@@ -383,14 +366,37 @@ class RegisterWindow(QWidget):
             self.showDialog("Error de Conexión", str(e), QMessageBox.Critical)
 
 
+    def openMainWindow(self, user_id):
+        from main_window import MainWindow
+        self.main_window = MainWindow(user_id)
+        self.main_window.show()
+        self.loading_screen.close()
+        self.close()
+
+        
     def showDialog(self, title, message, icon=QMessageBox.Information):
+        import json
+        try:
+            with open("config/settings.json", "r") as f:
+                config = json.load(f)
+                current_theme = config.get("theme", "light")
+        except (FileNotFoundError, json.JSONDecodeError):
+            current_theme = "light"
+
         msg_box = QMessageBox(self)
         msg_box.setWindowTitle(title)
         msg_box.setText(message)
         msg_box.setIcon(icon)
-        logo = QPixmap("images/logoDB_Negro.png").scaled(64, 64, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+
+        # Logo dinámico según tema
+        if current_theme == "dark":
+            logo = QPixmap("images/logoDB_Blanco.png").scaled(64, 64, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        else:
+            logo = QPixmap("images/logoDB_Negro.png").scaled(64, 64, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+
         msg_box.setIconPixmap(logo)
         msg_box.exec_()
+
 
     def goBack(self):
         print("Volviendo a la pantalla de bienvenida...")
@@ -431,14 +437,21 @@ class RegisterWindow(QWidget):
     def paintEvent(self, event):
         painter = QPainter(self)
         rect = self.rect()
-        
-        # Fondo degradado: de negro a naranja
+
         gradient = QLinearGradient(0, 0, 0, rect.height())
-        gradient.setColorAt(0.0, QColor(0, 0, 0))
-        gradient.setColorAt(1.0, QColor(255, 140, 0))
+
+        if self.current_theme == "dark":
+            # Fondo oscuro elegante
+            gradient.setColorAt(0.0, QColor(10, 10, 10))
+            gradient.setColorAt(1.0, QColor(30, 30, 30))
+        else:
+            # Fondo claro clásico
+            gradient.setColorAt(0.0, QColor(0, 0, 0))
+            gradient.setColorAt(1.0, QColor(255, 140, 0))
+
         painter.fillRect(rect, QBrush(gradient))
-        
-        # Logo giratorio dentro del área del logo_container
+
+        # Pintamos el logo giratorio encima
         if hasattr(self, 'logo_container'):
             geo = self.logo_container.geometry()
             center_x = geo.center().x()
@@ -446,6 +459,7 @@ class RegisterWindow(QWidget):
         else:
             center_x = rect.width() // 2
             center_y = rect.height() // 3
+
         angle_radians = math.radians(self.angle)
         scale_x = abs(math.cos(angle_radians))
         transform = QTransform()
@@ -455,6 +469,7 @@ class RegisterWindow(QWidget):
         painter.setTransform(transform)
         painter.drawPixmap(0, 0, self.logo)
         painter.resetTransform()
+
 
     def showEvent(self, event):
         self.setWindowOpacity(0)
@@ -469,6 +484,23 @@ class RegisterWindow(QWidget):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+
+    # Cargar tema desde settings
+    import json
+    try:
+        with open("config/settings.json", "r") as f:
+            config = json.load(f)
+            theme = config.get("theme", "light")
+    except (FileNotFoundError, json.JSONDecodeError):
+        theme = "light"
+
+    if theme == "dark":
+        with open("themes/dark.qss", "r") as f:
+            app.setStyleSheet(f.read())
+    else:
+        with open("themes/light.qss", "r") as f:
+            app.setStyleSheet(f.read())
+
     window = RegisterWindow()
     window.show()
     sys.exit(app.exec_())

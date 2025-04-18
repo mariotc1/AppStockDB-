@@ -19,11 +19,11 @@ class LoadingScreen(QDialog):
         self.spinner = QLabel(self)
         self.spinner.setAlignment(Qt.AlignCenter)
         pixmap = QPixmap("images/enProceso.png")
-        pixmap = pixmap.scaled(120, 120, Qt.KeepAspectRatio, Qt.SmoothTransformation)  # Escala la imagen manteniendo la proporción
+        pixmap = pixmap.scaled(120, 120, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         self.spinner.setPixmap(pixmap)
 
         # Texto de carga
-        self.label = QLabel("Cargando datos...\nPor favor espere", self)
+        self.label = QLabel("Cargando datos...\nPor favor, espere", self)
         self.label.setFont(QFont("Arial", 16, QFont.Bold))
         self.label.setStyleSheet("""
             color: white;
@@ -43,12 +43,12 @@ class LoadingScreen(QDialog):
 
         # Degradado radial para el fondo
         gradient = QRadialGradient(rect.center(), rect.width() / 2)
-        gradient.setColorAt(0.0, QColor(50, 50, 50, 240))  # Gris oscuro semitransparente
-        gradient.setColorAt(1.0, QColor(20, 20, 20, 240))  # Gris más oscuro
+        gradient.setColorAt(0.0, QColor(50, 50, 50, 240))
+        gradient.setColorAt(1.0, QColor(20, 20, 20, 240))
 
         painter.setRenderHint(QPainter.Antialiasing)
         
         # Fondo con bordes redondeados
         painter.setBrush(QBrush(gradient))
-        painter.setPen(QColor(255, 255, 255, 50))  # Borde blanco semitransparente
+        painter.setPen(QColor(255, 255, 255, 50))
         painter.drawRoundedRect(rect.adjusted(5, 5, -5, -5), 15, 15) 

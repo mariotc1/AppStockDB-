@@ -6,7 +6,7 @@ from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QFileDialog, QMessageBox, QScrollArea
 from PyQt5.QtGui import QPixmap, QPainter, QBitmap
 
-# Importación de los estilos (refactorización)
+# Importación de los estilos 
 from styles.styled_button import StyledButton
 from styles.styled_line_edit import StyledLineEdit
 from styles.password_field import PasswordField
@@ -22,6 +22,16 @@ class MyProfileView(QWidget):
     def __init__(self, user_id, parent=None):
         super().__init__(parent)
         self.user_id = user_id
+
+        import json
+        # Cargar tema desde settings.json
+        try:
+            with open("config/settings.json", "r") as f:
+                config = json.load(f)
+                self.current_theme = config.get("theme", "light")
+        except:
+            self.current_theme = "light"
+
         self.initUI()
 
     # Creación de la interfaz
@@ -51,26 +61,36 @@ class MyProfileView(QWidget):
 
         self.profile_pic = QLabel(self)
         self.profile_pic.setFixedSize(200, 200)
-        self.profile_pic.setStyleSheet("border-radius: 100px; background: transparent; border: 3px solid #FFA500;")
+        if self.current_theme == "dark":
+            border_color = "#FF5500"  # Naranja oscuro (modo dark)
+        else:
+            border_color = "#FFA500"  # Naranja claro (modo light)
+
+        self.profile_pic.setStyleSheet(f"""
+            border-radius: 100px;
+            background: transparent;
+            border: 3px solid {border_color};
+        """)
+
         self.profile_pic.setScaledContents(True)
         layout.addWidget(self.profile_pic, alignment=Qt.AlignCenter)
 
         # Cambiar la foto de perfil
-        self.btn_change_pic = StyledButton("Cambiar Foto", "images/galeria.png")
+        self.btn_change_pic = StyledButton("Cambiar Foto", "images/galeria.png", theme=self.current_theme)
         self.btn_change_pic.clicked.connect(self.change_profile_picture)
         layout.addWidget(self.btn_change_pic, alignment=Qt.AlignCenter)
 
         # Nombre de usuario
-        self.name_input = StyledLineEdit("Nombre", "images/nombre_usuario.png")
+        self.name_input = StyledLineEdit("Nombre", "images/nombre_usuario.png", theme=self.current_theme)
         layout.addWidget(self.name_input)
 
         # Correo de registro
-        self.email_input = StyledLineEdit("Correo", "images/email.png")
+        self.email_input = StyledLineEdit("Correo", "images/email.png", theme=self.current_theme)
         self.email_input.setReadOnly(True)
         layout.addWidget(self.email_input)
 
         # Botón de editar que habiliata la edición del Nombre de usuario
-        self.btn_edit_name = StyledButton("Editar Nombre", "images/edit.png")
+        self.btn_edit_name = StyledButton("Editar Nombre", "images/edit.png", theme=self.current_theme)
         self.btn_edit_name.clicked.connect(self.enable_name_edit)
         layout.addWidget(self.btn_edit_name)
 
@@ -79,19 +99,19 @@ class MyProfileView(QWidget):
         layout.addWidget(password_label)
 
         # Campo de la contraseña actual
-        self.old_password = PasswordField("Contraseña Actual", "images/password.png")
+        self.old_password = PasswordField("Contraseña Actual", "images/password.png", theme=self.current_theme)
         layout.addLayout(self.old_password)
 
         # Campo de la nueva contraseña
-        self.new_password = PasswordField("Nueva Contraseña", "images/password.png")
+        self.new_password = PasswordField("Nueva Contraseña", "images/password.png", theme=self.current_theme)
         layout.addLayout(self.new_password)
 
         # Campo de confirmar la contraseña
-        self.confirm_password = PasswordField("Confirmar Contraseña", "images/confirmar_password.png")
+        self.confirm_password = PasswordField("Confirmar Contraseña", "images/confirmar_password.png", theme=self.current_theme)
         layout.addLayout(self.confirm_password)
 
         # Botón de guardar los cambios
-        self.btn_save_changes = StyledButton("Guardar Cambios", "images/guardar.png")
+        self.btn_save_changes = StyledButton("Guardar Cambios", "images/guardar.png", theme=self.current_theme)
         self.btn_save_changes.clicked.connect(self.save_changes)
         layout.addWidget(self.btn_save_changes)
 
@@ -131,10 +151,10 @@ class MyProfileView(QWidget):
                     pixmap.loadFromData(BytesIO(img_data).read())
                 except Exception as e:
                     print(f"Error al cargar la imagen de perfil desde la URL: {e}")
-                    pixmap.load("images/usuario.png") # imagen por defecto
+                    pixmap.load("images/b_usuario.png") # imagen por defecto
 
             else:
-                pixmap.load("images/usuario.png") # iamgen por defecto
+                pixmap.load("images/b_usuario.png") # iamgen por defecto
 
             self.set_profile_picture(pixmap)
 

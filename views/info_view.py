@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (
 
 from styles.simple_card import SimpleCard
 from styles.circular_icon import CircularIcon
-
+from styles.styled_button import StyledButton
 from dialogs.videoPlayer_dialog import VideoPlayerDialog
 
 
@@ -17,6 +17,17 @@ from dialogs.videoPlayer_dialog import VideoPlayerDialog
 class InfoView(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+
+        import json
+
+        # Leer el tema actual
+        try:
+            with open("config/settings.json", "r") as f:
+                config = json.load(f)
+                self.current_theme = config.get("theme", "light")
+        except (FileNotFoundError, json.JSONDecodeError):
+            self.current_theme = "light"
+
         self.initUI()
 
     # Creo los card y les doy el formato: icono, título, texto y video explicativo
@@ -46,20 +57,8 @@ class InfoView(QWidget):
         content_label.setAlignment(Qt.AlignTop | Qt.AlignLeft)
         card_layout.addWidget(content_label)
 
-        learn_more_btn = QPushButton("Aprender más")
-        learn_more_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #3498db;
-                color: white;
-                border: none;
-                padding: 8px 16px;
-                border-radius: 4px;
-                font-size: 14px;
-            }
-            QPushButton:hover {
-                background-color: #2980b9;
-            }
-        """)
+        learn_more_btn = StyledButton("Aprender más", theme=self.current_theme)
+
         learn_more_btn.clicked.connect(lambda: self.show_video(video_file))
         card_layout.addWidget(learn_more_btn, alignment=Qt.AlignCenter)
 
@@ -113,7 +112,7 @@ class InfoView(QWidget):
         grid_layout.addWidget(card_op, 0, 1)
 
         # Card Gestión de Moviliario Avanzada: explicación + *falta el video
-        card_mob = self.createCard("images/furniture.png", 
+        card_mob = self.createCard("images/en_stock.png", 
                                    "Gestión de Mobiliario Avanzada", 
                                    "• Gestión integral del ciclo de vida del mobiliario\n"
                                    "• Seguimiento en tiempo real de la ubicación\n"

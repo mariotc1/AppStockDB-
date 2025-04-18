@@ -20,34 +20,45 @@ from styles.bubble_widget import BubbleWidget
 class ChatPopup(QDialog):
     def __init__(self, parent_button, parent=None):
         super().__init__(parent)
+        
         self.parent_button = parent_button
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.Dialog)
+        
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.resize(400, 600)
+        
         self.initUI()
+        
         self.showAnimation()
         self.positionPopup()
+
 
     # Posiciono el chat en la esquina inferior derecha
     def positionPopup(self):
         self.show()
         QTimer.singleShot(50, self.recalculatePosition)
 
+
     # Recalcula la posición tras rederizar la ventana
     def recalculatePosition(self):
         if self.parent_button:
             global_pos = self.parent_button.mapToGlobal(QPoint(0, 0))
+            
             x = global_pos.x() + self.parent_button.width() - self.width()
             y = global_pos.y() - self.height() - 10
+            
             self.move(x, y)
+
 
     # Animación de apartura del chat
     def showAnimation(self):
         self.animation = QPropertyAnimation(self, b"geometry")
         self.recalculatePosition()
+        
         start_rect = self.geometry()
         end_rect = self.geometry()
         start_rect.setY(start_rect.y() + 50)
+        
         self.setGeometry(start_rect)
 
         self.animation.setDuration(300)
@@ -55,6 +66,7 @@ class ChatPopup(QDialog):
         self.animation.setEndValue(end_rect)
         self.animation.setEasingCurve(QEasingCurve.OutQuad)
         self.animation.start()
+
 
     # Creación de la interfaz
     def initUI(self):
@@ -132,7 +144,7 @@ class ChatPopup(QDialog):
             background-color: white;
             border-radius: 15px;
             padding: 5px 15px;
-            font-size: 16px; /* Aumentado */
+            font-size: 16px; 
         """)
         
         self.send_button = QPushButton()
@@ -157,7 +169,7 @@ class ChatPopup(QDialog):
         self.close()
 
 
-    # Rncia
+    # Enviar el mensaje al pulsar el botón de enviar
     def send_message(self):
         user_message = self.input_field.text().strip()
         if not user_message:
@@ -175,7 +187,7 @@ class ChatPopup(QDialog):
             super().keyPressEvent(event)
 
 
-
+    # Respuesta del bot al mensaje del usuario
     def get_bot_response(self, user_message):
         response = self.generate_response(user_message)
         self.add_bot_message(response)
@@ -305,10 +317,12 @@ class ChatPopup(QDialog):
         self.chat_layout.addWidget(BubbleWidget(message, is_user=True))
         self.scroll_to_bottom()
 
+
     # Mensaje del bot
     def add_bot_message(self, message):
         self.chat_layout.addWidget(BubbleWidget(message, is_user=False))
         self.scroll_to_bottom()
+
 
     def scroll_to_bottom(self):
         self.chat_area.verticalScrollBar().setValue(self.chat_area.verticalScrollBar().maximum())

@@ -1,0 +1,66 @@
+QWidget {
+    background-color: transparent;
+    color: #FFFFFF; /* texto blanco */
+}
+
+QPushButton {
+    background-color: #FF5500; /* naranja oscuro */
+    color: white;
+    border-radius: 10px;
+    padding: 10px;
+    font-weight: bold;
+}
+
+QPushButton:hover {
+    background-color: #FF7700; /* naranja un poco más brillante */
+}
+
+QPushButton:pressed {
+    background-color: #FF3300;
+}
+
+QLabel {
+    color: #FFFFFF;
+    background: transparent;
+    font-weight: normal;
+}
+
+QLineEdit {
+    background-color: #222;
+    color: #FFFFFF; /* Texto escrito blanco */
+    border: 2px solid #FF5500;
+    padding: 8px;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+QLineEdit:focus {
+    border: 2px solid #FF7700;
+}
+
+/* IMPORTANTE: Estilo para el texto del placeholder */
+QLineEdit::placeholder {
+    color: #AAAAAA; /* Placeholder text más claro y visible */
+}
+
+QMessageBox {
+    background-color: #121212; /* Un gris casi negro */
+    color: white;
+    border-radius: 10px;
+}
+
+QMessageBox QLabel {
+    color: white;
+}
+
+QMessageBox QPushButton {
+    background-color: #FF5500;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 8px;
+}
+
+QMessageBox QPushButton:hover {
+    background-color: #FF7700;
+}
+

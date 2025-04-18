@@ -529,7 +529,7 @@ def get_user(user_id):
             user["profile_picture"] = f"http://localhost:5000/uploads/{user['profile_picture']}"
         else:
             # Devolver la imagen por defecto si no hay personalizada
-            user["profile_picture"] = "images/usuario.png"
+            user["profile_picture"] = "images/b_usuario.png"
 
         return jsonify(user), 200
 

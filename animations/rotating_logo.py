@@ -1,8 +1,8 @@
 import math, os
 
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QPainter, QPixmap, QTransform
 from PyQt5.QtWidgets import QWidget
+from PyQt5.QtGui import QPainter, QPixmap, QTransform
 
 # Ruta del logo
 LOGO_PATH = "images/logoDB_Blanco.png"
@@ -11,13 +11,18 @@ LOGO_PATH = "images/logoDB_Blanco.png"
 class RotatingLogoWidget(QWidget):
     def __init__(self, logo_path, parent=None):
         super().__init__(parent)
+        
         self.logo_path = logo_path
         self.loadLogo()
+        
         self.angle = 0
+       
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.updateRotation)
         self.timer.start(50)
+        
         self.setFixedSize(300, 300)
+
 
     # Cargo el logo y lo escalo
     def loadLogo(self):
@@ -28,10 +33,14 @@ class RotatingLogoWidget(QWidget):
             print(f"Error: No se encontró el logo en '{self.logo_path}'")
             self.logo = QPixmap()
 
+
+    # Actualizo la rotación del logo
     def updateRotation(self):
         self.angle = (self.angle + 1) % 360
         self.update()
 
+
+    # Pintar el logo en la ventana
     def paintEvent(self, event):
         painter = QPainter(self)
         
