@@ -9,6 +9,7 @@ class ThemeManager:
     DARK_THEME = "themes/dark.qss"
     LIGHT_THEME = "themes/light.qss"
 
+    
     # Carga el tema guardado en el archivo de configuración
     @staticmethod
     def load_theme(app):
@@ -20,6 +21,7 @@ class ThemeManager:
             theme = config.get("theme", "light")
             ThemeManager.apply_theme(app, theme)
 
+   
     # Guarda el tema actual en configuración
     @staticmethod
     def save_theme(theme):
@@ -27,6 +29,7 @@ class ThemeManager:
         with open(ThemeManager.CONFIG_FILE, "w") as f:
             json.dump({"theme": theme}, f)
 
+    
     # Aplica el tema ligth/dark a toda la aplicación
     @staticmethod
     def apply_theme(app, theme):
@@ -38,6 +41,7 @@ class ThemeManager:
         with open(qss_file, "r") as f:
             app.setStyleSheet(f.read())
 
+    
     # Cambia entre light y dark
     @staticmethod
     def toggle_theme(app):

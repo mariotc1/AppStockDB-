@@ -1,10 +1,10 @@
 QWidget {
     background-color: transparent;
-    color: #000000; /* texto negro */
+    color: #000000;
 }
 
 QPushButton {
-    background-color: #FFA500; /* naranja normal */
+    background-color: #FFA500;
     color: white;
     border-radius: 10px;
     padding: 10px;
@@ -43,7 +43,7 @@ QLineEdit::placeholder {
 }
 
 QMessageBox {
-    background-color: #FFFFFF; /* Fondo blanco */
+    background-color: #FFFFFF;
     color: black;
     border-radius: 10px;
 }
