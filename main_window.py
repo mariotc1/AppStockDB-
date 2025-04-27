@@ -148,7 +148,7 @@ class MainWindow(QWidget):
         header_layout.setContentsMargins(5, 5, 5, 5)
         header_layout.setSpacing(10)
         self.title_label = QLabel("Gestión de Stock DB Inmuebles")
-        self.title_label.setStyleSheet("color: white; font-size: 20px; font-weight: bold;")
+        self.title_label.setStyleSheet("color: white; font-size: 28px; font-weight: bold;")
         header_layout.addWidget(self.title_label)
         header_layout.addStretch()
         content_layout.addWidget(header)

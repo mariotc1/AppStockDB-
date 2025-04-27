@@ -252,7 +252,7 @@ class TransactionHistorySubview(QWidget):
     def create_mov_card(self, mov):
         tipo = mov['tipo_movimiento']
         color_border = "#27ae60" if tipo == "Entrada" else "#e74c3c"
-        icon_path = "images/up.png" if tipo == "Entrada" else "images/down.png"
+        icon_path = "images/entradaStock.png" if tipo == "Entrada" else "images/salidaStock.png"
         titulo_text = "ENTRADA A ALMACÉN" if tipo == "Entrada" else "SALIDA DEL ALMACÉN"
 
         card = QFrame()
