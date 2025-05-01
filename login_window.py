@@ -237,6 +237,13 @@ class LoginWindow(QWidget):
             if response.status_code == 200:
                 user_data = response.json()
                 user_id = user_data.get("user_id", "")
+                
+                import json
+                import os
+                # Guardar la sesión en config/session.json
+                session_path = os.path.join("config", "session.json")
+                with open(session_path, "w") as session_file:
+                    json.dump({"user_id": user_id}, session_file)
 
                 if not user_id:
                     self.showDialog("Error", "No se ha recibido el ID del usuario.", QMessageBox.Critical)

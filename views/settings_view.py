@@ -1,3 +1,5 @@
+import os
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QPixmap
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFrame, QMessageBox
@@ -149,9 +151,19 @@ class SettingsView(QWidget):
 
     # Función de cierre de sesión (en desarrollo))
     def logout_action(self):
-        QMessageBox.information(self, "Cerrar Sesión", "Aquí iría la lógica de logout del usuario.")
-    
+        session_path = os.path.join("config", "session.json")
+        if os.path.exists(session_path):
+            os.remove(session_path)
 
+        QMessageBox.information(self, "Cerrar Sesión", "Sesión cerrada correctamente.")
+        
+        # Volver a pantalla de bienvenida
+        from welcome_window import WelcomeWindow
+        self.welcome_window = WelcomeWindow()
+        self.welcome_window.show()
+        self.window().close()  # Cierra la ventana actual
+
+    
     # Dialog personalizado: muestra un cuadro de diálogo con un título, mensaje y logo
     def showDialog(self, title, message, icon=QMessageBox.Information):
         import json
