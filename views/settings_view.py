@@ -149,7 +149,7 @@ class SettingsView(QWidget):
         import webbrowser
         webbrowser.open('mailto:gestionstockdb@gmail.com')
 
-    # Función de cierre de sesión (en desarrollo))
+    # Función de cierre de sesión
     def logout_action(self):
         session_path = os.path.join("config", "session.json")
         if os.path.exists(session_path):

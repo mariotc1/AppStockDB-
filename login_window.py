@@ -15,8 +15,8 @@ from PyQt5.QtGui import (
 
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, 
-    QLabel, QPushButton, QGraphicsOpacityEffect, QLineEdit, 
-    QGraphicsDropShadowEffect, QMessageBox, QToolButton
+    QLabel, QPushButton, QGraphicsOpacityEffect, QLineEdit, QHBoxLayout,
+    QGraphicsDropShadowEffect, QMessageBox, QToolButton, QCheckBox
 )
 
 # estilo para los botones
@@ -87,6 +87,40 @@ class LoginWindow(QWidget):
         # Campo: Contraseña
         self.password_field = self.createInputField("Contraseña", "images/b_iconPass.png", is_password=True)
         fields_layout.addLayout(self.password_field)
+        
+        # Checkbox de recordar sesión centrado y estilizado
+        self.remember_checkbox = QCheckBox("Guardar la sesión en este dispositivo")
+
+        # Un solo estilo, con texto blanco SIEMPRE y estilo moderno
+        self.remember_checkbox.setStyleSheet("""
+            QCheckBox {
+                color: white;
+                font-size: 15px;
+                font-weight: bold;
+            }
+            QCheckBox::indicator {
+                width: 20px;
+                height: 20px;
+            }
+            QCheckBox::indicator:unchecked {
+                border: 2px solid #FF8C00;
+                background-color: transparent;
+                border-radius: 4px;
+            }
+            QCheckBox::indicator:checked {
+                image: url(images/tick.png);
+                background-color: #FF8C00;
+                border: 2px solid #FF8C00;
+                border-radius: 4px;
+            }
+        """)
+
+        # Añadir checkbox centrado
+        checkbox_layout = QHBoxLayout()
+        checkbox_layout.addStretch()
+        checkbox_layout.addWidget(self.remember_checkbox)
+        checkbox_layout.addStretch()
+        main_layout.addLayout(checkbox_layout)
 
         main_layout.addLayout(fields_layout)
 
@@ -240,10 +274,12 @@ class LoginWindow(QWidget):
                 
                 import json
                 import os
-                # Guardar la sesión en config/session.json
-                session_path = os.path.join("config", "session.json")
-                with open(session_path, "w") as session_file:
-                    json.dump({"user_id": user_id}, session_file)
+
+                # Solo guardar la sesión si el checkbox está marcado
+                if self.remember_checkbox.isChecked():
+                    session_path = os.path.join("config", "session.json")
+                    with open(session_path, "w") as session_file:
+                        json.dump({"user_id": user_id}, session_file)
 
                 if not user_id:
                     self.showDialog("Error", "No se ha recibido el ID del usuario.", QMessageBox.Critical)
