@@ -76,7 +76,7 @@ class MyProfileView(QWidget):
         layout.addWidget(self.profile_pic, alignment=Qt.AlignCenter)
 
         # Cambiar la foto de perfil
-        self.btn_change_pic = StyledButton("Cambiar Foto", "images/galeria.png", theme=self.current_theme)
+        self.btn_change_pic = StyledButton("Cambiar Foto", "images/b_galeria.png", theme=self.current_theme)
         self.btn_change_pic.clicked.connect(self.change_profile_picture)
         layout.addWidget(self.btn_change_pic, alignment=Qt.AlignCenter)
 
@@ -90,7 +90,7 @@ class MyProfileView(QWidget):
         layout.addWidget(self.email_input)
 
         # Botón de editar que habiliata la edición del Nombre de usuario
-        self.btn_edit_name = StyledButton("Editar Nombre", "images/edit.png", theme=self.current_theme)
+        self.btn_edit_name = StyledButton("Editar Nombre", "images/b_edit.png", theme=self.current_theme)
         self.btn_edit_name.clicked.connect(self.enable_name_edit)
         layout.addWidget(self.btn_edit_name)
 
@@ -111,7 +111,7 @@ class MyProfileView(QWidget):
         layout.addLayout(self.confirm_password)
 
         # Botón de guardar los cambios
-        self.btn_save_changes = StyledButton("Guardar Cambios", "images/guardar.png", theme=self.current_theme)
+        self.btn_save_changes = StyledButton("Guardar Cambios", "images/b_guardar.png", theme=self.current_theme)
         self.btn_save_changes.clicked.connect(self.save_changes)
         layout.addWidget(self.btn_save_changes)
 

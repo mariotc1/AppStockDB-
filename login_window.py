@@ -218,7 +218,7 @@ class LoginWindow(QWidget):
         if is_password:
             line_edit.setEchoMode(QLineEdit.Password)
             eye_button = QPushButton()
-            eye_button.setIcon(QIcon("images/icon_eye_off.png"))
+            eye_button.setIcon(QIcon("images/b_icon_eye_off.png"))
             eye_button.setFixedSize(24, 24)
             eye_button.setStyleSheet("border: none;")
             eye_button.setCheckable(True)
@@ -236,11 +236,11 @@ class LoginWindow(QWidget):
     def togglePasswordVisibility(self, checked, line_edit, button):
         if checked:
             line_edit.setEchoMode(QLineEdit.Normal)
-            button.setIcon(QIcon("images/icon_eye.png"))
+            button.setIcon(QIcon("images/b_icon_eye.png"))
 
         else:
             line_edit.setEchoMode(QLineEdit.Password)
-            button.setIcon(QIcon("images/icon_eye_off.png"))
+            button.setIcon(QIcon("images/b_icon_eye_off.png"))
 
 
     # Efecto de 'fundido' de entrada en el widget

@@ -54,7 +54,7 @@ class PasswordField(QHBoxLayout):
         # Botón del ojo
         self.eye_button = QPushButton()
         
-        self.eye_button.setIcon(QIcon("images/icon_eye_off.png"))
+        self.eye_button.setIcon(QIcon("images/b_icon_eye_off.png"))
         self.eye_button.setIconSize(QSize(24, 24))
         self.eye_button.setCheckable(True)
         self.eye_button.setStyleSheet("border: none;")
@@ -67,10 +67,10 @@ class PasswordField(QHBoxLayout):
     def toggle_password_visibility(self):
         if self.eye_button.isChecked():
             self.line_edit.setEchoMode(QLineEdit.Normal)
-            self.eye_button.setIcon(QIcon("images/icon_eye.png"))
+            self.eye_button.setIcon(QIcon("images/b_icon_eye.png"))
         else:
             self.line_edit.setEchoMode(QLineEdit.Password)
-            self.eye_button.setIcon(QIcon("images/icon_eye_off.png"))
+            self.eye_button.setIcon(QIcon("images/b_icon_eye_off.png"))
 
     # Método para obtener el texto del campo
     def text(self):
