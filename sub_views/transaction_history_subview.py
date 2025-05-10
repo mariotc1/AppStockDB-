@@ -101,7 +101,7 @@ class TransactionHistorySubview(QWidget):
         """)
 
         self.btn_filtrar = QPushButton(" Filtrar")
-        self.btn_filtrar.setIcon(QIcon("images/filtrar.png"))
+        self.btn_filtrar.setIcon(QIcon("images/b_filtrar.png"))
         self.btn_filtrar.setIconSize(QSize(18, 18))
         self.btn_filtrar.setFixedSize(140, 40)
         self.btn_filtrar.clicked.connect(self.filtrar_movimientos)
@@ -158,12 +158,12 @@ class TransactionHistorySubview(QWidget):
         btn_layout = QHBoxLayout()
 
         self.btn_refresh = QPushButton(" Refrescar Datos")
-        self.btn_refresh.setIcon(QIcon("images/refrescar.png"))
+        self.btn_refresh.setIcon(QIcon("images/b_refrescar.png"))
         self.btn_refresh.setFixedSize(200, 50)
         self.btn_refresh.clicked.connect(self.cargar_movimientos)
 
         self.btn_export = QPushButton(" Exportar a Excel")
-        self.btn_export.setIcon(QIcon("images/ConvertirExcel.png"))
+        self.btn_export.setIcon(QIcon("images/b_ConvertirExcel.png"))
         self.btn_export.setFixedSize(200, 50)
         self.btn_export.clicked.connect(self.exportar_excel)
 
@@ -285,19 +285,19 @@ class TransactionHistorySubview(QWidget):
         row_producto = QHBoxLayout()
         producto_label = QLabel(f" Producto: {mov['producto']}")
         producto_label.setFont(QFont("Arial", 12))
-        row_producto.addWidget(self.create_icon_label("images/product.png"))
+        row_producto.addWidget(self.create_icon_label("images/b_product_icon.png"))
         row_producto.addWidget(producto_label)
 
         row_cantidad = QHBoxLayout()
         cantidad_label = QLabel(f" Cantidad: {mov['cantidad']}")
         cantidad_label.setFont(QFont("Arial", 12))
-        row_cantidad.addWidget(self.create_icon_label("images/cantidad.png"))
+        row_cantidad.addWidget(self.create_icon_label("images/b_cantidad.png"))
         row_cantidad.addWidget(cantidad_label)
 
         row_fecha = QHBoxLayout()
         fecha_label = QLabel(f" Fecha/Hora: {mov['fecha_movimiento']}")
         fecha_label.setFont(QFont("Arial", 12))
-        row_fecha.addWidget(self.create_icon_label("images/calendar.png"))
+        row_fecha.addWidget(self.create_icon_label("images/b_calendar.png"))
         row_fecha.addWidget(fecha_label)
 
         layout.addLayout(row_producto)
@@ -308,12 +308,12 @@ class TransactionHistorySubview(QWidget):
             row_dir = QHBoxLayout()
             direccion_label = QLabel(f" Dirección: {mov['direccion']}")
             direccion_label.setFont(QFont("Arial", 12))
-            row_dir.addWidget(self.create_icon_label("images/location.png"))
+            row_dir.addWidget(self.create_icon_label("images/b_location.png"))
             row_dir.addWidget(direccion_label)
             layout.addLayout(row_dir)
 
         btn_eliminar = QPushButton(" Eliminar")
-        btn_eliminar.setIcon(QIcon("images/basura.png"))
+        btn_eliminar.setIcon(QIcon("images/b_basura.png"))
         btn_eliminar.setIconSize(QSize(22, 22))
         btn_eliminar.setFixedHeight(40)
         btn_eliminar.setStyleSheet("""

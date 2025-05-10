@@ -88,7 +88,7 @@ class StockRemovalSubview(QWidget):
         filter_layout.addWidget(self.calendar_widget)
 
         self.btn_filtrar = QPushButton(" Filtrar")
-        self.btn_filtrar.setIcon(QIcon("images/filtrar.png"))
+        self.btn_filtrar.setIcon(QIcon("images/b_filtrar.png"))
         self.btn_filtrar.setIconSize(QSize(18, 18))
         self.btn_filtrar.setFixedSize(140, 40)
         self.btn_filtrar.setStyleSheet("""
@@ -152,10 +152,10 @@ class StockRemovalSubview(QWidget):
         self.btn_devolver_lote = QPushButton(" Devolver Seleccionados")
         self.btn_delete_lote = QPushButton(" Eliminar Seleccionados")
 
-        self.btn_devolver_lote.setIcon(QIcon("images/return.png"))
+        self.btn_devolver_lote.setIcon(QIcon("images/b_return.png"))
         self.btn_devolver_lote.clicked.connect(self.devolver_seleccionados)
 
-        self.btn_delete_lote.setIcon(QIcon("images/delete.png"))
+        self.btn_delete_lote.setIcon(QIcon("images/b_basura.png"))
         self.btn_delete_lote.clicked.connect(self.eliminar_seleccionados)
 
         self.btn_devolver_lote.setStyleSheet(self.button_style)
@@ -238,18 +238,25 @@ class StockRemovalSubview(QWidget):
 
         checkbox = QCheckBox()
         checkbox.setStyleSheet("""
-            QCheckBox::indicator {
-                width: 25px;
-                height: 25px;
+            QCheckBox {
+                color: white;
+                font-size: 15px;
+                font-weight: bold;
             }
-            QCheckBox::indicator:checked {
-                background-color: #FFA500;
-                border: 2px solid #FF8C00;
-                border-radius: 5px;
+            QCheckBox::indicator {
+                width: 20px;
+                height: 20px;
             }
             QCheckBox::indicator:unchecked {
-                border: 2px solid #B0B0B0;
-                border-radius: 5px;
+                border: 2px solid #FF8C00;
+                background-color: transparent;
+                border-radius: 4px;
+            }
+            QCheckBox::indicator:checked {
+                image: url(images/tick.png);
+                background-color: #FF8C00;
+                border: 2px solid #FF8C00;
+                border-radius: 4px;
             }
         """)
         self.checkboxes.append((checkbox, salida))
@@ -268,31 +275,31 @@ class StockRemovalSubview(QWidget):
         row_direccion = QHBoxLayout()
         direccion_label = QLabel(f" Dirección: {salida['direccion']}")
         direccion_label.setFont(font_bold)
-        row_direccion.addWidget(create_icon_label("images/location.png"))
+        row_direccion.addWidget(create_icon_label("images/b_location.png"))
         row_direccion.addWidget(direccion_label)
 
         row_producto = QHBoxLayout()
         producto_label = QLabel(f" Producto: {salida['producto']}")
         producto_label.setFont(font_normal)
-        row_producto.addWidget(create_icon_label("images/product.png"))
+        row_producto.addWidget(create_icon_label("images/b_product_icon.png"))
         row_producto.addWidget(producto_label)
 
         row_cantidad = QHBoxLayout()
         cantidad_label = QLabel(f" Cantidad: {salida['cantidad']}")
         cantidad_label.setFont(font_normal)
-        row_cantidad.addWidget(create_icon_label("images/cantidad.png"))
+        row_cantidad.addWidget(create_icon_label("images/b_cantidad.png"))
         row_cantidad.addWidget(cantidad_label)
 
         row_fecha = QHBoxLayout()
         fecha_label = QLabel(f" Fecha/Hora: {salida['fecha_salida']}")
         fecha_label.setFont(font_normal)
-        row_fecha.addWidget(create_icon_label("images/calendar.png"))
+        row_fecha.addWidget(create_icon_label("images/b_calendar.png"))
         row_fecha.addWidget(fecha_label)
 
         btn_layout = QHBoxLayout()
         
         btn_devolver = QPushButton(" Devolver")
-        btn_devolver.setIcon(QIcon("images/return.png"))
+        btn_devolver.setIcon(QIcon("images/b_return.png"))
         btn_devolver.setIconSize(QSize(22, 22))
         btn_devolver.setMinimumWidth(180)
         btn_devolver.setFixedHeight(40)
@@ -315,7 +322,7 @@ class StockRemovalSubview(QWidget):
         """)
 
         btn_delete = QPushButton(" Eliminar")
-        btn_delete.setIcon(QIcon("images/basura.png"))
+        btn_delete.setIcon(QIcon("images/b_basura.png"))
         btn_delete.setIconSize(QSize(22, 22))
         btn_delete.setMinimumWidth(180)
         btn_delete.setFixedHeight(40)

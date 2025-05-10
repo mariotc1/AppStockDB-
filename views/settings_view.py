@@ -82,11 +82,11 @@ class SettingsView(QWidget):
         buttons_layout.setSpacing(25)
         buttons_layout.setAlignment(Qt.AlignCenter)
 
-        btn_whatsapp = StyledButton("WhatsApp", "images/whatsappIcon.png", theme=self.current_theme)
+        btn_whatsapp = StyledButton("WhatsApp", "images/b_whatsapp.png", theme=self.current_theme)
         btn_whatsapp.clicked.connect(self.open_whatsapp)
         buttons_layout.addWidget(btn_whatsapp)
 
-        btn_email = StyledButton("Gmail", "images/gmail.png", theme=self.current_theme)
+        btn_email = StyledButton("Gmail", "images/b_gmail.png", theme=self.current_theme)
         btn_email.clicked.connect(self.open_email)
         buttons_layout.addWidget(btn_email)
 
@@ -99,7 +99,7 @@ class SettingsView(QWidget):
         logout_label.setAlignment(Qt.AlignCenter)
         container_layout.addWidget(logout_label)
 
-        logout_button = StyledButton("Cerrar Sesión", "images/cerrarSesion.png", theme=self.current_theme)
+        logout_button = StyledButton("Cerrar Sesión", "images/b_cerrarSesion.png", theme=self.current_theme)
         logout_button.clicked.connect(self.logout_action)
         container_layout.addWidget(logout_button, alignment=Qt.AlignCenter)
 

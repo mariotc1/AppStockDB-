@@ -96,7 +96,7 @@ class AssignProductDialog(QDialog):
         self.add_product_entry()
         
         self.btn_add_more = QPushButton(" Añadir otro producto")
-        self.btn_add_more.setIcon(QIcon("images/add.png"))
+        self.btn_add_more.setIcon(QIcon("images/b_add.png"))
         self.btn_add_more.clicked.connect(self.add_product_entry)
         main_layout.addWidget(self.btn_add_more)
         

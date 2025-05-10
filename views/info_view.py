@@ -1,6 +1,6 @@
 import os
 
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QFont, QIcon
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QGridLayout, QLabel,
@@ -58,6 +58,7 @@ class InfoView(QWidget):
         card_layout.addWidget(content_label)
 
         learn_more_btn = StyledButton("Aprender más", theme=self.current_theme)
+        learn_more_btn.setIcon(QIcon("images/b_aprendeMas.png"))
 
         learn_more_btn.clicked.connect(lambda: self.show_video(video_file))
         card_layout.addWidget(learn_more_btn, alignment=Qt.AlignCenter)

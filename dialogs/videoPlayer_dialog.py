@@ -47,19 +47,19 @@ class VideoPlayerDialog(QDialog):
         # Controles de reproducción con botones redondeados y naranja
         controls_layout = QHBoxLayout()
 
-        btn_play = QPushButton(QIcon("images/playVideo.png"), "")
+        btn_play = QPushButton(QIcon("images/b_playVideo.png"), "")
         btn_play.setToolTip("Reproducir")
         btn_play.setStyleSheet("background-color: #FF8C00; border-radius: 15px; padding: 8px;")
         btn_play.clicked.connect(self.media_player.play)
         controls_layout.addWidget(btn_play)
 
-        btn_pause = QPushButton(QIcon("images/pauseVideo.png"), "")
+        btn_pause = QPushButton(QIcon("images/b_pauseVideo.png"), "")
         btn_pause.setToolTip("Pausar")
         btn_pause.setStyleSheet("background-color: #FF8C00; border-radius: 15px; padding: 8px;")
         btn_pause.clicked.connect(self.media_player.pause)
         controls_layout.addWidget(btn_pause)
 
-        btn_stop = QPushButton(QIcon("images/stopVideo.png"), "")
+        btn_stop = QPushButton(QIcon("images/b_stopVideo.png"), "")
         btn_stop.setToolTip("Detener")
         btn_stop.setStyleSheet("background-color: #FF8C00; border-radius: 15px; padding: 8px;")
         btn_stop.clicked.connect(self.media_player.stop)

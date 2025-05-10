@@ -57,7 +57,7 @@ class CurrentStockSubview(QWidget):
         filter_layout.addWidget(self.line_edit_filtro)
 
         self.btn_filtrar = QPushButton(" Filtrar")
-        self.btn_filtrar.setIcon(QIcon("images/filtrar.png"))
+        self.btn_filtrar.setIcon(QIcon("images/b_filtrar.png"))
         self.btn_filtrar.setIconSize(QSize(18, 18))
         self.btn_filtrar.setFixedSize(140, 40)
         self.btn_filtrar.setStyleSheet("""
@@ -108,9 +108,9 @@ class CurrentStockSubview(QWidget):
         self.btn_assign = QPushButton(" Asignar Producto a Mobiliario")  
         self.btn_export = QPushButton(" Exportar a Excel")  
 
-        self.btn_add.setIcon(QIcon("images/agregar.png"))  
-        self.btn_assign.setIcon(QIcon("images/asignar.png"))  
-        self.btn_export.setIcon(QIcon("images/ConvertirExcel.png"))  
+        self.btn_add.setIcon(QIcon("images/b_agregar.png"))  
+        self.btn_assign.setIcon(QIcon("images/b_asignar.png"))  
+        self.btn_export.setIcon(QIcon("images/b_ConvertirExcel.png"))  
 
         # Tamaño de lso iconos
         icon_size = QSize(30, 30) 
@@ -245,9 +245,9 @@ class CurrentStockSubview(QWidget):
             icon_label.setStyleSheet("border-radius: 15px; background-color: #FFA500; padding: 3px;")
             return icon_label
         
-        icon_nombre = create_icon_label("images/product_icon.png")
-        icon_estado = create_icon_label("images/estado.png")
-        icon_cantidad = create_icon_label("images/cantidad.png")
+        icon_nombre = create_icon_label("images/b_product_icon.png")
+        icon_estado = create_icon_label("images/b_estado.png")
+        icon_cantidad = create_icon_label("images/b_cantidad.png")
         
         # Etiquetas con iconos y texto mejorado
         label_nombre = QLabel(f" {producto['nombre']}")
@@ -274,7 +274,7 @@ class CurrentStockSubview(QWidget):
         
         # Botones de acción 
         btn_edit = QPushButton(" Editar")
-        btn_edit.setIcon(QIcon("images/edit.png"))
+        btn_edit.setIcon(QIcon("images/b_edit.png"))
         btn_edit.setIconSize(QSize(22, 22))  
         btn_edit.setMinimumWidth(180)   
         btn_edit.setStyleSheet("""
@@ -296,7 +296,7 @@ class CurrentStockSubview(QWidget):
         btn_edit.clicked.connect(lambda: self.edit_product(producto))
 
         btn_delete = QPushButton(" Eliminar")
-        btn_delete.setIcon(QIcon("images/basura.png"))
+        btn_delete.setIcon(QIcon("images/b_basura.png"))
         btn_delete.setIconSize(QSize(22, 22))  
         btn_delete.setMinimumWidth(180)  
         btn_delete.setStyleSheet("""
