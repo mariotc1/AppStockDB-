@@ -49,23 +49,20 @@ class MainWindow(QWidget):
                 self.current_theme = config.get("theme", "light")
         except (FileNotFoundError, json.JSONDecodeError):
             self.current_theme = "light"
-
-        self.setWindowFlags(Qt.FramelessWindowHint)
-        self.showFullScreen()
         
         self.collapsed_width = 60
         self.expanded_width = 320
         
         self.initUI()
         self.fadeIn()
+        self.showMaximized()
 
-    # Creación de la interfaz de la app
     def initUI(self):
         self.main_layout = QHBoxLayout(self)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.main_layout.setSpacing(0)
 
-        # Menú lateral
+        # Menú lateral 
         self.lateral_menu = QWidget()
         self.lateral_menu.setMinimumWidth(self.collapsed_width)
         self.lateral_menu.setMaximumWidth(self.collapsed_width)
@@ -136,30 +133,25 @@ class MainWindow(QWidget):
 
         self.main_layout.addWidget(self.lateral_menu)
 
-        # El área de contenido
+        # Área de contenido
         content_widget = QWidget()
         content_layout = QVBoxLayout(content_widget)
         content_layout.setContentsMargins(0, 0, 0, 0)
         content_layout.setSpacing(5)
 
-        # La ccabecera: título de la app + logo con el giro 360º
+        # Cabecera
         header = QWidget()
         header_layout = QHBoxLayout(header)
         header_layout.setContentsMargins(5, 5, 5, 5)
-        header_layout.setSpacing(10)
         self.title_label = QLabel("Gestión de Stock DB Inmuebles")
         self.title_label.setStyleSheet("color: white; font-size: 28px; font-weight: bold;")
         header_layout.addWidget(self.title_label)
         header_layout.addStretch()
         content_layout.addWidget(header)
 
-        # Defino el content_stack para luego usarlo
+        # Stacked widget 
         self.content_stack = QStackedWidget()
-        self.content_stack.setMaximumHeight(self.height() - 100)
-        self.content_stack.update()
-        self.update()
-
-        content_layout.addWidget(self.content_stack, stretch=1)
+        content_layout.addWidget(self.content_stack, stretch=1)  
 
         # Añado las vistas (situadas en la carpeta views)
         self.info_view = InfoView()
