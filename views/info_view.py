@@ -93,22 +93,22 @@ class InfoView(QWidget):
         # Card Navegación inteigente: explicaión + video
         card_nav = self.createCard("images/navigation.png", 
                                    "Navegación Inteligente",
-                                     "• Menú lateral expandible al acercar el ratón\n"
-                                     "• Acceso rápido a todas las secciones\n"
-                                     "• Atajos de teclado personalizables\n"
-                                     "• Historial de navegación integrado\n", 
-                                     "navegacionApp.mp4")
+                                     "• Menú lateral expandible al acercar el ratón, para acceder a todas las vistas de la app.\n"
+                                     "• Acceso rápido a todas las secciones con un solo click.\n"
+                                     "• Cambio entre modo oscuro y claro en toda la app.\n"
+                                     "• Guarda tú sesión para no tener que escribir tus credenciales cada vez que uses la app.\n", 
+                                     "navegacion_inteligente.mp4")
         grid_layout.addWidget(card_nav, 0, 0)
 
         # Card Personalización de tu Perfil: explicación + video
         card_op = self.createCard("images/usuario.png", 
                                 "Personalización de Tu Perfil", 
-                                "• Cambia la imagen de perfil por una personalizada\n"
+                                "• Cambia la imagen de perfil por una personalizada localizada en tu explorador de archivos\n"
                                 "• Tu foto saldrá de forma sincronizada en el menú lateral\n"
-                                "• Edita tu nombre de usuario\n"
+                                "• Consulta y edita tu nombre de usuario si lo necesitas.\n"
                                 "• Consulta el correo con el que está registrado\n"
-                                "• Cambia tu contraseña si lo necesitas!", 
-                                "perfil.mp4")
+                                "• Cambia tu contraseña si lo necesitas\n", 
+                                "mi_perfil.mp4")
 
         grid_layout.addWidget(card_op, 0, 1)
 
@@ -116,10 +116,10 @@ class InfoView(QWidget):
         card_mob = self.createCard("images/en_stock.png", 
                                    "Gestión de Mobiliario Avanzada", 
                                    "• Gestión integral del ciclo de vida del mobiliario\n"
-                                   "• Seguimiento en tiempo real de la ubicación\n"
+                                   "• Seguimiento en tiempo real de la ubicación y estado.\n"
                                    "• Sistema de etiquetado avanzado\n"
                                    "• Seguimiento en tiempo real", 
-                                   "stock.mp4")
+                                   "gestion_de_stock.mp4")
         grid_layout.addWidget(card_mob, 1, 0)
 
         # Card Chat Bot: explicación + video
@@ -129,7 +129,7 @@ class InfoView(QWidget):
                                     "• Aprendizaje continuo basado en interacciones\n"
                                     "• Análisis de sentimientos para mejorar la experiencia\n"
                                     "• Integración con base de conocimientos", 
-                                    "usoChatBot.mp4")
+                                    "uso_de_chatbot.mp4")
         grid_layout.addWidget(card_chat, 1, 1)
 
         main_layout.addLayout(grid_layout)
