@@ -3,7 +3,7 @@ import requests
 from io import BytesIO
 
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QFileDialog, QMessageBox, QScrollArea
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QFileDialog, QMessageBox, QScrollArea, QFrame, QHBoxLayout
 from PyQt5.QtGui import QPixmap, QPainter, QBitmap
 
 # Importación de los estilos 
@@ -51,69 +51,100 @@ class MyProfileView(QWidget):
         scroll_area.setWidget(content_widget)
 
         layout = QVBoxLayout(content_widget)
-        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(20)
 
+        # --- CARD CONTENEDORA ---
+        container = QFrame()
+        container.setMinimumWidth(1000)
+        container.setMaximumWidth(1000)
+        container.setStyleSheet("""
+            QFrame {
+                background-color: rgba(255, 255, 255, 0.05);
+                border-radius: 25px;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+        """)
+        container_layout = QVBoxLayout(container)
+        container_layout.setContentsMargins(50, 50, 50, 50)
+        container_layout.setSpacing(30)
+
+        # --- TÍTULO ---
         title_label = QLabel("Mi Perfil")
         title_label.setAlignment(Qt.AlignCenter)
-        title_label.setStyleSheet("color: white; font-size: 36px; font-weight: bold; background: transparent;")
-        layout.addWidget(title_label)
+        title_label.setStyleSheet("color: white; font-size: 36px; font-weight: bold; background: transparent; border: none;")
+        # --- Encabezado ---
+        container_layout.addWidget(title_label)
+
+        # --- Bloque superior horizontal ---
+        top_layout = QHBoxLayout()
+        top_layout.setSpacing(40)
+
+        # --- Columna izquierda: Foto + botón ---
+        photo_layout = QVBoxLayout()
+        photo_layout.setAlignment(Qt.AlignTop)
+        photo_layout.setSpacing(15)
 
         self.profile_pic = QLabel(self)
         self.profile_pic.setFixedSize(200, 200)
-        if self.current_theme == "dark":
-            border_color = "#FF5500"  # Naranja oscuro (modo dark)
-        else:
-            border_color = "#FFA500"  # Naranja claro (modo light)
-
+        border_color = "#FF5500" if self.current_theme == "dark" else "#FFA500"
         self.profile_pic.setStyleSheet(f"""
             border-radius: 100px;
             background: transparent;
             border: 3px solid {border_color};
         """)
-
         self.profile_pic.setScaledContents(True)
-        layout.addWidget(self.profile_pic, alignment=Qt.AlignCenter)
 
-        # Cambiar la foto de perfil
         self.btn_change_pic = StyledButton("Cambiar Foto", "images/b_galeria.png", theme=self.current_theme)
         self.btn_change_pic.clicked.connect(self.change_profile_picture)
-        layout.addWidget(self.btn_change_pic, alignment=Qt.AlignCenter)
 
-        # Nombre de usuario
+        photo_layout.addWidget(self.profile_pic, alignment=Qt.AlignCenter)
+        photo_layout.addWidget(self.btn_change_pic, alignment=Qt.AlignCenter)
+
+        # --- Columna derecha: Nombre, correo, botón ---
+        info_layout = QVBoxLayout()
+        info_layout.setSpacing(15)
+        info_layout.setAlignment(Qt.AlignTop)
+
         self.name_input = StyledLineEdit("Nombre", "images/nombre_usuario.png", theme=self.current_theme)
-        layout.addWidget(self.name_input)
-
-        # Correo de registro
         self.email_input = StyledLineEdit("Correo", "images/email.png", theme=self.current_theme)
         self.email_input.setReadOnly(True)
-        layout.addWidget(self.email_input)
-
-        # Botón de editar que habiliata la edición del Nombre de usuario
         self.btn_edit_name = StyledButton("Editar Nombre", "images/b_edit.png", theme=self.current_theme)
         self.btn_edit_name.clicked.connect(self.enable_name_edit)
-        layout.addWidget(self.btn_edit_name)
 
+        info_layout.addWidget(self.name_input)
+        info_layout.addWidget(self.email_input)
+        info_layout.addWidget(self.btn_edit_name)
+        info_layout.setContentsMargins(0, 86, 0, 0)  # margen suprior para coincidir con el botón de cambiar foto
+
+        # --- Agregar ambas columnas al layout superior ---
+        top_layout.addLayout(photo_layout)
+        top_layout.addLayout(info_layout)
+        container_layout.addLayout(top_layout)
+
+
+        # --- CAMBIAR CONTRASEÑA ---
         password_label = QLabel("Cambiar Contraseña")
-        password_label.setStyleSheet("color: white; font-size: 20px; font-weight: bold; background: transparent;")
-        layout.addWidget(password_label)
+        password_label.setStyleSheet("color: white; font-size: 20px; font-weight: bold; background: transparent; border: none;")
+        container_layout.addWidget(password_label)
 
-        # Campo de la contraseña actual
         self.old_password = PasswordField("Contraseña Actual", "images/password.png", theme=self.current_theme)
-        layout.addLayout(self.old_password)
+        container_layout.addLayout(self.old_password)
 
-        # Campo de la nueva contraseña
         self.new_password = PasswordField("Nueva Contraseña", "images/password.png", theme=self.current_theme)
-        layout.addLayout(self.new_password)
+        container_layout.addLayout(self.new_password)
 
-        # Campo de confirmar la contraseña
         self.confirm_password = PasswordField("Confirmar Contraseña", "images/confirmar_password.png", theme=self.current_theme)
-        layout.addLayout(self.confirm_password)
+        container_layout.addLayout(self.confirm_password)
 
-        # Botón de guardar los cambios
         self.btn_save_changes = StyledButton("Guardar Cambios", "images/b_guardar.png", theme=self.current_theme)
         self.btn_save_changes.clicked.connect(self.save_changes)
-        layout.addWidget(self.btn_save_changes)
+        container_layout.addWidget(self.btn_save_changes)
+
+        # Añadir el contenedor final al layout principal con centrado
+        layout.addWidget(container, alignment=Qt.AlignHCenter)
+        layout.addStretch()
+
 
         main_layout.addWidget(scroll_area)
         self.setLayout(main_layout)

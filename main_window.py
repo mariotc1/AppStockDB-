@@ -55,6 +55,8 @@ class MainWindow(QWidget):
         
         self.initUI()
         self.fadeIn()
+        self.setWindowTitle("AppStockDB")
+        self.setWindowIcon(QIcon("images/logoDB_Blanco.png"))
         self.showMaximized()
 
     def initUI(self):
@@ -143,7 +145,7 @@ class MainWindow(QWidget):
         header = QWidget()
         header_layout = QHBoxLayout(header)
         header_layout.setContentsMargins(5, 5, 5, 5)
-        self.title_label = QLabel("Gestión de Stock DB Inmuebles")
+        self.title_label = QLabel("  Gestión de Stock DB Inmuebles")
         self.title_label.setStyleSheet("color: white; font-size: 28px; font-weight: bold;")
         header_layout.addWidget(self.title_label)
         header_layout.addStretch()
