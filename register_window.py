@@ -63,7 +63,7 @@ class RegisterWindow(QWidget):
         main_layout.setContentsMargins(20, 20, 20, 20)
         main_layout.setSpacing(10)
 
-        # --- CARD CONTENEDORA ---
+        # Card contenedor
         card = QFrame()
         card.setMinimumWidth(1000)
         card.setMaximumWidth(1000)
@@ -84,14 +84,14 @@ class RegisterWindow(QWidget):
         self.logo_container.setFixedSize(300, 300)
         card_layout.insertWidget(0, self.logo_container, alignment=Qt.AlignCenter)
 
-        # --- TÍTULO ---
+        # Título
         title_label = QLabel("Regístrate")
         title_label.setFont(QFont("Arial", 28, QFont.Bold))
         title_label.setStyleSheet("color: white; background: transparent; border: none;")
         title_label.setAlignment(Qt.AlignCenter)
         card_layout.addWidget(title_label)
 
-        # --- CAMPOS ---
+        # Campos
         self.name_field = self.createInputField("Nombre", "images/b_iconName.png", is_password=False)
         self.email_field = self.createInputField("Correo", "images/b_iconMail.png", is_password=False)
         self.password_field = self.createInputField("Contraseña", "images/b_iconPass.png", is_password=True)
@@ -106,7 +106,7 @@ class RegisterWindow(QWidget):
 
         card_layout.addLayout(fields_layout)
 
-        # --- BARRA DE FUERZA DE CONTRASEÑA ---
+        # Barra de fuerza de contraseña
         self.strength_bar = QProgressBar()
         self.strength_bar.setRange(0, 100)
         self.strength_bar.setValue(0)
@@ -124,18 +124,18 @@ class RegisterWindow(QWidget):
         """)
         card_layout.addWidget(self.strength_bar)
 
-        # --- LABEL DE FUERZA DE CONTRASEÑA ---
+        # Label de fuerza de contraseña
         self.strength_label = QLabel("")
         self.strength_label.setFont(QFont("Arial", 12))
         self.strength_label.setStyleSheet("color: white; background: transparent; border: none;")
         self.strength_label.setAlignment(Qt.AlignCenter)
         card_layout.addWidget(self.strength_label)
 
-        # --- CONEXIÓN DE ACTUALIZACIÓN DE FUERZA ---
+        # Actualización de la barra de fuerza al cambiar el texto
         password_line_edit = self.password_field.itemAt(1).widget()
         password_line_edit.textChanged.connect(self.updateStrengthBar)
 
-        # --- BOTONES REGISTRAR / VOLVER ---
+        # Botones de registro y volver
         self.btn_register = StyledButton("Registrar", theme=self.current_theme)
         self.btn_back = StyledButton("Volver", theme=self.current_theme)
 
@@ -147,7 +147,7 @@ class RegisterWindow(QWidget):
         bottom_buttons_layout.addWidget(self.btn_back)
         card_layout.addLayout(bottom_buttons_layout)
 
-        # --- ENLACE "YA TENGO CUENTA" ---
+        # Enlace "ya tengo cuenta"
         self.btn_already_account = QToolButton()
         self.btn_already_account.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
         self.btn_already_account.setText("Ya tengo cuenta. Iniciar Sesión")
@@ -165,9 +165,9 @@ class RegisterWindow(QWidget):
         self.fadeInWidget(self.btn_already_account, 2500, QEasingCurve.OutCubic)
         card_layout.addLayout(account_layout)
 
-        # --- AÑADIR EL CARD AL LAYOUT PRINCIPAL ---
+        main_layout.addStretch()
+        # Añadir el card al layout principal
         main_layout.addWidget(card, alignment=Qt.AlignCenter)
-
 
         # Agrego un stretch para empujar el footer hacia abajo
         main_layout.addStretch()
@@ -198,6 +198,7 @@ class RegisterWindow(QWidget):
         icon_label = QLabel()
         icon_pixmap = QPixmap(icon_path)
         icon_pixmap = icon_pixmap.scaled(24, 24, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        icon_label.setStyleSheet("background: transparent; border: none;")
         icon_label.setPixmap(icon_pixmap)
         
         layout.addWidget(icon_label)

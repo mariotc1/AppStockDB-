@@ -51,5 +51,5 @@ class StyledLineEdit(QLineEdit):
 
         icon_label = QLabel(self)
         icon_label.setPixmap(QIcon(icon).pixmap(QSize(24, 24)))
-        icon_label.setStyleSheet("background: transparent;")
+        icon_label.setStyleSheet("background: transparent; border: none;")
         icon_label.move(10, 8)

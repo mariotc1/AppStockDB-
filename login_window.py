@@ -14,7 +14,7 @@ from PyQt5.QtGui import (
 )
 
 from PyQt5.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QHBoxLayout, 
+    QApplication, QWidget, QVBoxLayout, QHBoxLayout, QFrame,
     QLabel, QPushButton, QGraphicsOpacityEffect, QLineEdit, QHBoxLayout,
     QGraphicsDropShadowEffect, QMessageBox, QToolButton, QCheckBox
 )
@@ -63,35 +63,48 @@ class LoginWindow(QWidget):
         main_layout.setContentsMargins(20, 20, 20, 20)
         main_layout.setSpacing(10)
 
-        # Contenedor para el logo
-        logo_container = QWidget()
-        logo_container.setFixedSize(300, 300)
-        main_layout.addWidget(logo_container, alignment=Qt.AlignCenter)
-        self.logo_container = logo_container
+        # --- CARD TRANSPARENTE ---
+        card = QFrame()
+        card.setMinimumWidth(1000)
+        card.setMaximumWidth(1000)
+        card.setStyleSheet("""
+            QFrame {
+                background-color: rgba(255, 255, 255, 0.05);
+                border-radius: 25px;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+        """)
+
+        card_layout = QVBoxLayout(card)
+        card_layout.setContentsMargins(50, 30, 50, 30)
+        card_layout.setSpacing(20)
+
+        # Logo giratorio dentro del card
+        self.logo_container = QWidget()
+        self.logo_container.setFixedSize(200, 200)
+        card_layout.addWidget(self.logo_container, alignment=Qt.AlignCenter)
 
         # Título
         title_label = QLabel("Inicia Sesión")
         title_label.setFont(QFont("Arial", 28, QFont.Bold))
-        title_label.setStyleSheet("color: white;")
+        title_label.setStyleSheet("color: white; background: transparent; border: none;")
         title_label.setAlignment(Qt.AlignCenter)
-        main_layout.addWidget(title_label)
+        card_layout.addWidget(title_label)
 
-        # Contenedor para los campos de entrada
+        # Campos de entrada
         fields_layout = QVBoxLayout()
         fields_layout.setSpacing(15)
 
-        # Campo: Correo
         self.email_field = self.createInputField("Correo", "images/b_iconMail.png", is_password=False)
         fields_layout.addLayout(self.email_field)
 
-        # Campo: Contraseña
         self.password_field = self.createInputField("Contraseña", "images/b_iconPass.png", is_password=True)
         fields_layout.addLayout(self.password_field)
-        
-        # Checkbox de recordar sesión centrado y estilizado
-        self.remember_checkbox = QCheckBox("Guardar la sesión en este dispositivo")
 
-        # Un solo estilo, con texto blanco SIEMPRE y estilo moderno
+        card_layout.addLayout(fields_layout)
+
+        # Checkbox para guardar la sesión
+        self.remember_checkbox = QCheckBox("Guardar la sesión en este dispositivo")
         self.remember_checkbox.setStyleSheet("""
             QCheckBox {
                 color: white;
@@ -115,34 +128,25 @@ class LoginWindow(QWidget):
             }
         """)
 
-        # Añadir checkbox centrado
         checkbox_layout = QHBoxLayout()
         checkbox_layout.addStretch()
         checkbox_layout.addWidget(self.remember_checkbox)
         checkbox_layout.addStretch()
-        main_layout.addLayout(checkbox_layout)
+        card_layout.addLayout(checkbox_layout)
 
-        main_layout.addLayout(fields_layout)
-
-        # Botones de Iniciar Sesión y Volver (pantalla de bienvenida)
-        bottom_buttons_layout = QHBoxLayout()
+        # Botones de Iniciar sesión y volver
         self.btn_login = StyledButton("Iniciar Sesión", theme=self.current_theme)
         self.btn_back = StyledButton("Volver", theme=self.current_theme)
-        
+
         self.applyShadow(self.btn_login)
         self.applyShadow(self.btn_back)
 
+        bottom_buttons_layout = QHBoxLayout()
         bottom_buttons_layout.addWidget(self.btn_login)
         bottom_buttons_layout.addWidget(self.btn_back)
-        
-        main_layout.addLayout(bottom_buttons_layout)
+        card_layout.addLayout(bottom_buttons_layout)
 
-        main_layout.addSpacing(20)
-
-        # Enlaces a otras pantallas con QToolButton
-        additional_layout = QHBoxLayout()
-        additional_layout.setSpacing(40)
-        
+        # Enlaces de Regístrate y Olvidé mi contraseña
         self.btn_no_account = QToolButton()
         self.btn_no_account.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
         self.btn_no_account.setText("¿No tienes cuenta?\nRegístrate")
@@ -150,7 +154,7 @@ class LoginWindow(QWidget):
         self.btn_no_account.setIcon(QIcon("images/b_registrate.png"))
         self.btn_no_account.setIconSize(QSize(48, 48))
         self.btn_no_account.setAutoRaise(True)
-        
+
         self.btn_forgot_password = QToolButton()
         self.btn_forgot_password.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
         self.btn_forgot_password.setText("¿Has olvidado la\ncontraseña?")
@@ -158,16 +162,18 @@ class LoginWindow(QWidget):
         self.btn_forgot_password.setIcon(QIcon("images/b_olvido.png"))
         self.btn_forgot_password.setIconSize(QSize(48, 48))
         self.btn_forgot_password.setAutoRaise(True)
-        
+
+        additional_layout = QHBoxLayout()
+        additional_layout.setSpacing(40)
         additional_layout.addStretch()
-        
         additional_layout.addWidget(self.btn_no_account)
         additional_layout.addWidget(self.btn_forgot_password)
-        
         additional_layout.addStretch()
-        
-        main_layout.addLayout(additional_layout)
+        card_layout.addLayout(additional_layout)
 
+        main_layout.addStretch()
+        # Agregar el card al layout principal
+        main_layout.addWidget(card, alignment=Qt.AlignCenter)
         main_layout.addStretch()
 
         # Footer
@@ -210,6 +216,7 @@ class LoginWindow(QWidget):
         icon_label = QLabel()
         icon_pixmap = QPixmap(icon_path)
         icon_pixmap = icon_pixmap.scaled(24, 24, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        icon_label.setStyleSheet("background: transparent; border: none;")
         icon_label.setPixmap(icon_pixmap)
         layout.addWidget(icon_label)
 
@@ -468,9 +475,9 @@ class LoginWindow(QWidget):
 
         # Pintamos el logo giratorio
         if hasattr(self, 'logo_container'):
-            geo = self.logo_container.geometry()
-            center_x = geo.center().x()
-            center_y = geo.center().y()
+            global_pos = self.logo_container.mapTo(self, self.logo_container.rect().center())
+            center_x = global_pos.x()
+            center_y = global_pos.y()
         else:
             center_x = rect.width() // 2
             center_y = rect.height() // 3

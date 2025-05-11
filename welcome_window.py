@@ -57,8 +57,8 @@ class WelcomeWindow(QWidget):
 
         # Card contenedor
         card = QFrame()
-        card.setMinimumWidth(1000)
-        card.setMaximumWidth(1000)
+        card.setMinimumWidth(800)
+        card.setMaximumWidth(800)
         card.setStyleSheet("""
             QFrame {
                 background-color: rgba(255, 255, 255, 0.05);
@@ -109,7 +109,7 @@ class WelcomeWindow(QWidget):
         card_layout.addSpacing(10)
         card_layout.addWidget(self.tagline_label)
 
-
+        main_layout.addStretch()
         main_layout.addWidget(card, alignment=Qt.AlignCenter)
         main_layout.addStretch()
 
