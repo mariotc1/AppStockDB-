@@ -11,7 +11,7 @@ from PyQt5.QtGui import (
 )
 
 from PyQt5.QtWidgets import (
-    QApplication, QWidget, QVBoxLayout, QHBoxLayout, 
+    QApplication, QWidget, QVBoxLayout, QHBoxLayout, QFrame,
     QLabel, QPushButton, QGraphicsOpacityEffect, QGraphicsDropShadowEffect
 )
 
@@ -55,47 +55,62 @@ class WelcomeWindow(QWidget):
         self.rotating_logo = RotatingLogoWidget(LOGO_PATH)
         main_layout.addWidget(self.rotating_logo, alignment=Qt.AlignCenter)
 
-        # Layout para el contenido principal (títulos y botones)
-        content_layout = QVBoxLayout()
-        content_layout.setAlignment(Qt.AlignCenter)
+        # Card contenedor
+        card = QFrame()
+        card.setMinimumWidth(800)
+        card.setMaximumWidth(800)
+        card.setStyleSheet("""
+            QFrame {
+                background-color: rgba(255, 255, 255, 0.05);
+                border-radius: 25px;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+        """)
 
+        card_layout = QVBoxLayout(card)
+        card_layout.setContentsMargins(50, 40, 50, 40)
+        card_layout.setSpacing(30)
+
+        # Logo giratorio 
+        card_layout.addWidget(self.rotating_logo, alignment=Qt.AlignCenter)
+
+        # Títulos 
         self.title_label = QLabel("¡Bienvenido a DB Inmuebles!")
         self.title_label.setFont(QFont("Arial", 28, QFont.Bold))
-        self.title_label.setStyleSheet("color: white;")
+        self.title_label.setStyleSheet("color: white; background: transparent; border: none;")
         self.title_label.setAlignment(Qt.AlignCenter)
+        card_layout.addWidget(self.title_label)
 
         self.subtitle_label = QLabel("Sistema de Gestión de Stock")
         self.subtitle_label.setFont(QFont("Arial", 18))
-        self.subtitle_label.setStyleSheet("color: white;")
+        self.subtitle_label.setStyleSheet("color: white; background: transparent; border: none;")
         self.subtitle_label.setAlignment(Qt.AlignCenter)
+        card_layout.addWidget(self.subtitle_label)
 
-        # Layout para los botones de inicio de sesión y registro
+        # Botones 
         button_layout = QHBoxLayout()
         self.btn_login = StyledButton("Iniciar Sesión", theme=self.current_theme)
         self.btn_register = StyledButton("Registrarse", theme=self.current_theme)
 
         self.applyShadow(self.btn_login)
         self.applyShadow(self.btn_register)
-        
+
         button_layout.addWidget(self.btn_login)
         button_layout.addWidget(self.btn_register)
 
-        content_layout.addWidget(self.title_label)
-        content_layout.addWidget(self.subtitle_label)
-        
-        content_layout.addSpacing(40)
-        content_layout.addLayout(button_layout)
+        card_layout.addSpacing(20)
+        card_layout.addLayout(button_layout)
 
-        # Etiqueta de la línea de etiqueta con efecto de máquina de escribir
+        # Tagline con efecto de máquina de escribir
         self.tagline_label = TypewriterLabel("Tecnología y excelencia en cada detalle")
         self.tagline_label.setFont(QFont("Courier", 14, QFont.StyleItalic))
-        self.tagline_label.setStyleSheet("color: white;")
+        self.tagline_label.setStyleSheet("color: white; background: transparent; border: none;")
         self.tagline_label.setAlignment(Qt.AlignCenter)
-        
-        content_layout.addSpacing(20)
-        content_layout.addWidget(self.tagline_label)
+        card_layout.addSpacing(10)
+        card_layout.addWidget(self.tagline_label)
 
-        main_layout.addLayout(content_layout)
+
+        main_layout.addWidget(card, alignment=Qt.AlignCenter)
         main_layout.addStretch()
 
         from themes.theme_manager import ThemeManager
