@@ -57,8 +57,8 @@ class WelcomeWindow(QWidget):
 
         # Card contenedor
         card = QFrame()
-        card.setMinimumWidth(800)
-        card.setMaximumWidth(800)
+        card.setMinimumWidth(1000)
+        card.setMaximumWidth(1000)
         card.setStyleSheet("""
             QFrame {
                 background-color: rgba(255, 255, 255, 0.05);
