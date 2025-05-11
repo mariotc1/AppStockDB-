@@ -54,7 +54,7 @@ class MyProfileView(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(20)
 
-        # --- CARD CONTENEDORA ---
+        # Card contenedor
         container = QFrame()
         container.setMinimumWidth(1000)
         container.setMaximumWidth(1000)
@@ -69,18 +69,17 @@ class MyProfileView(QWidget):
         container_layout.setContentsMargins(50, 50, 50, 50)
         container_layout.setSpacing(30)
 
-        # --- TÍTULO ---
+        # Títiulo de la vista
         title_label = QLabel("Mi Perfil")
         title_label.setAlignment(Qt.AlignCenter)
         title_label.setStyleSheet("color: white; font-size: 36px; font-weight: bold; background: transparent; border: none;")
-        # --- Encabezado ---
         container_layout.addWidget(title_label)
 
-        # --- Bloque superior horizontal ---
+        # Bloque superior horizontal
         top_layout = QHBoxLayout()
         top_layout.setSpacing(40)
 
-        # --- Columna izquierda: Foto + botón ---
+        # Columna izquierda: Foto + botón cambiar foto
         photo_layout = QVBoxLayout()
         photo_layout.setAlignment(Qt.AlignTop)
         photo_layout.setSpacing(15)
@@ -101,7 +100,7 @@ class MyProfileView(QWidget):
         photo_layout.addWidget(self.profile_pic, alignment=Qt.AlignCenter)
         photo_layout.addWidget(self.btn_change_pic, alignment=Qt.AlignCenter)
 
-        # --- Columna derecha: Nombre, correo, botón ---
+        # Columna derecha: Nombre, correo, botón editar nombre
         info_layout = QVBoxLayout()
         info_layout.setSpacing(15)
         info_layout.setAlignment(Qt.AlignTop)
@@ -117,13 +116,13 @@ class MyProfileView(QWidget):
         info_layout.addWidget(self.btn_edit_name)
         info_layout.setContentsMargins(0, 86, 0, 0)  # margen suprior para coincidir con el botón de cambiar foto
 
-        # --- Agregar ambas columnas al layout superior ---
+        # Agregar ambas columnas al layout superior
         top_layout.addLayout(photo_layout)
         top_layout.addLayout(info_layout)
         container_layout.addLayout(top_layout)
 
 
-        # --- CAMBIAR CONTRASEÑA ---
+        # Cambiar contraseña
         password_label = QLabel("Cambiar Contraseña")
         password_label.setStyleSheet("color: white; font-size: 20px; font-weight: bold; background: transparent; border: none;")
         container_layout.addWidget(password_label)

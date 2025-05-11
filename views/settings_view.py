@@ -32,12 +32,6 @@ class SettingsView(QWidget):
         main_layout.setContentsMargins(40, 20, 40, 20)
         main_layout.setSpacing(20)
 
-        # Título centrarl de la vista
-        title = QLabel("Ajustes y Soporte Técnico")
-        title.setStyleSheet("color: white; font-size: 28px; font-weight: bold;")
-        title.setAlignment(Qt.AlignCenter)
-        main_layout.addWidget(title)
-
         # Contenedor principal
         container = QFrame()
         container.setMaximumWidth(1000)
@@ -52,6 +46,12 @@ class SettingsView(QWidget):
         container_layout = QVBoxLayout(container)
         container_layout.setContentsMargins(50, 50, 50, 50)
         container_layout.setSpacing(35)
+
+        # Título centrarl de la vista
+        title = QLabel("Ajustes y Soporte Técnico")
+        title.setStyleSheet("color: white; font-size: 28px; font-weight: bold; background: transparent; border: none;")
+        title.setAlignment(Qt.AlignCenter)
+        container_layout.addWidget(title)
 
         # Texto de modo oscuro + switch para cambiar tema
         theme_block = QHBoxLayout()
