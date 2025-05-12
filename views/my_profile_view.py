@@ -45,6 +45,8 @@ class MyProfileView(QWidget):
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
         scroll_area.setStyleSheet("background: transparent; border: none;")
+        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
         content_widget = QWidget()
         content_widget.setStyleSheet("background: transparent;")
