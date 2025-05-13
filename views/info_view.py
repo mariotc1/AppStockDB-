@@ -96,7 +96,7 @@ class InfoView(QWidget):
                                      "• Menú lateral expandible al acercar el ratón, para acceder a todas las vistas de la app.\n"
                                      "• Acceso rápido a todas las secciones con un solo click.\n"
                                      "• Cambio entre modo oscuro y claro en toda la app.\n"
-                                     "• Guarda tú sesión para no tener que escribir tus credenciales cada vez que uses la app.\n", 
+                                     "• Guarda tú sesión.\n", 
                                      "navegacion_inteligente.mp4")
         grid_layout.addWidget(card_nav, 0, 0)
 
@@ -106,7 +106,6 @@ class InfoView(QWidget):
                                 "• Cambia la imagen de perfil por una personalizada localizada en tu explorador de archivos\n"
                                 "• Tu foto saldrá de forma sincronizada en el menú lateral\n"
                                 "• Consulta y edita tu nombre de usuario si lo necesitas.\n"
-                                "• Consulta el correo con el que está registrado\n"
                                 "• Cambia tu contraseña si lo necesitas\n", 
                                 "mi_perfil.mp4")
 
