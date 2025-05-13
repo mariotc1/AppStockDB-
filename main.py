@@ -41,17 +41,3 @@ def show_main_with_loader(user_id):
 
     # Delay para mostrar la pantalla de carga (ajustable)
     QTimer.singleShot(2000, open_main)
-
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    ThemeManager.load_theme(app)
-
-    user_id = load_session()
-
-    if user_id:
-        show_main_with_loader(user_id)
-    else:
-        welcome_window = WelcomeWindow()
-        welcome_window.show()
-
-    sys.exit(app.exec_())

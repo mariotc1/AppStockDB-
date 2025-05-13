@@ -678,8 +678,3 @@ def exportar_historial():
 def add_headers(response):
     response.headers["Content-Type"] = "application/json"
     return response
-
-
-# Inicio la aplicación Flask en modo de desarrollo  
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
