@@ -31,3 +31,6 @@ language = 'es'
 
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
+# --- Fix para despliegue correcto en GitHub Pages ---
+html_baseurl = "https://marioct1.github.io/AppStockDB-/"
+html_extra_path = []
