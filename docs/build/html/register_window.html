@@ -1,0 +1,240 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>register_window module &mdash; documentación de App Stock DB - 1.0</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=4936afed"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=f85f4cfb"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Búsqueda" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            App Stock DB
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">register_window module</a><ul>
+<li><a class="reference internal" href="#register_window.RegisterWindow"><code class="docutils literal notranslate"><span class="pre">RegisterWindow</span></code></a><ul>
+<li><a class="reference internal" href="#register_window.RegisterWindow.applyShadow"><code class="docutils literal notranslate"><span class="pre">RegisterWindow.applyShadow()</span></code></a></li>
+<li><a class="reference internal" href="#register_window.RegisterWindow.calculatePasswordStrength"><code class="docutils literal notranslate"><span class="pre">RegisterWindow.calculatePasswordStrength()</span></code></a></li>
+<li><a class="reference internal" href="#register_window.RegisterWindow.createInputField"><code class="docutils literal notranslate"><span class="pre">RegisterWindow.createInputField()</span></code></a></li>
+<li><a class="reference internal" href="#register_window.RegisterWindow.fadeInWidget"><code class="docutils literal notranslate"><span class="pre">RegisterWindow.fadeInWidget()</span></code></a></li>
+<li><a class="reference internal" href="#register_window.RegisterWindow.goBack"><code class="docutils literal notranslate"><span class="pre">RegisterWindow.goBack()</span></code></a></li>
+<li><a class="reference internal" href="#register_window.RegisterWindow.initUI"><code class="docutils literal notranslate"><span class="pre">RegisterWindow.initUI()</span></code></a></li>
+<li><a class="reference internal" href="#register_window.RegisterWindow.is_valid_email"><code class="docutils literal notranslate"><span class="pre">RegisterWindow.is_valid_email()</span></code></a></li>
+<li><a class="reference internal" href="#register_window.RegisterWindow.openLogin"><code class="docutils literal notranslate"><span class="pre">RegisterWindow.openLogin()</span></code></a></li>
+<li><a class="reference internal" href="#register_window.RegisterWindow.openMainWindow"><code class="docutils literal notranslate"><span class="pre">RegisterWindow.openMainWindow()</span></code></a></li>
+<li><a class="reference internal" href="#register_window.RegisterWindow.paintEvent"><code class="docutils literal notranslate"><span class="pre">RegisterWindow.paintEvent()</span></code></a></li>
+<li><a class="reference internal" href="#register_window.RegisterWindow.register"><code class="docutils literal notranslate"><span class="pre">RegisterWindow.register()</span></code></a></li>
+<li><a class="reference internal" href="#register_window.RegisterWindow.send_welcome_email"><code class="docutils literal notranslate"><span class="pre">RegisterWindow.send_welcome_email()</span></code></a></li>
+<li><a class="reference internal" href="#register_window.RegisterWindow.showDialog"><code class="docutils literal notranslate"><span class="pre">RegisterWindow.showDialog()</span></code></a></li>
+<li><a class="reference internal" href="#register_window.RegisterWindow.showEvent"><code class="docutils literal notranslate"><span class="pre">RegisterWindow.showEvent()</span></code></a></li>
+<li><a class="reference internal" href="#register_window.RegisterWindow.togglePasswordVisibility"><code class="docutils literal notranslate"><span class="pre">RegisterWindow.togglePasswordVisibility()</span></code></a></li>
+<li><a class="reference internal" href="#register_window.RegisterWindow.updateRotation"><code class="docutils literal notranslate"><span class="pre">RegisterWindow.updateRotation()</span></code></a></li>
+<li><a class="reference internal" href="#register_window.RegisterWindow.updateStrengthBar"><code class="docutils literal notranslate"><span class="pre">RegisterWindow.updateStrengthBar()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">App Stock DB</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">register_window module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/register_window.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-register_window">
+<span id="register-window-module"></span><h1>register_window module<a class="headerlink" href="#module-register_window" title="Link to this heading"></a></h1>
+<p>register_window.py</p>
+<p>Módulo que implementa la ventana de registro para nuevos usuarios en la aplicación
+de gestión de stock.</p>
+<p>Características destacadas:
+- Formulario con campos de nombre, email y contraseña.
+- Validación del formato del correo electrónico.
+- Cálculo visual e informativo de la fortaleza de la contraseña.
+- Envío automático de correo de bienvenida al registrarse.
+- Logo animado con efecto de giro.
+- Botones estilizados y animaciones de entrada.
+- Redirección hacia login o pantalla principal tras registro exitoso.</p>
+<p>Este módulo puede ejecutarse de forma independiente para pruebas.</p>
+<dl class="simple">
+<dt>Requiere:</dt><dd><ul class="simple">
+<li><p>PyQt5</p></li>
+<li><p>Acceso a <cite>images/</cite> para los iconos</p></li>
+<li><p>Archivo <cite>config/settings.json</cite> para detectar el tema visual</p></li>
+<li><p>Servidor Flask disponible en <cite>http://127.0.0.1:5000</cite></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="register_window.RegisterWindow">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">register_window.</span></span><span class="sig-name descname"><span class="pre">RegisterWindow</span></span><a class="headerlink" href="#register_window.RegisterWindow" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QWidget</span></code></p>
+<p>Inicializa la ventana, carga el tema actual, configura el logo giratorio y construye la UI.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="register_window.RegisterWindow.applyShadow">
+<span class="sig-name descname"><span class="pre">applyShadow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#register_window.RegisterWindow.applyShadow" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="register_window.RegisterWindow.calculatePasswordStrength">
+<span class="sig-name descname"><span class="pre">calculatePasswordStrength</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">password</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#register_window.RegisterWindow.calculatePasswordStrength" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="register_window.RegisterWindow.createInputField">
+<span class="sig-name descname"><span class="pre">createInputField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">placeholder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_password</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#register_window.RegisterWindow.createInputField" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="register_window.RegisterWindow.fadeInWidget">
+<span class="sig-name descname"><span class="pre">fadeInWidget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">easing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#register_window.RegisterWindow.fadeInWidget" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="register_window.RegisterWindow.goBack">
+<span class="sig-name descname"><span class="pre">goBack</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#register_window.RegisterWindow.goBack" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="register_window.RegisterWindow.initUI">
+<span class="sig-name descname"><span class="pre">initUI</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#register_window.RegisterWindow.initUI" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="register_window.RegisterWindow.is_valid_email">
+<span class="sig-name descname"><span class="pre">is_valid_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#register_window.RegisterWindow.is_valid_email" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="register_window.RegisterWindow.openLogin">
+<span class="sig-name descname"><span class="pre">openLogin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#register_window.RegisterWindow.openLogin" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="register_window.RegisterWindow.openMainWindow">
+<span class="sig-name descname"><span class="pre">openMainWindow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#register_window.RegisterWindow.openMainWindow" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="register_window.RegisterWindow.paintEvent">
+<span class="sig-name descname"><span class="pre">paintEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QPaintEvent</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#register_window.RegisterWindow.paintEvent" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="register_window.RegisterWindow.register">
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#register_window.RegisterWindow.register" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="register_window.RegisterWindow.send_welcome_email">
+<span class="sig-name descname"><span class="pre">send_welcome_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recipient_email</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#register_window.RegisterWindow.send_welcome_email" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="register_window.RegisterWindow.showDialog">
+<span class="sig-name descname"><span class="pre">showDialog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#register_window.RegisterWindow.showDialog" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="register_window.RegisterWindow.showEvent">
+<span class="sig-name descname"><span class="pre">showEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QShowEvent</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#register_window.RegisterWindow.showEvent" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="register_window.RegisterWindow.togglePasswordVisibility">
+<span class="sig-name descname"><span class="pre">togglePasswordVisibility</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">checked</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_edit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">button</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#register_window.RegisterWindow.togglePasswordVisibility" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="register_window.RegisterWindow.updateRotation">
+<span class="sig-name descname"><span class="pre">updateRotation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#register_window.RegisterWindow.updateRotation" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="register_window.RegisterWindow.updateStrengthBar">
+<span class="sig-name descname"><span class="pre">updateStrengthBar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#register_window.RegisterWindow.updateStrengthBar" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Mario Tomé Core.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,245 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="es" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>login_window module &mdash; documentación de App Stock DB - 1.0</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=4936afed"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=f85f4cfb"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Índice" href="genindex.html" />
+    <link rel="search" title="Búsqueda" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            App Stock DB
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Buscar documentos" aria-label="Buscar documentos" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">login_window module</a><ul>
+<li><a class="reference internal" href="#login_window.LoginWindow"><code class="docutils literal notranslate"><span class="pre">LoginWindow</span></code></a><ul>
+<li><a class="reference internal" href="#login_window.LoginWindow.applyShadow"><code class="docutils literal notranslate"><span class="pre">LoginWindow.applyShadow()</span></code></a></li>
+<li><a class="reference internal" href="#login_window.LoginWindow.createInputField"><code class="docutils literal notranslate"><span class="pre">LoginWindow.createInputField()</span></code></a></li>
+<li><a class="reference internal" href="#login_window.LoginWindow.fadeInWidget"><code class="docutils literal notranslate"><span class="pre">LoginWindow.fadeInWidget()</span></code></a></li>
+<li><a class="reference internal" href="#login_window.LoginWindow.forgotPassword"><code class="docutils literal notranslate"><span class="pre">LoginWindow.forgotPassword()</span></code></a></li>
+<li><a class="reference internal" href="#login_window.LoginWindow.goBack"><code class="docutils literal notranslate"><span class="pre">LoginWindow.goBack()</span></code></a></li>
+<li><a class="reference internal" href="#login_window.LoginWindow.initUI"><code class="docutils literal notranslate"><span class="pre">LoginWindow.initUI()</span></code></a></li>
+<li><a class="reference internal" href="#login_window.LoginWindow.is_valid_email"><code class="docutils literal notranslate"><span class="pre">LoginWindow.is_valid_email()</span></code></a></li>
+<li><a class="reference internal" href="#login_window.LoginWindow.login"><code class="docutils literal notranslate"><span class="pre">LoginWindow.login()</span></code></a></li>
+<li><a class="reference internal" href="#login_window.LoginWindow.openMainWindow"><code class="docutils literal notranslate"><span class="pre">LoginWindow.openMainWindow()</span></code></a></li>
+<li><a class="reference internal" href="#login_window.LoginWindow.openRegister"><code class="docutils literal notranslate"><span class="pre">LoginWindow.openRegister()</span></code></a></li>
+<li><a class="reference internal" href="#login_window.LoginWindow.paintEvent"><code class="docutils literal notranslate"><span class="pre">LoginWindow.paintEvent()</span></code></a></li>
+<li><a class="reference internal" href="#login_window.LoginWindow.send_recovery_email"><code class="docutils literal notranslate"><span class="pre">LoginWindow.send_recovery_email()</span></code></a></li>
+<li><a class="reference internal" href="#login_window.LoginWindow.showDialog"><code class="docutils literal notranslate"><span class="pre">LoginWindow.showDialog()</span></code></a></li>
+<li><a class="reference internal" href="#login_window.LoginWindow.showError"><code class="docutils literal notranslate"><span class="pre">LoginWindow.showError()</span></code></a></li>
+<li><a class="reference internal" href="#login_window.LoginWindow.showEvent"><code class="docutils literal notranslate"><span class="pre">LoginWindow.showEvent()</span></code></a></li>
+<li><a class="reference internal" href="#login_window.LoginWindow.showMessage"><code class="docutils literal notranslate"><span class="pre">LoginWindow.showMessage()</span></code></a></li>
+<li><a class="reference internal" href="#login_window.LoginWindow.togglePasswordVisibility"><code class="docutils literal notranslate"><span class="pre">LoginWindow.togglePasswordVisibility()</span></code></a></li>
+<li><a class="reference internal" href="#login_window.LoginWindow.updateRotation"><code class="docutils literal notranslate"><span class="pre">LoginWindow.updateRotation()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">App Stock DB</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">login_window module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/login_window.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-login_window">
+<span id="login-window-module"></span><h1>login_window module<a class="headerlink" href="#module-login_window" title="Link to this heading"></a></h1>
+<p>login_window.py</p>
+<p>Módulo que define la interfaz gráfica de inicio de sesión para la aplicación de gestión de stock.</p>
+<p>Permite al usuario introducir sus credenciales, validar con la API REST, guardar sesión,
+recuperar contraseña y navegar a otras ventanas como Registro o Bienvenida.</p>
+<p>Características clave:
+- Animaciones suaves y visuales modernas.
+- Persistencia de sesión opcional.
+- Enlace a recuperación de contraseña.
+- Verificación del formato de email.
+- Diálogos estilizados con íconos según el tema claro/oscuro.
+- Logo rotatorio central y degradado dinámico de fondo.</p>
+<dl class="simple">
+<dt>Requiere:</dt><dd><ul class="simple">
+<li><p>PyQt5</p></li>
+<li><p>requests</p></li>
+<li><p>smtplib (para correo)</p></li>
+<li><p>Archivos en <cite>images/</cite> y <cite>config/</cite></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="login_window.LoginWindow">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">login_window.</span></span><span class="sig-name descname"><span class="pre">LoginWindow</span></span><a class="headerlink" href="#login_window.LoginWindow" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QWidget</span></code></p>
+<p>Inicializa la ventana, configura el logo giratorio y carga el tema actual.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="login_window.LoginWindow.applyShadow">
+<span class="sig-name descname"><span class="pre">applyShadow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#login_window.LoginWindow.applyShadow" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="login_window.LoginWindow.createInputField">
+<span class="sig-name descname"><span class="pre">createInputField</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">placeholder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_password</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#login_window.LoginWindow.createInputField" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="login_window.LoginWindow.fadeInWidget">
+<span class="sig-name descname"><span class="pre">fadeInWidget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">easing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#login_window.LoginWindow.fadeInWidget" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="login_window.LoginWindow.forgotPassword">
+<span class="sig-name descname"><span class="pre">forgotPassword</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#login_window.LoginWindow.forgotPassword" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="login_window.LoginWindow.goBack">
+<span class="sig-name descname"><span class="pre">goBack</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#login_window.LoginWindow.goBack" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="login_window.LoginWindow.initUI">
+<span class="sig-name descname"><span class="pre">initUI</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#login_window.LoginWindow.initUI" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="login_window.LoginWindow.is_valid_email">
+<span class="sig-name descname"><span class="pre">is_valid_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#login_window.LoginWindow.is_valid_email" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="login_window.LoginWindow.login">
+<span class="sig-name descname"><span class="pre">login</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#login_window.LoginWindow.login" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="login_window.LoginWindow.openMainWindow">
+<span class="sig-name descname"><span class="pre">openMainWindow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#login_window.LoginWindow.openMainWindow" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="login_window.LoginWindow.openRegister">
+<span class="sig-name descname"><span class="pre">openRegister</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#login_window.LoginWindow.openRegister" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="login_window.LoginWindow.paintEvent">
+<span class="sig-name descname"><span class="pre">paintEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QPaintEvent</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#login_window.LoginWindow.paintEvent" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="login_window.LoginWindow.send_recovery_email">
+<span class="sig-name descname"><span class="pre">send_recovery_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recipient_email</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recovery_code</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#login_window.LoginWindow.send_recovery_email" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="login_window.LoginWindow.showDialog">
+<span class="sig-name descname"><span class="pre">showDialog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#login_window.LoginWindow.showDialog" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="login_window.LoginWindow.showError">
+<span class="sig-name descname"><span class="pre">showError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#login_window.LoginWindow.showError" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="login_window.LoginWindow.showEvent">
+<span class="sig-name descname"><span class="pre">showEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QShowEvent</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#login_window.LoginWindow.showEvent" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="login_window.LoginWindow.showMessage">
+<span class="sig-name descname"><span class="pre">showMessage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#login_window.LoginWindow.showMessage" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="login_window.LoginWindow.togglePasswordVisibility">
+<span class="sig-name descname"><span class="pre">togglePasswordVisibility</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">checked</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_edit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">button</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#login_window.LoginWindow.togglePasswordVisibility" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="login_window.LoginWindow.updateRotation">
+<span class="sig-name descname"><span class="pre">updateRotation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#login_window.LoginWindow.updateRotation" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Derechos de autor 2025, Mario Tomé Core.</p>
+  </div>
+
+  Compilado con <a href="https://www.sphinx-doc.org/">Sphinx</a> usando un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">tema</a>
+    proporcionado por <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
