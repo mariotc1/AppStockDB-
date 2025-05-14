@@ -1,3 +1,13 @@
+"""
+edit_product_dialog.py
+
+Este módulo define el cuadro de diálogo `EditProductDialog`, usado para
+modificar o eliminar productos existentes en la vista de stock actual.
+
+Permite editar el nombre, la cantidad o el estado del producto. También
+incluye una opción para eliminarlo completamente del sistema.
+"""
+
 import requests
 
 from PyQt5.QtCore import Qt
@@ -12,8 +22,14 @@ from PyQt5.QtWidgets import (
 API_BASE_URL = "http://localhost:5000"
 
 
-# Dialog para editar un producto en Stock Actual
 class EditProductDialog(QDialog):
+
+    """
+    Inicializa el cuadro de diálogo con los valores actuales del producto.
+
+    Configura el diseño, precarga los datos, define los estilos visuales y
+    establece los botones para editar, cancelar o eliminar el producto.
+    """
     def __init__(self, producto, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Editar/Eliminar Producto")
@@ -117,7 +133,15 @@ class EditProductDialog(QDialog):
         layout.addLayout(btn_layout)
 
 
-    #  Guardar los cambios de la edicion del producto
+    """
+    Guarda los cambios realizados al producto mediante una petición PUT a la API.
+
+    Realiza validaciones básicas antes del envío:
+    - El nombre no debe estar vacío.
+    - La cantidad debe ser numérica.
+
+    Muestra mensajes de confirmación o error según el resultado.
+    """
     def save_edited_product(self):
         nombre = self.input_nombre.text().strip()
         cantidad = self.input_cantidad.text().strip()
@@ -142,7 +166,12 @@ class EditProductDialog(QDialog):
             QMessageBox.critical(self, "Error de conexión", f"No se pudo conectar con el servidor: {str(e)}")
 
 
-    # Eliminacion de un producto desde la edición
+    """
+    Confirma con el usuario si desea eliminar el producto y, en caso afirmativo,
+    envía una petición DELETE a la API para eliminarlo del sistema.
+
+    Muestra un cuadro de diálogo para confirmar la acción.
+    """
     def confirm_delete_product(self):
         reply = QMessageBox.question(
             self, "Confirmar Eliminación", "¿Estás seguro de que deseas eliminar este producto?",

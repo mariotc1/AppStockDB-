@@ -1,3 +1,16 @@
+"""
+return_product_dialog.py
+
+Este módulo define el cuadro de diálogo `ReturnProductDialog`, que permite
+devolver total o parcialmente un producto previamente asignado.
+
+La devolución genera automáticamente un movimiento de tipo "Entrada" 
+en el historial de movimientos y, si la cantidad devuelta es total, 
+el producto se elimina de las salidas.
+
+Requiere conexión con la API REST para actualizar los datos en la base de datos.
+"""
+
 import requests
 
 from PyQt5.QtCore import Qt
@@ -12,6 +25,13 @@ API_BASE_URL = "http://localhost:5000"
 
 # Cuadro de diálogo para devolver los productos
 class ReturnProductDialog(QDialog):
+
+    """
+    Inicializa el diálogo con la información del producto a devolver.
+
+    Carga el diseño visual, las opciones de cantidad total/parcial y
+    prepara los botones de acción para cancelar o confirmar la devolución.
+    """
     def __init__(self, salida, parent=None, categoria=None):
         super().__init__(parent)
         self.salida = salida
@@ -87,10 +107,26 @@ class ReturnProductDialog(QDialog):
 
         layout.addLayout(btn_layout)
 
+
+    """
+    Habilita o deshabilita el campo de entrada de cantidad según 
+    la opción de devolución seleccionada por el usuario.
+
+    Args:
+        enabled (bool): Si True, el usuario puede introducir una cantidad personalizada.
+    """
     def toggle_cantidad(self, enabled):
         self.cantidad_input.setEnabled(enabled)
 
 
+    """
+    Realiza la devolución del producto a través de la API REST.
+
+    1. Envía una petición PUT para devolver el producto.
+    2. Si es exitoso, registra un nuevo movimiento de tipo "Entrada".
+    3. Muestra mensajes según el resultado (éxito, error parcial o total).
+    4. Cierra el diálogo si todo fue correcto.
+    """
     def devolver_producto(self):
         cantidad_a_devolver = self.cantidad_input.value()
         try:
@@ -124,6 +160,16 @@ class ReturnProductDialog(QDialog):
             self.mostrar_mensaje("Error", f"Error al devolver el producto: {str(e)}", "error")
 
 
+    """
+    Muestra un cuadro de mensaje personalizado según el tipo.
+
+    Args:
+        titulo (str): Título de la ventana del mensaje.
+        mensaje (str): Contenido del mensaje.
+        tipo (str): Tipo de mensaje ("success", "error", "confirm").
+
+    Dependiendo del tipo se aplican estilos e íconos diferentes.
+    """
     def mostrar_mensaje(self, titulo, mensaje, tipo):
         msg_box = QMessageBox(self)
         msg_box.setWindowTitle(titulo)

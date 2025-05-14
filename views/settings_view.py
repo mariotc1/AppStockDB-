@@ -1,3 +1,13 @@
+"""
+Vista de configuración general de la aplicación.
+
+Permite al usuario cambiar entre tema claro y oscuro, contactar con soporte técnico
+(vía WhatsApp o correo), y cerrar sesión. Incluye controles estilizados y una interfaz
+moderna y centrada, con un diseño responsive y coherente con el tema activo.
+
+:param parent: Widget padre opcional.
+"""
+
 import os
 
 from PyQt5.QtCore import Qt
@@ -9,6 +19,12 @@ from styles.styled_button import StyledButton
 from styles.animated_styled_switch import AnimatedStyledSwitch
 
 class SettingsView(QWidget):
+
+    """
+    Inicializa la vista de ajustes cargando el tema actual y construyendo la interfaz visual.
+
+    :param parent: Widget padre opcional.
+    """
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -24,7 +40,15 @@ class SettingsView(QWidget):
         # Inicializo la vista
         self.initUI()
 
-    # Crea la interfaz de la vista de configuración
+    
+    """
+    Construye la interfaz gráfica de la vista, incluyendo:
+    - Título principal
+    - Cambio de tema (claro/oscuro)
+    - Opciones de contacto con soporte
+    - Botón para cerrar sesión
+    - Footer informativo
+    """
     def initUI(self):
         self.setStyleSheet("background-color: transparent;")
 
@@ -114,11 +138,20 @@ class SettingsView(QWidget):
         main_layout.addWidget(footer)
 
 
-    # Actualiza el estado del switch y cambia el tema
+    """
+    Llama a la función encargada de aplicar el cambio de tema según el estado del switch.
+
+    :param state: Estado del switch (Qt.Checked o Qt.Unchecked).
+    """
     def update_toggle_ui(self, state):
         self.toggle_theme(state)
 
-    # Comprueba si el tema actual es oscuro o claro
+    
+    """
+    Comprueba si el tema actual guardado en configuración es 'dark'.
+
+    :return: True si el tema actual es oscuro, False en caso contrario.
+    """
     def is_dark_theme(self):
         import json
         try:
@@ -128,7 +161,13 @@ class SettingsView(QWidget):
         except:
             return False
 
-    # Cambia el tema de la aplicación y reinicia
+
+    """
+    Cambia entre el tema claro y oscuro, guarda la preferencia en el archivo de configuración
+    y reinicia la aplicación para aplicar los cambios visuales.
+
+    :param state: Estado del switch que indica el nuevo tema a aplicar.
+    """
     def toggle_theme(self, state):
         import json, os, sys
         new_theme = "dark" if state == Qt.Checked else "light"
@@ -140,16 +179,27 @@ class SettingsView(QWidget):
         except Exception as e:
             self.showDialog("Error", f"No se pudo cambiar el tema: {e}", QMessageBox.Critical)
 
-    # Abre WhatsApp y Gmail
+
+    """
+    Abre el navegador predeterminado y redirige al enlace de contacto por WhatsApp.
+    """
     def open_whatsapp(self):
         import webbrowser
         webbrowser.open('https://wa.me/34644071074')
 
+
+    """
+    Abre el cliente de correo predeterminado con un nuevo mensaje a la dirección de soporte.
+    """
     def open_email(self):
         import webbrowser
         webbrowser.open('mailto:gestionstockdb@gmail.com')
 
-    # Función de cierre de sesión
+
+    """
+    Elimina el archivo de sesión local, muestra un mensaje de confirmación y redirige al usuario
+    a la pantalla de bienvenida.
+    """
     def logout_action(self):
         session_path = os.path.join("config", "session.json")
         if os.path.exists(session_path):
@@ -164,7 +214,13 @@ class SettingsView(QWidget):
         self.window().close()  # Cierra la ventana actual
 
     
-    # Dialog personalizado: muestra un cuadro de diálogo con un título, mensaje y logo
+    """
+    Muestra un cuadro de diálogo personalizado con ícono dinámico dependiendo del tema actual.
+
+    :param title: Título de la ventana del mensaje.
+    :param message: Mensaje a mostrar al usuario.
+    :param icon: Tipo de icono de mensaje (por defecto: QMessageBox.Information).
+    """
     def showDialog(self, title, message, icon=QMessageBox.Information):
         import json
         try:

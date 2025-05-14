@@ -1,9 +1,34 @@
+"""
+animated_styled_switch.py
+
+Contiene la clase `AnimatedStyledSwitch`, un interruptor personalizado con animación
+utilizado para alternar entre el modo claro y oscuro de la interfaz.
+
+Simula un switch moderno con animaciones suaves, círculo deslizante e iconos representativos.
+Ideal para menús de configuración modernos.
+
+Características:
+- Basado en `QCheckBox`.
+- Uso de `QPropertyAnimation`.
+- Estilo completamente personalizado mediante `paintEvent`.
+
+Requiere:
+    - PyQt5
+    - Iconos en `images/claro.png` y `images/oscuro.png`
+"""
+
 from PyQt5.QtWidgets import QCheckBox
 from PyQt5.QtGui import QPainter, QColor, QBrush, QPixmap
 from PyQt5.QtCore import Qt, QPropertyAnimation, QEasingCurve, pyqtProperty
 
-# Clase para crear un switch animado en la vista de configuración para cambiar entre modo claro y oscuro
 class AnimatedStyledSwitch(QCheckBox):
+
+    """
+    Inicializa el interruptor, establece estilo base y conecta la animación al cambio de estado.
+
+    Args:
+        parent (QWidget, opcional): Widget padre.
+    """
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -25,7 +50,11 @@ class AnimatedStyledSwitch(QCheckBox):
         """)
 
 
-    # Personalizar el aspecto del switch
+    """
+    Dibuja el interruptor: fondo redondeado, círculo animado e icono del modo actual.
+
+    El color y el icono cambian según el estado (`checked` o no).
+    """
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)
@@ -49,7 +78,9 @@ class AnimatedStyledSwitch(QCheckBox):
         painter.end()
 
 
-    # Animación al cambiar el estado del switch
+    """
+    Lanza la animación suave del círculo deslizante al cambiar el estado del switch.
+    """
     def start_animation(self):
         self.anim = QPropertyAnimation(self, b"circle_position")
         self.anim.setDuration(200)
@@ -63,19 +94,36 @@ class AnimatedStyledSwitch(QCheckBox):
         self.anim.start()
 
 
-    # Propiedad para la posición del círculo
+    """
+    Getter de la propiedad `circle_position`.
+
+    Returns:
+        int: Posición actual del círculo.
+    """
     def get_circle_position(self):
         return self._circle_position
 
-    # Setter para la posición del círculo
+
+    """
+    Setter de la propiedad `circle_position`.
+
+    Actualiza la posición del círculo y repinta el widget.
+
+    Args:
+        pos (int): Nueva posición horizontal del círculo.
+    """
     def set_circle_position(self, pos):
         self._circle_position = pos
         self.update()
 
-    # Propiedad para la posición del círculo
+
+    """
+    Propiedad Qt que permite animar la posición del círculo mediante `QPropertyAnimation`.
+    """
     @pyqtProperty(int)
     def circle_position(self):
         return self._circle_position
+
 
     # Setter para la posición del círculo
     @circle_position.setter
@@ -83,7 +131,10 @@ class AnimatedStyledSwitch(QCheckBox):
         self._circle_position = pos
         self.update()
 
-    # Método para manejar el evento de pulsar el switch
+
+    """
+    Alterna el estado del switch al hacer clic izquierdo, disparando la animación.
+    """
     def mouseReleaseEvent(self, event):
         if event.button() == Qt.LeftButton:
             self.setChecked(not self.isChecked())

@@ -1,7 +1,31 @@
+"""
+simple_card.py
+
+Define el widget `SimpleCard`, una tarjeta visual con:
+- Fondo semitransparente.
+- Borde suave.
+- Radio redondeado.
+
+Ideal para mostrar bloques de información con separación clara del fondo.
+
+Usado comúnmente en:
+- InfoView
+- Vistas decorativas o informativas.
+
+Requiere:
+    - PyQt5
+"""
+
 from PyQt5.QtWidgets import QFrame
 
-# Clase para dar formato sencillo al card de InfoView
 class SimpleCard(QFrame):
+
+    """
+    Inicializa la tarjeta con un estilo visual translúcido y bordes suaves.
+
+    Args:
+        parent (QWidget, opcional): Widget padre.
+    """
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setStyleSheet("""

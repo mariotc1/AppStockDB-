@@ -1,9 +1,36 @@
+"""
+styled_line_edit.py
+
+Define la clase `StyledLineEdit`, una entrada de texto personalizada con:
+- Borde redondeado.
+- Padding interior.
+- Icono embebido a la izquierda.
+- Colores adaptados dinámicamente al tema claro/oscuro.
+
+Usado en:
+- Formularios de login, registro y perfil.
+
+Requiere:
+    - PyQt5
+    - Ruta a un icono PNG o SVG.
+    - Archivo de configuración `config/settings.json` (opcional si se pasa el tema manualmente).
+"""
+
 from PyQt5.QtCore import QSize
 from PyQt5.QtWidgets import QLabel, QLineEdit
 from PyQt5.QtGui import QIcon
 import json
 
 class StyledLineEdit(QLineEdit):
+
+    """
+    Inicializa el campo de texto con estilos y un icono visual.
+
+    Args:
+        placeholder (str): Texto guía mostrado cuando el campo está vacío.
+        icon (str): Ruta del icono que se muestra a la izquierda del campo.
+        theme (str, opcional): Tema actual (light/dark). Si no se indica, se carga desde settings.json.
+    """
     def __init__(self, placeholder, icon, theme=None):
         super().__init__()
 

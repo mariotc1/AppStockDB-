@@ -1,3 +1,30 @@
+"""
+welcome_window.py
+
+Módulo que define la ventana de bienvenida de la aplicación de gestión de stock.
+
+Contiene la clase `WelcomeWindow`, una interfaz moderna con estilo profesional, efectos visuales
+como degradados, sombras, animaciones y efectos de entrada. Esta pantalla permite al usuario
+acceder a las opciones de inicio de sesión y registro, además de permitir el cambio de tema
+(oscuro o claro) con persistencia entre sesiones.
+
+Componentes destacados:
+- Logo rotativo central.
+- Mensaje de bienvenida y subtítulo.
+- Botones estilizados para navegar a Login o Registro.
+- Selector de tema (modo claro/oscuro) persistente.
+- Animaciones suaves y efectos visuales (sombra, fundido, entrada elástica).
+- Efecto de máquina de escribir en el tagline.
+
+Este módulo se ejecuta también como script independiente para pruebas directas de la ventana.
+
+Requiere:
+    - PyQt5
+    - Archivos de configuración en `config/settings.json`
+    - Imagen del logo en `images/logoDB_Blanco.png`
+    - Componentes de animación y estilo personalizados
+"""
+
 import sys, json
 
 from PyQt5.QtCore import (
@@ -26,6 +53,9 @@ LOGO_PATH = "images/logoDB_Blanco.png"
 # Pantalla de Bienvenida 
 class WelcomeWindow(QWidget):
 
+    """
+    Inicializa la ventana de bienvenida y carga la configuración del tema actual.
+    """
     def __init__(self):
         super().__init__()
         
@@ -46,7 +76,9 @@ class WelcomeWindow(QWidget):
         self.showMaximized()
         self.initUI()
 
-    # Creacion de la interfaz
+    """
+    Construye toda la interfaz gráfica, aplica estilos, configura botones y animaciones.
+    """
     def initUI(self):
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(20, 20, 20, 20)
@@ -143,14 +175,16 @@ class WelcomeWindow(QWidget):
         self.setupAnimations()
 
 
-    # Cambia el tema y recarga la ventana de bienvenida
+    """
+    Alterna entre modo claro y oscuro, guarda el estado y reinicia la ventana para aplicar cambios.
+    """
     def toggleTheme(self):
         from themes.theme_manager import ThemeManager
         app = QApplication.instance()
         ThemeManager.toggle_theme(app)
         self.updateThemeIcon()
 
-        # Actualizamos el tema actual leído del archivo
+        # Actualizo el tema actual leído del archivo
         try:
             with open("config/settings.json", "r") as f:
                 config = json.load(f)
@@ -161,7 +195,10 @@ class WelcomeWindow(QWidget):
         self.updateThemeIcon()
         self.reopen()
 
-    # Actualiza el icono del botón según el tema actual
+
+    """
+    Actualiza el icono del botón de cambio de tema según el modo actual (claro u oscuro).
+    """
     def updateThemeIcon(self):
         try:
             with open("config/settings.json", "r") as f:
@@ -173,13 +210,18 @@ class WelcomeWindow(QWidget):
         self.theme_button.setIcon(QIcon(icon_path))
         self.theme_button.setIconSize(self.theme_button.size())
 
-    # Reabre la ventana de bienvenida después de cambiar el tema
+
+    """
+    Cierra y vuelve a abrir la ventana de bienvenida para aplicar el nuevo tema visual.
+    """
     def reopen(self):
         self.new_window = WelcomeWindow()
         self.new_window.show()
         self.close()
 
-    # Configuro las animaciones de los elementos de la ventana
+    """
+    Configura las animaciones de entrada para títulos y botones de la interfaz.
+    """
     def setupAnimations(self):
         self.fadeInWidget(self.title_label, 1500, QEasingCurve.OutCubic)
         self.fadeInWidget(self.subtitle_label, 2000, QEasingCurve.OutCubic)
@@ -201,7 +243,15 @@ class WelcomeWindow(QWidget):
         main_sequence.start()
 
 
-    # Creo una animación de desplazamiento para el botón
+    """
+    Crea una animación de entrada para un botón, haciéndolo deslizar desde abajo.
+
+    Args:
+        button (QPushButton): Botón al que se le aplicará la animación.
+
+    Returns:
+        QPropertyAnimation: Objeto de animación configurado.
+    """
     def createButtonAnimation(self, button):
         anim = QPropertyAnimation(button, b"pos")
         anim.setDuration(1000)
@@ -212,7 +262,12 @@ class WelcomeWindow(QWidget):
         return anim
 
 
-    # Aplico el efecto de sombra al widget
+    """
+    Aplica un efecto de sombra estilizado a un widget dado.
+
+    Args:
+        widget (QWidget): Elemento visual al que se aplicará la sombra.
+    """
     def applyShadow(self, widget):
         shadow = QGraphicsDropShadowEffect(self)
         shadow.setBlurRadius(15)
@@ -222,7 +277,14 @@ class WelcomeWindow(QWidget):
         widget.setGraphicsEffect(shadow)
 
 
-    # Efecto de 'fundido' de entrada en el widget
+    """
+    Aplica una animación de entrada en forma de fundido al widget indicado.
+
+    Args:
+        widget (QWidget): Widget al que se le aplicará el efecto.
+        duration (int): Duración del efecto en milisegundos.
+        easing (QEasingCurve): Curva de suavizado de la animación.
+    """
     def fadeInWidget(self, widget, duration=2000, easing=QEasingCurve.InOutQuad):
         effect = QGraphicsOpacityEffect(widget)
         widget.setGraphicsEffect(effect)
@@ -235,7 +297,9 @@ class WelcomeWindow(QWidget):
         self.animations.append(animation)
 
 
-    # Lleva a la pantalla de Inicio de Sesión
+    """
+    Muestra la ventana de inicio de sesión y cierra la actual.
+    """
     def onLogin(self):
         from login_window import LoginWindow
         self.login_window = LoginWindow()
@@ -243,7 +307,9 @@ class WelcomeWindow(QWidget):
         self.close()
 
 
-    # Lleva a la pantalla de Registro
+    """
+    Muestra la ventana de registro de usuario y cierra la actual.
+    """
     def onRegister(self):
         from register_window import RegisterWindow
         self.register_window = RegisterWindow()
@@ -251,7 +317,9 @@ class WelcomeWindow(QWidget):
         self.close()
 
 
-    # 'Pinto' el fondo de la pantalla con un degradado de negro a naranja
+    """
+    Dibuja el fondo con un degradado vertical dependiendo del tema actual.
+    """
     def paintEvent(self, event):
         painter = QPainter(self)
         rect = self.rect()
@@ -270,7 +338,9 @@ class WelcomeWindow(QWidget):
         super().paintEvent(event)
 
 
-    # Animación de fundido de entrada al mostrar la pantalla
+    """
+    Aplica una animación de entrada con fundido al mostrar la ventana.
+    """
     def showEvent(self, event):
         self.setWindowOpacity(0)
         anim = QPropertyAnimation(self, b"windowOpacity")

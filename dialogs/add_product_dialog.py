@@ -1,3 +1,23 @@
+"""
+add_product_dialog.py
+
+Define `AddProductDialog`, un cuadro de diálogo visual para ingresar nuevos productos al inventario.
+
+Características:
+- Nombre, cantidad (número) y estado del producto.
+- Estilo moderno con degradado y botones personalizados.
+- Validación de campos.
+- Conexión directa con la API REST para persistencia.
+
+Requiere:
+    - requests
+    - PyQt5
+    - Ruta válida a las imágenes (check, cancel, logo).
+
+Endpoint utilizado:
+    POST /productos/agregar
+"""
+
 import requests
 
 from PyQt5.QtCore import Qt
@@ -10,8 +30,15 @@ from PyQt5.QtWidgets import (
 # URL para la conexión con la api rest
 API_BASE_URL = "http://localhost:5000"
 
-# Cuadro de diálogo para añadir un producto en la subvista de Stock Actual
 class AddProductDialog(QDialog):
+
+    """
+    Inicializa la interfaz del cuadro de diálogo para añadir productos.
+
+    Args:
+        parent (QWidget, opcional): Widget padre.
+        categoria (str, opcional): Categoría del producto (ej. "Habitaciones", "Electrodomésticos").
+    """
     def __init__(self, parent=None, categoria=None):
         super().__init__(parent)
         self.categoria = categoria
@@ -116,7 +143,14 @@ class AddProductDialog(QDialog):
         layout.addLayout(btn_layout)
 
 
-    # Conexión con la api para guardar el nuevo producto
+    """
+    Valida los datos del formulario y realiza una solicitud POST a la API para guardar el producto.
+
+    Muestra un `QMessageBox` con el resultado:
+    - Éxito: Cierra el cuadro y confirma.
+    - Error de validación: Muestra advertencia.
+    - Error HTTP o de conexión: Muestra mensaje crítico.
+    """
     def save_product(self):
         nombre = self.input_nombre.text().strip()
         cantidad = self.input_cantidad.text().strip()

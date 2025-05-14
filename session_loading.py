@@ -1,12 +1,48 @@
+"""
+session_loading.py
+
+Módulo que implementa la pantalla de carga tras la detección de una sesión guardada.
+
+Se utiliza para mostrar una interfaz temporal mientras la aplicación termina de inicializarse
+tras recuperar la sesión del usuario desde disco.
+
+Características:
+- Animaciones visuales (fade-in).
+- Fondo con degradado dinámico.
+- Mensaje personalizado con el nombre del usuario.
+- Tarjeta decorativa con imagen de carga.
+
+Requiere:
+    - PyQt5
+    - Archivo de configuración (`config/settings.json`)
+    - Recursos gráficos en `images/`
+"""
+
 import sys, json, os
-from PyQt5.QtCore import Qt, QTimer, QPropertyAnimation, QEasingCurve
-from PyQt5.QtGui import QPixmap, QPainter, QLinearGradient, QBrush, QColor, QFont, QIcon
+
+from PyQt5.QtCore import (
+    Qt, QTimer, 
+    QPropertyAnimation, QEasingCurve
+)
+
+from PyQt5.QtGui import (
+    QPixmap, QPainter, QLinearGradient, 
+    QBrush, QColor, QFont, QIcon
+)
+
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QGraphicsOpacityEffect,
     QApplication, QFrame
 )
 
 class SessionLoading(QWidget):
+
+    """
+    Inicializa la pantalla de carga y configura la UI con el nombre del usuario.
+
+    Args:
+        username (str): Nombre del usuario autenticado.
+    """
     def __init__(self, username):
         super().__init__()
 
@@ -25,6 +61,12 @@ class SessionLoading(QWidget):
         self.setWindowIcon(QIcon("images/logoDB_Blanco.png"))
         self.showMaximized()
 
+
+    """
+    Construye la interfaz gráfica: logo, título, subtítulo, tarjeta central e imagen decorativa.
+
+    Incluye animaciones de fade-in y un mensaje de espera para el usuario.
+    """
     def initUI(self):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(20, 20, 20, 20)
@@ -88,6 +130,14 @@ class SessionLoading(QWidget):
         self.fadeInWidget(subtitle, 2000)
         self.fadeInWidget(card, 2300)
 
+
+    """
+    Aplica una animación de entrada (fade-in) al widget dado.
+
+    Args:
+        widget (QWidget): Elemento al que aplicar la animación.
+        duration (int): Duración de la animación en milisegundos.
+    """
     def fadeInWidget(self, widget, duration):
         effect = QGraphicsOpacityEffect(widget)
         widget.setGraphicsEffect(effect)
@@ -99,6 +149,10 @@ class SessionLoading(QWidget):
         anim.start()
         self.animations.append(anim)
 
+
+    """
+    Dibuja el fondo con un degradado vertical adaptado al tema actual (claro u oscuro).
+    """
     def paintEvent(self, event):
         painter = QPainter(self)
         rect = self.rect()
@@ -113,6 +167,10 @@ class SessionLoading(QWidget):
 
         painter.fillRect(rect, QBrush(gradient))
 
+
+    """
+    Ejecuta una animación de aparición suave al mostrar la ventana.
+    """
     def showEvent(self, event):
         self.setWindowOpacity(0)
         anim = QPropertyAnimation(self, b"windowOpacity")

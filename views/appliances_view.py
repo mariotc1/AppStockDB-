@@ -1,3 +1,17 @@
+"""
+Vista principal de la sección 'Electrodomésticos' en la aplicación de gestión de stock.
+
+Integra múltiples subvistas relacionadas con el mobiliario de electrodomésticos:
+- Visualización del stock actual
+- Gestión de salidas de stock
+- Historial de movimientos
+
+También incluye un botón de acceso al chatbot para asistencia contextual.
+
+:param categoria: Categoría de productos a gestionar (electrodomésticos).
+:param parent: Widget padre opcional.
+"""
+
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import (
@@ -18,13 +32,24 @@ API_BASE_URL = "http://localhost:5000"
 
 # Clase principal de la subvista de electrodomesticos
 class AppliancesView(QWidget):
+
+    """
+    Inicializa la vista RoomView con la categoría 'Electrodomésticos' y construye la interfaz principal.
+
+    :param categoria: Categoría a la que pertenece la vista ('Electorodmésticos').
+    :param parent: Widget padre opcional.
+    """
     def __init__(self, categoria, parent=None):
         super().__init__(parent)
         self.categoria = categoria
         self.chat_popup = None
         self.initUI()
     
-    # Creo la interfaz: titulo, 3 botones inferioes y chatbot
+    
+    """
+    Construye la interfaz de usuario con título, menú de navegación por iconos,
+    contenedor de subvistas (stock, salidas, historial) y botón flotante del chatbot.
+    """
     def initUI(self):
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(20, 20, 20, 20)
@@ -106,8 +131,12 @@ class AppliancesView(QWidget):
         main_layout.addStretch()
         self.setLayout(main_layout)
         self.positionChatbotButton()
-    
-    # Posiciono el chatbot en la vista abajo a la derecha
+
+
+    """
+    Calcula y establece la posición del botón del chatbot en la esquina inferior derecha.
+    Se llama inicialmente y también en cada redimensionado de la ventana.
+    """
     def positionChatbotButton(self):
         margin = 20
         self.chatbot_btn.move(
@@ -115,10 +144,20 @@ class AppliancesView(QWidget):
             self.height() - self.chatbot_btn.height() - margin
         )
     
+
+    """
+    Cambia la subvista activa del `QStackedWidget` según el índice seleccionado.
+
+    :param index: Índice de la vista a mostrar (0: stock, 1: salida, 2: historial).
+    """
     def change_tab(self, index):
         self.content_stack.setCurrentIndex(index)
     
-    # Llamo a la clase del chatbot
+    
+    """
+    Muestra u oculta el chatbot flotante contextual. Si ya está visible, lo cierra.
+    Si no está creado, lo instancia y lo muestra.
+    """
     def toggleChatPopup(self):
         if self.chat_popup and self.chat_popup.isVisible():
             self.chat_popup.close()
@@ -127,6 +166,12 @@ class AppliancesView(QWidget):
             self.chat_popup = ChatPopup(self.chatbot_btn, self)
             self.chat_popup.show()
     
+
+    """
+    Evento de redimensionamiento. Reposiciona el botón del chatbot automáticamente.
+
+    :param event: Evento de redimensionamiento de la ventana.
+    """
     def resizeEvent(self, event):
         super().resizeEvent(event)
         self.positionChatbotButton()

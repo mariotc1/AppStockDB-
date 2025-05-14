@@ -1,3 +1,16 @@
+"""
+Vista principal de información y ayuda de la aplicación.
+
+Muestra al usuario un manual visual interactivo con tarjetas explicativas, 
+cada una con su título, descripción y acceso a un vídeo demostrativo. 
+Está diseñada para facilitar la comprensión del funcionamiento de la app.
+
+Las tarjetas abordan temas como navegación, personalización del perfil, 
+gestión de stock y uso del chatbot.
+
+:param parent: Widget padre opcional.
+"""
+
 import os
 
 from PyQt5.QtGui import QFont, QIcon
@@ -13,8 +26,14 @@ from styles.styled_button import StyledButton
 from dialogs.videoPlayer_dialog import VideoPlayerDialog
 
 
-# Clase de la vista - Información de la App
 class InfoView(QWidget):
+
+    """
+    Inicializa la vista de información, cargando el tema actual desde configuración
+    y construyendo toda la interfaz visual de ayuda.
+    
+    :param parent: Widget padre opcional.
+    """
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -30,7 +49,16 @@ class InfoView(QWidget):
 
         self.initUI()
 
-    # Creo los card y les doy el formato: icono, título, texto y video explicativo
+
+    """
+    Crea una tarjeta visual informativa con icono, título, descripción y botón para ver video.
+
+    :param icon_path: Ruta al icono que se mostrará en la parte superior de la tarjeta.
+    :param title_text: Título principal de la tarjeta.
+    :param content_text: Texto descriptivo con viñetas o explicación.
+    :param video_file: Nombre del archivo de video explicativo asociado.
+    :return: Widget completo de la tarjeta (SimpleCard).
+    """
     def createCard(self, icon_path, title_text, content_text, video_file):
         card = SimpleCard()
         card.setMinimumSize(250, 280)
@@ -65,7 +93,12 @@ class InfoView(QWidget):
 
         return card
 
-    # Muestro el video (situados en la carpeta videos)
+    
+    """
+    Muestra el video explicativo correspondiente a una tarjeta mediante un cuadro de diálogo.
+
+    :param video_file: Nombre del archivo de video (ubicado en la carpeta 'videos').
+    """
     def show_video(self, video_file):
         video_path = os.path.join('videos', video_file)
         if os.path.exists(video_path):
@@ -74,7 +107,11 @@ class InfoView(QWidget):
         else:
             print(f"ERROR: No se encontró el archivo de video: {video_file}")
 
-    # Creo la interfaz de la vista
+
+    """
+    Construye y organiza visualmente toda la vista, incluyendo el título principal 
+    y las tarjetas de ayuda agrupadas en un `QGridLayout`.
+    """
     def initUI(self):
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(20, 20, 20, 20)
@@ -93,7 +130,7 @@ class InfoView(QWidget):
         # Card Navegación inteigente: explicaión + video
         card_nav = self.createCard("images/navigation.png", 
                                    "Navegación Inteligente",
-                                     "• Menú lateral expandible al acercar el ratón, para acceder a todas las vistas de la app.\n"
+                                     "• Menú lateral expandible al acercar el ratón, para acceder a las funciones.\n"
                                      "• Acceso rápido a todas las secciones con un solo click.\n"
                                      "• Cambio entre modo oscuro y claro en toda la app.\n"
                                      "• Guarda tú sesión.\n", 
@@ -103,7 +140,7 @@ class InfoView(QWidget):
         # Card Personalización de tu Perfil: explicación + video
         card_op = self.createCard("images/usuario.png", 
                                 "Personalización de Tu Perfil", 
-                                "• Cambia la imagen de perfil por una personalizada localizada en tu explorador de archivos\n"
+                                "• Cambia la imagen de perfil por una personalizada.\n"
                                 "• Tu foto saldrá de forma sincronizada en el menú lateral\n"
                                 "• Consulta y edita tu nombre de usuario si lo necesitas.\n"
                                 "• Cambia tu contraseña si lo necesitas\n", 

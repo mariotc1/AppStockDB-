@@ -1,3 +1,27 @@
+"""
+register_window.py
+
+Módulo que implementa la ventana de registro para nuevos usuarios en la aplicación
+de gestión de stock.
+
+Características destacadas:
+- Formulario con campos de nombre, email y contraseña.
+- Validación del formato del correo electrónico.
+- Cálculo visual e informativo de la fortaleza de la contraseña.
+- Envío automático de correo de bienvenida al registrarse.
+- Logo animado con efecto de giro.
+- Botones estilizados y animaciones de entrada.
+- Redirección hacia login o pantalla principal tras registro exitoso.
+
+Este módulo puede ejecutarse de forma independiente para pruebas.
+
+Requiere:
+    - PyQt5
+    - Acceso a `images/` para los iconos
+    - Archivo `config/settings.json` para detectar el tema visual
+    - Servidor Flask disponible en `http://127.0.0.1:5000`
+"""
+
 import sys, math, requests, re, smtplib
 
 from email.mime.text import MIMEText
@@ -25,6 +49,10 @@ from styles.styled_button import StyledButton
 
 # Clase de Registro
 class RegisterWindow(QWidget):
+
+    """
+    Inicializa la ventana, carga el tema actual, configura el logo giratorio y construye la UI.
+    """
     def __init__(self):
         super().__init__()
         
@@ -58,6 +86,9 @@ class RegisterWindow(QWidget):
         self.showMaximized()
 
 
+    """
+    Construye toda la interfaz de registro, desde los campos hasta los botones y animaciones.
+    """
     def initUI(self):
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(20, 20, 20, 20)
@@ -190,7 +221,17 @@ class RegisterWindow(QWidget):
         self.setLayout(main_layout)
 
 
-    # Creo un campo de entrada con icono y placeholder
+    """
+    Crea un campo de entrada con un icono y un botón opcional para mostrar la contraseña.
+
+    Args:
+        placeholder (str): Texto guía.
+        icon_path (str): Ruta al icono a mostrar.
+        is_password (bool): Si el campo debe ocultar caracteres.
+
+    Returns:
+        QHBoxLayout: Layout con los elementos del campo.
+    """
     def createInputField(self, placeholder, icon_path, is_password):
         layout = QHBoxLayout()
         layout.setSpacing(10)
@@ -221,7 +262,14 @@ class RegisterWindow(QWidget):
         return layout
 
 
-    # Cambia la visibilidad de la contraseña al hacer clic en el botón
+    """
+    Alterna la visibilidad de la contraseña en un campo de texto.
+
+    Args:
+        checked (bool): Estado del botón (mostrar/ocultar).
+        line_edit (QLineEdit): Campo de texto objetivo.
+        button (QPushButton): Botón de visibilidad.
+    """
     def togglePasswordVisibility(self, checked, line_edit, button):
         if checked:
             line_edit.setEchoMode(QLineEdit.Normal)
@@ -231,7 +279,12 @@ class RegisterWindow(QWidget):
             button.setIcon(QIcon("images/b_icon_eye_off.png"))
 
 
-    # Actualiza la barra de fuerza de contraseña y el texto informativo
+    """
+    Actualiza el progreso visual e informativo de la fortaleza de la contraseña.
+
+    Args:
+        text (str): Contraseña introducida.
+    """
     def updateStrengthBar(self, text):
         strength = self.calculatePasswordStrength(text)
         self.strength_bar.setValue(strength)
@@ -260,7 +313,15 @@ class RegisterWindow(QWidget):
         self.strength_label.setText(mensaje)
 
 
-    # Calculo la fuerza de la contraseña
+    """
+    Calcula una puntuación basada en la longitud y complejidad de una contraseña.
+
+    Args:
+        password (str): Contraseña a evaluar.
+
+    Returns:
+        int: Puntuación de 0 a 100.
+    """
     def calculatePasswordStrength(self, password):
         strength = 0
         if len(password) >= 8:
@@ -276,13 +337,26 @@ class RegisterWindow(QWidget):
         return min(strength, 100)
 
 
-    # Validar si el correo tiene formato correto con una regex
+    """
+    Valida que el formato del correo electrónico sea correcto.
+
+    Args:
+        email (str): Correo a validar.
+
+    Returns:
+        bool: True si es válido, False si no.
+    """
     def is_valid_email(self, email):
         pattern = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
         return re.match(pattern, email)
 
 
-    # Enviar un correo de bienvenida al usuario tras el registro
+    """
+    Envía un correo de bienvenida en formato HTML con imagen adjunta.
+
+    Args:
+        recipient_email (str): Correo del nuevo usuario.
+    """
     def send_welcome_email(self, recipient_email):
         sender_email = "gestionstockdb@gmail.com"
         subject = "¡Bienvenido a Gestión de Stock!"
@@ -325,7 +399,10 @@ class RegisterWindow(QWidget):
             print(f"Error al enviar el correo: {e}")
 
 
-    # Manejo del registro con validación del correo y envío de correo de bienvenida
+    """
+    Realiza la lógica de registro de usuario con validaciones, llamada a la API
+    y envío de correo de bienvenida. Si el registro es exitoso, redirige a MainWindow.
+    """
     def register(self):
         name = self.name_field.itemAt(1).widget().text().strip()
         email = self.email_field.itemAt(1).widget().text().strip()
@@ -379,6 +456,12 @@ class RegisterWindow(QWidget):
             self.showDialog("Error de Conexión", str(e), QMessageBox.Critical)
 
 
+    """
+    Lanza la ventana principal tras un registro exitoso.
+
+    Args:
+        user_id (int): ID del nuevo usuario.
+    """
     def openMainWindow(self, user_id):
         from main_window import MainWindow
         self.main_window = MainWindow(user_id)
@@ -386,7 +469,15 @@ class RegisterWindow(QWidget):
         self.loading_screen.close()
         self.close()
 
-        
+
+    """
+    Muestra un cuadro de diálogo con mensaje personalizado e icono temático.
+
+    Args:
+        title (str): Título de la ventana.
+        message (str): Mensaje que se mostrará.
+        icon (QMessageBox.Icon): Tipo de icono a usar.
+    """
     def showDialog(self, title, message, icon=QMessageBox.Information):
         import json
         try:
@@ -411,6 +502,9 @@ class RegisterWindow(QWidget):
         msg_box.exec_()
 
 
+    """
+    Regresa a la pantalla de bienvenida cerrando la actual.
+    """
     def goBack(self):
         print("Volviendo a la pantalla de bienvenida...")
         from welcome_window import WelcomeWindow
@@ -418,12 +512,24 @@ class RegisterWindow(QWidget):
         self.welcome_window = WelcomeWindow()
         self.welcome_window.show()
 
+
+    """
+    Abre la ventana de inicio de sesión y cierra la ventana actual.
+    """
     def openLogin(self):
         from login_window import LoginWindow
         self.login_window = LoginWindow()
         self.login_window.show()
         self.close()
 
+    """
+    Aplica un efecto de fundido (fade-in) al widget indicado.
+
+    Args:
+        widget (QWidget): Elemento visual a animar.
+        duration (int): Duración de la animación.
+        easing (QEasingCurve): Curva de suavizado.
+    """
     def fadeInWidget(self, widget, duration=2000, easing=QEasingCurve.InOutQuad):
         effect = QGraphicsOpacityEffect(widget)
         widget.setGraphicsEffect(effect)
@@ -435,6 +541,12 @@ class RegisterWindow(QWidget):
         animation.start()
         self.animations.append(animation)
 
+    """
+    Aplica una sombra suave al widget.
+
+    Args:
+        widget (QWidget): Elemento visual objetivo.
+    """
     def applyShadow(self, widget):
         shadow = QGraphicsDropShadowEffect(self)
         shadow.setBlurRadius(15)
@@ -443,10 +555,16 @@ class RegisterWindow(QWidget):
         shadow.setColor(QColor(0, 0, 0, 160))
         widget.setGraphicsEffect(shadow)
 
+    """
+    Actualiza el ángulo del logo giratorio para producir la animación.
+    """
     def updateRotation(self):
         self.angle = (self.angle + 1) % 360
         self.update()
 
+    """
+    Dibuja el fondo con degradado y el logo con efecto de rotación 3D.
+    """
     def paintEvent(self, event):
         painter = QPainter(self)
         rect = self.rect()
@@ -476,15 +594,19 @@ class RegisterWindow(QWidget):
 
         angle_radians = math.radians(self.angle)
         scale_x = abs(math.cos(angle_radians))
+        
         transform = QTransform()
         transform.translate(center_x, center_y)
         transform.scale(scale_x, 1.0)
         transform.translate(-self.logo.width() // 2, -self.logo.height() // 2)
+        
         painter.setTransform(transform)
         painter.drawPixmap(0, 0, self.logo)
         painter.resetTransform()
 
 
+    """
+    Ejecuta una animación de entrada (fundido) al mostrar la ventana."""
     def showEvent(self, event):
         self.setWindowOpacity(0)
         anim = QPropertyAnimation(self, b"windowOpacity")

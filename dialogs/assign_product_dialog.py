@@ -1,3 +1,23 @@
+"""
+assign_product_dialog.py
+
+Define el cuadro de diálogo `AssignProductDialog`, que permite asignar productos a una dirección específica
+desde la interfaz gráfica. También registra automáticamente los movimientos en el historial de salida.
+
+Características:
+- Selección dinámica de productos disponibles.
+- Cantidades con control (`QSpinBox`) y validación.
+- Soporta múltiples productos en una sola asignación.
+- Envía las asignaciones a la API REST:
+    - `/productos/asignar_multiples`
+    - `/historial/registrar`
+
+Requiere:
+    - requests
+    - PyQt5
+    - Imágenes: `logoDB_Blanco.png`, `b_add.png`, `check.png`, `cancel.png`
+"""
+
 import requests
 
 from PyQt5.QtCore import Qt
@@ -11,8 +31,15 @@ from PyQt5.QtWidgets import (
 API_BASE_URL = "http://localhost:5000"
 
 
-# Dialog para asignar uno o varios productos a una direccion 
 class AssignProductDialog(QDialog):
+
+    """
+    Inicializa la interfaz del diálogo y su estilo. Carga la UI y el primer producto por defecto.
+
+    Args:
+        parent (QWidget, optional): Widget padre, usado para actualizar vistas.
+        categoria (str, optional): Categoría para filtrar productos (ej: 'Habitaciones').
+    """
     def __init__(self, parent=None, categoria=None):
         super().__init__(parent)
         self.parent = parent
@@ -121,7 +148,12 @@ class AssignProductDialog(QDialog):
         main_layout.addLayout(btn_layout)
     
 
-    # Añadir el producto y su respectiva cantidad
+    """
+    Agrega una fila al formulario con un `QComboBox` para seleccionar producto
+    y un `QSpinBox` para indicar la cantidad deseada.
+
+    Los productos disponibles se cargan en el combo.
+    """
     def add_product_entry(self):
         entry_layout = QHBoxLayout()
         product_dropdown = QComboBox()
@@ -139,7 +171,15 @@ class AssignProductDialog(QDialog):
         self.product_entries.append((product_dropdown, quantity_spinbox))
     
 
-    # Cargo todos los proctos creados
+    """
+    Carga los productos disponibles desde la API y los añade al combo `dropdown`.
+
+    Si hay una categoría definida, filtra los productos por ella.
+
+    Args:
+        dropdown (QComboBox): Combo al que se añadirán los productos.
+        spinbox (QSpinBox): Control de cantidad, cuyo máximo se ajusta según el stock disponible.
+    """
     def load_products(self, dropdown, spinbox):
         try:
             response = requests.get(f"{API_BASE_URL}/productos/listar")
@@ -159,7 +199,14 @@ class AssignProductDialog(QDialog):
             QMessageBox.critical(self, "Error de conexión", f"No se pudo cargar la lista de productos: {str(e)}")
     
 
-    # Asigano uno o varios a una direccion
+    """
+    Valida las entradas del usuario y realiza las siguientes acciones:
+
+    1. Enviar las asignaciones a `/productos/asignar_multiples`.
+    2. Registrar cada asignación como movimiento de salida en `/historial/registrar`.
+
+    Muestra mensajes informativos o de error según el resultado.
+    """
     def assign_products(self):
         asignaciones = []
 

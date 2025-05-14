@@ -1,3 +1,20 @@
+"""
+delete_multiple_dialog.py
+
+Este módulo define el cuadro de diálogo `DeleteMultipleDialog` para eliminar
+múltiples productos a la vez dentro del historial de salida de stock.
+
+Funcionalidades:
+- Presenta los productos seleccionados con su cantidad actual.
+- Permite ajustar la cantidad a eliminar de cada producto.
+- Al confirmar, devuelve las cantidades ajustadas en el atributo `resultados`.
+- Muestra una advertencia visual clara antes de proceder con la acción.
+
+Requiere:
+    - PyQt5
+    - Iconos: logoDB_Blanco.png, cancel.png, check.png
+"""
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QIcon, QPixmap
 from PyQt5.QtWidgets import (
@@ -6,8 +23,21 @@ from PyQt5.QtWidgets import (
     QWidget, QMessageBox, QSizePolicy
 )
 
-# Cuadro de diálogo para eliminar varios productos a la vez
 class DeleteMultipleDialog(QDialog):
+
+    """
+    Inicializa el cuadro de diálogo, configurando la interfaz con:
+    - Logo superior
+    - Título y advertencia
+    - Scroll con todos los productos seleccionados
+    - SpinBox para ajustar la cantidad de cada producto a eliminar
+    - Botones de Confirmar y Cancelar
+
+    Args:
+        salidas (list[dict]): Productos seleccionados con sus cantidades.
+        parent (QWidget, optional): Componente padre.
+        categoria (str, optional): Categoría desde la cual se invoca el diálogo.
+    """
     def __init__(self, salidas, parent=None, categoria=None):
         super().__init__(parent)
         self.setWindowTitle("Eliminar Productos Seleccionados")
@@ -122,6 +152,10 @@ class DeleteMultipleDialog(QDialog):
         btn_layout.addWidget(btn_confirmar)
         layout.addLayout(btn_layout)
 
+    """
+    Muestra un cuadro de diálogo de confirmación antes de proceder con la eliminación.
+    Este paso sirve como protección contra errores de usuario.
+    """
     def confirmar(self):
         # Confirmación visual antes de aceptar
         msg_box = QMessageBox(self)
@@ -140,6 +174,10 @@ class DeleteMultipleDialog(QDialog):
         btn_si.clicked.connect(self.ejecutar_confirmacion)
         msg_box.exec_()
 
+    """
+    Captura los valores actuales de los SpinBox y los almacena en el diccionario `resultados`.
+    Luego cierra el diálogo con `accept()` para continuar con la acción desde el componente que lo invoca.
+    """
     def ejecutar_confirmacion(self):
         for salida in self.salidas:
             cantidad = self.spinboxes[salida['id']].value()

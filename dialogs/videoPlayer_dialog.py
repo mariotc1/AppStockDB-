@@ -1,3 +1,21 @@
+"""
+videoPlayer_dialog.py
+
+Este módulo define el diálogo `VideoPlayerDialog` para la reproducción de vídeos
+explicativos dentro de la aplicación. Utiliza PyQt5 Multimedia para mostrar
+vídeos en una ventana estilizada con controles personalizados.
+
+Incluye:
+- Botones de reproducción, pausa y detención.
+- Barra de progreso sincronizada.
+- Reproducción automática al abrir el diálogo.
+
+Requiere:
+    - PyQt5.QtMultimedia
+    - PyQt5.QtMultimediaWidgets
+    - Archivos de iconos en /images/
+"""
+
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QUrl, Qt
 from PyQt5.QtWidgets import (
@@ -7,8 +25,19 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 
-# Dialog para mostrar el video de InfoView
 class VideoPlayerDialog(QDialog):
+
+    """
+    Inicializa el diálogo de reproducción de vídeo.
+
+    Args:
+        video_path (str): Ruta local al archivo de vídeo a reproducir.
+
+    Configuraciones:
+    - Fija el tamaño de la ventana y la centra en pantalla.
+    - Aplica estilos personalizados para fondo y bordes.
+    - Configura el reproductor multimedia, controles de vídeo y slider.
+    """
     def __init__(self, video_path):
         super().__init__()
         self.setWindowTitle("Video Explicativo")
@@ -71,13 +100,32 @@ class VideoPlayerDialog(QDialog):
         self.media_player.play()
 
 
-    # Funciones para pausar, reanudar y empezar el video
+    """
+    Cambia manualmente la posición de reproducción del vídeo
+    cuando el usuario interactúa con el slider.
+
+    Args:
+        position (int): Valor porcentual entre 0 y 100.
+    """
     def set_position(self, position):
         self.media_player.setPosition(int(position * self.media_player.duration() / 100))
 
+
+    """
+    Actualiza el slider en tiempo real según avanza el vídeo.
+
+    Args:
+        position (int): Posición actual del vídeo en milisegundos.
+    """
     def update_position(self, position):
         if self.media_player.duration() > 0:
             self.slider.setValue(int((position / self.media_player.duration()) * 100))
 
+    """
+    Reajusta el rango del slider cuando se carga un nuevo vídeo.
+
+    Args:
+        duration (int): Duración total del vídeo en milisegundos.
+    """
     def update_duration(self, duration):
         self.slider.setRange(0, 100)

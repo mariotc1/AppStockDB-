@@ -1,3 +1,15 @@
+"""
+Subvista de la aplicación que muestra el stock actual de una categoría específica de productos.
+
+Esta clase permite visualizar los productos disponibles en una categoría mediante tarjetas interactivas.
+Incluye funcionalidades de búsqueda con autocompletado, filtrado, exportación a Excel, y operaciones
+CRUD como añadir, editar, eliminar o asignar productos. La información se obtiene dinámicamente desde
+una API REST, y se presenta en una interfaz moderna y scrollable.
+
+:param categoria: Categoría de productos a mostrar (ej. 'Habitaciones', 'Electrodomésticos').
+:param parent: Widget padre opcional.
+"""
+
 import requests
 
 from PyQt5.QtCore import Qt, QSize, QStringListModel
@@ -22,6 +34,13 @@ API_BASE_URL = "http://localhost:5000"
 
 # Clase principal de la subvista de salida de stock
 class CurrentStockSubview(QWidget):
+
+    """
+    Inicializa la subvista de stock actual para una categoría específica.
+
+    :param categoria: Nombre de la categoría de productos (e.g., 'Habitaciones').
+    :param parent: Widget padre opcional.
+    """
     def __init__(self, categoria, parent=None):
         super().__init__(parent)
         self.categoria = categoria
@@ -32,7 +51,9 @@ class CurrentStockSubview(QWidget):
         self.initUI()
         self.load_stock_data()
 
-
+    """
+    Configura la interfaz de usuario: filtros, botones, área scrollable y conectores de señales.
+    """
     def initUI(self):
         main_layout = QVBoxLayout(self)
 
@@ -159,7 +180,11 @@ class CurrentStockSubview(QWidget):
 
         self.setLayout(main_layout)
 
-    # Cargo de la base de datos los productos y por categoria para saber de que vista es el producto
+
+    """
+    Carga los productos desde la API REST, filtra por la categoría correspondiente
+    y los almacena para su visualización en la UI.
+    """
     def load_stock_data(self):
         response = requests.get(f"{API_BASE_URL}/productos/listar")
         if response.status_code == 200:
@@ -172,6 +197,12 @@ class CurrentStockSubview(QWidget):
             self.all_productos = productos_filtrados
             self.populate_stock_cards(productos_filtrados)
 
+
+    """
+    Genera y muestra las tarjetas visuales de los productos en el grid.
+
+    :param productos: Lista de productos que se deben representar visualmente.
+    """
     def populate_stock_cards(self, productos):
         while self.grid_layout.count():
             item = self.grid_layout.takeAt(0)
@@ -184,7 +215,11 @@ class CurrentStockSubview(QWidget):
         
         self.grid_layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
-    # Método para filtrar los productos según el texto ingresado
+
+    """
+    Aplica un filtro al listado de productos basado en el texto introducido
+    en el campo de búsqueda y actualiza la vista en consecuencia.
+    """
     def filtrar_productos(self):
         filter_text = self.line_edit_filtro.text().strip().lower()
 
@@ -202,7 +237,12 @@ class CurrentStockSubview(QWidget):
         else:
             QMessageBox.information(self, "Información", "No se encontraron productos con este filtro.")
 
-    # Método para actualizar las sugerencias del autocompletar
+
+    """
+    Actualiza la lista de sugerencias del autocompletado en base al texto actual.
+
+    :param text: Texto actual escrito en el campo de búsqueda.
+    """
     def update_suggestions(self, text):
         text = text.strip().lower()
 
@@ -218,6 +258,13 @@ class CurrentStockSubview(QWidget):
         model = QStringListModel(self.suggestions)
         self.completer.setModel(model)
 
+
+    """
+    Crea una tarjeta visual (QFrame) para representar la información de un producto.
+
+    :param producto: Diccionario con los datos del producto.
+    :return: Widget QFrame representando el producto.
+    """
     def create_product_card(self, producto):
         card = QFrame()
         card.setStyleSheet("""
@@ -332,12 +379,24 @@ class CurrentStockSubview(QWidget):
         
         return card
     
+
+    """
+    Abre el cuadro de diálogo para añadir un nuevo producto y recarga los datos si se confirma.
+    """
     def add_product(self):
         dialog = AddProductDialog(self, categoria=self.categoria)  # Crea la ventana de añadir producto
         if dialog.exec_():  # Si el usuario confirma se recargam los datos
             self.load_stock_data()
 
-    # Guardar los productos
+    
+    """
+    Guarda un nuevo producto enviando los datos a la API.
+
+    :param dialog: Diálogo actual desde donde se hace la operación.
+    :param nombre: Nombre del producto.
+    :param cantidad: Cantidad del producto (como string, debe ser un número).
+    :param estado: Estado del producto (Nuevo, Usado, Dañado).
+    """
     def save_product(self, dialog, nombre, cantidad, estado):
         if not nombre or not cantidad.isdigit():
             QMessageBox.warning(self, "Error", "Datos inválidos.")
@@ -357,22 +416,41 @@ class CurrentStockSubview(QWidget):
         else:
             QMessageBox.critical(self, "Error", "No se pudo añadir el producto.")
     
+
+    """
+    Abre el cuadro de diálogo para editar un producto existente.
+
+    :param producto: Diccionario con los datos del producto a editar.
+    """
     def edit_product(self, producto):
         dialog = EditProductDialog(producto, self)
         if dialog.exec_():
             self.load_stock_data()  # Recarga los datos si se ha editado 
 
+
+    """
+    Abre el cuadro de diálogo para confirmar la eliminación de un producto.
+
+    :param producto_id: ID del producto a eliminar.
+    """
     def delete_product(self, producto_id):
         dialog = DeleteProductDialog(producto_id, self)
         if dialog.exec_():  # Si el usuario confirma se recargan los datos
             self.load_stock_data()
 
+
+    """
+    Abre el diálogo para asignar un producto a un inmueble y recarga los datos si se confirma.
+    """
     def assign_product(self):
         dialog = AssignProductDialog(self, categoria=self.categoria)
         if dialog.exec_():  
             self.load_stock_data()
 
-    # Conexión con la api para exportar a excel el stock
+
+    """
+    Realiza una petición a la API para exportar los datos del stock actual en un archivo Excel.
+    """
     def export_to_excel(self):
         try:
             response = requests.get(f"{API_BASE_URL}/productos/exportar")
@@ -386,6 +464,13 @@ class CurrentStockSubview(QWidget):
             self.mostrar_mensaje("Error", f"Error durante la exportación: {str(e)}", "error")
 
     
+    """
+    Muestra un cuadro de diálogo con un mensaje personalizado.
+
+    :param titulo: Título de la ventana del mensaje.
+    :param mensaje: Texto informativo a mostrar.
+    :param tipo: Tipo de mensaje ('info', 'error', 'warning').
+    """
     def mostrar_mensaje(self, titulo, mensaje, tipo="info"):
         msg_box = QMessageBox(self)
         msg_box.setWindowTitle(titulo)

@@ -1,3 +1,14 @@
+"""
+Subvista de la aplicación que muestra las salidas de stock de una categoría determinada.
+
+Permite visualizar, filtrar y gestionar registros de productos retirados del inventario, incluyendo opciones
+de devolución o eliminación tanto individual como en lote. Ofrece búsqueda avanzada por dirección, producto o fecha,
+con autocompletado y un diseño visual moderno mediante tarjetas.
+
+:param categoria: Categoría del stock a filtrar (ej. 'Zonas Comunes').
+:param parent: Widget padre opcional.
+"""
+
 import requests
 
 from PyQt5.QtCore import Qt, QSize, QStringListModel
@@ -18,6 +29,13 @@ API_BASE_URL = "http://localhost:5000"
 
 # Clase para la subvista de Salida de Stock
 class StockRemovalSubview(QWidget):
+
+    """
+    Inicializa la subvista de salidas de stock para una categoría específica y carga los datos iniciales.
+
+    :param categoria: Categoría a gestionar.
+    :param parent: Widget padre opcional.
+    """
     def __init__(self, categoria, parent=None):
         super().__init__(parent)
         self.categoria = categoria
@@ -29,6 +47,9 @@ class StockRemovalSubview(QWidget):
         self.load_salida_data()
 
 
+    """
+    Configura la interfaz gráfica, filtros, botones de acción, área scrollable y conecta señales de eventos.
+    """
     def initUI(self):
         layout = QVBoxLayout(self)
 
@@ -187,6 +208,9 @@ class StockRemovalSubview(QWidget):
         self.setLayout(layout)
 
 
+    """
+    Solicita a la API las salidas de stock de la categoría actual y actualiza la vista con tarjetas.
+    """
     def load_salida_data(self):
         response = requests.get(f"{API_BASE_URL}/salidas/listar", params={"categoria": self.categoria})
         if response.status_code == 200:
@@ -196,6 +220,12 @@ class StockRemovalSubview(QWidget):
                 self.all_salidas = salidas
                 self.populate_salida_cards(salidas)
 
+
+    """
+    Crea tarjetas visuales para cada salida y las muestra en el layout.
+
+    :param salidas: Lista de salidas obtenidas desde la API.
+    """
     def populate_salida_cards(self, salidas):
         while self.grid_layout.count():
             item = self.grid_layout.takeAt(0)
@@ -211,6 +241,12 @@ class StockRemovalSubview(QWidget):
         self.grid_layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
 
+    """
+    Genera una tarjeta visual con los datos de una salida de producto.
+
+    :param salida: Diccionario con los datos de la salida.
+    :return: Widget QFrame representando visualmente la salida.
+    """
     def create_salida_card(self, salida):
         def create_icon_label(image_path):
             icon_label = QLabel()
@@ -361,11 +397,21 @@ class StockRemovalSubview(QWidget):
 
         return card
 
+
+    """
+    Muestra el cuadro de diálogo para devolver un producto a stock.
+
+    :param salida: Diccionario con los datos del producto a devolver.
+    """
     def show_return_dialog(self, salida):
         dialog = ReturnProductDialog(salida, self, categoria=self.categoria)
         if dialog.exec_():
             self.load_salida_data()
 
+
+    """
+    Ajusta la visibilidad de los campos de filtro según la opción seleccionada (Dirección, Producto o Fecha).
+    """
     def update_filter_input(self):
         selected_filter = self.combo_filtro.currentText()
         if selected_filter == "Dirección":
@@ -380,6 +426,10 @@ class StockRemovalSubview(QWidget):
             self.line_edit_filtro.setVisible(False)
             self.calendar_widget.setVisible(True)
 
+
+    """
+    Filtra las salidas de stock según el criterio actual (dirección, producto o fecha) y actualiza la vista.
+    """
     def filtrar_salidas(self):
         selected_filter = self.combo_filtro.currentText()
         filter_text = self.line_edit_filtro.text().strip()
@@ -404,6 +454,12 @@ class StockRemovalSubview(QWidget):
         else:
             QMessageBox.information(self, "Información", "No se encontraron salidas con este filtro.")
 
+
+    """
+    Actualiza las sugerencias del autocompletado en función del texto introducido y del filtro activo.
+
+    :param text: Texto actual del campo de búsqueda.
+    """
     def update_suggestions(self, text):
         selected_filter = self.combo_filtro.currentText()
         text = text.strip().lower()
@@ -422,6 +478,10 @@ class StockRemovalSubview(QWidget):
             model = QStringListModel(self.suggestions)
             self.completer.setModel(model)
 
+
+    """
+    Muestra las sugerencias actuales en consola (placeholder para futura mejora con QListWidget o similar).
+    """
     def show_suggestions(self):
         if self.suggestions:
             # Aquí deberías implementar un widget para mostrar las sugerencias
@@ -431,7 +491,9 @@ class StockRemovalSubview(QWidget):
             print("No hay sugerencias")
 
 
-    # Recorro la lista de checkboxes y se almacenan en esta lista únicamente aquellos productos que estén marcados
+    """
+    Devuelve los productos seleccionados por el usuario mediante el cuadro de diálogo correspondiente.
+    """
     def devolver_seleccionados(self):
         productos_seleccionados = [salida for checkbox, salida in self.checkboxes if checkbox.isChecked()]
 
@@ -445,12 +507,20 @@ class StockRemovalSubview(QWidget):
                 self.load_salida_data()  # Recarga los datos actualizados tras la devolución
     
 
+    """
+    Muestra un cuadro de confirmación para eliminar una salida específica.
+
+    :param salida: Diccionario con los datos de la salida a eliminar.
+    """
     def show_delete_dialog(self, salida):
         dialog = DeleteSelectedProductDialog(salida, self, categoria=self.categoria)
         if dialog.exec_():
             self.load_salida_data()  # Recarga los datos actualizados
 
 
+    """
+    Permite eliminar varias salidas seleccionadas en lote, mostrando resumen de éxitos y errores.
+    """
     def eliminar_seleccionados(self):
         productos_seleccionados = [salida for checkbox, salida in self.checkboxes if checkbox.isChecked()]
 

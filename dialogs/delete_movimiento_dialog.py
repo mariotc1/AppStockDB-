@@ -1,3 +1,21 @@
+"""
+delete_movimiento_dialog.py
+
+Define el cuadro de diálogo `DeleteMovimientoDialog`, que permite al usuario confirmar
+la eliminación de un movimiento específico en el historial de la aplicación.
+
+Características:
+- Diálogo con diseño oscuro y estilizado.
+- Incluye advertencias claras para evitar confusión.
+- Conexión con la API REST vía método DELETE: `/historial/eliminar/<id>`
+- Confirma el borrado al usuario o muestra mensajes de error.
+
+Requiere:
+    - requests
+    - PyQt5
+    - Imagen: `logoDB_Blanco.png`, `check.png`, `cancel.png`
+"""
+
 import requests
 
 from PyQt5.QtCore import Qt
@@ -11,8 +29,15 @@ from PyQt5.QtWidgets import (
 API_BASE_URL = "http://localhost:5000"
 
 
-# Diálogo para eliminar un movimiento de la subvista historial
 class DeleteMovimientoDialog(QDialog):
+
+    """
+    Inicializa el cuadro de diálogo con el estilo visual y los botones de acción.
+
+    Args:
+        movimiento_id (int): ID del movimiento a eliminar.
+        parent (QWidget, optional): Componente padre del diálogo (opcional).
+    """
     def __init__(self, movimiento_id, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Eliminar Movimiento")
@@ -88,6 +113,15 @@ class DeleteMovimientoDialog(QDialog):
 
         layout.addLayout(btn_layout)
 
+    """
+    Envía una petición DELETE a la API para eliminar el movimiento especificado.
+
+    - Si la operación es exitosa, muestra un mensaje informativo y cierra el diálogo.
+    - Si ocurre un error (status != 200 o excepción), muestra un mensaje de error.
+
+    Endpoint usado:
+        DELETE /historial/eliminar/<movimiento_id>
+    """
     def delete_movimiento(self):
         try:
             response = requests.delete(f"{API_BASE_URL}/historial/eliminar/{self.movimiento_id}")

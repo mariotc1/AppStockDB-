@@ -1,3 +1,16 @@
+"""
+Ventana emergente del chatbot de asistencia virtual.
+
+Permite al usuario escribir preguntas relacionadas con el funcionamiento de la app
+y recibir respuestas contextuales basadas en palabras clave. Incluye interfaz animada,
+burbujas de chat estilizadas, sistema de autoscroll, botón flotante, y reconocimiento de ENTER.
+
+Está diseñado para integrarse visualmente en la esquina inferior de las vistas principales.
+
+:param parent_button: Botón desde el que se despliega el chatbot (para posicionamiento).
+:param parent: Widget padre opcional.
+"""
+
 import random
 
 from PyQt5.QtGui import QIcon, QColor
@@ -16,8 +29,16 @@ from PyQt5.QtWidgets import (
 # Burbuja del chatbot
 from styles.bubble_widget import BubbleWidget
 
-# Clase principal del Chatbot
+
 class ChatPopup(QDialog):
+
+    """
+    Inicializa la ventana del chatbot con animaciones, posicionamiento dinámico
+    y mensaje inicial de bienvenida.
+
+    :param parent_button: Botón flotante que dispara la apertura del chatbot.
+    :param parent: Widget padre opcional.
+    """
     def __init__(self, parent_button, parent=None):
         super().__init__(parent)
         
@@ -33,13 +54,19 @@ class ChatPopup(QDialog):
         self.positionPopup()
 
 
-    # Posiciono el chat en la esquina inferior derecha
+    """
+    Muestra el chatbot y lanza el temporizador para posicionarlo correctamente 
+    en relación al botón flotante.
+    """
     def positionPopup(self):
         self.show()
         QTimer.singleShot(50, self.recalculatePosition)
 
 
-    # Recalcula la posición tras rederizar la ventana
+    """
+    Recalcula la posición de la ventana del chatbot para anclarla a la esquina
+    inferior derecha del botón que lo invoca.
+    """
     def recalculatePosition(self):
         if self.parent_button:
             global_pos = self.parent_button.mapToGlobal(QPoint(0, 0))
@@ -50,7 +77,10 @@ class ChatPopup(QDialog):
             self.move(x, y)
 
 
-    # Animación de apartura del chat
+    """
+    Aplica una animación suave de deslizamiento al mostrar el chatbot.
+    Mejora la percepción visual de la apertura del diálogo.
+    """
     def showAnimation(self):
         self.animation = QPropertyAnimation(self, b"geometry")
         self.recalculatePosition()
@@ -68,7 +98,13 @@ class ChatPopup(QDialog):
         self.animation.start()
 
 
-    # Creación de la interfaz
+    """
+    Construye toda la interfaz gráfica del chatbot:  
+    - Encabezado con botón de cerrar  
+    - Área scrollable de mensajes  
+    - Campo de entrada y botón de enviar  
+    - Estilos personalizados y mensaje inicial
+    """
     def initUI(self):
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(0, 0, 0, 0)
@@ -164,12 +200,17 @@ class ChatPopup(QDialog):
         self.add_bot_message("¡Hola! ¿En qué puedo ayudarte hoy?")
 
 
-    # Cerrar el chatbot pulsando la X
+    """
+    Cierra la ventana del chatbot cuando el usuario pulsa el botón de cerrar.
+    """
     def closeChat(self):
         self.close()
 
 
-    # Enviar el mensaje al pulsar el botón de enviar
+    """
+    Envía el mensaje escrito por el usuario, lo añade a la interfaz como burbuja de usuario
+    y genera una respuesta automática desde el bot.
+    """
     def send_message(self):
         user_message = self.input_field.text().strip()
         if not user_message:
@@ -179,7 +220,11 @@ class ChatPopup(QDialog):
         QTimer.singleShot(1000, lambda: self.get_bot_response(user_message))
 
 
-    # Al pulsar la tecla enter se envía el mensaje
+    """
+    Permite que la tecla ENTER envíe el mensaje, replicando la funcionalidad del botón de enviar.
+
+    :param event: Evento de teclado.
+    """
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Return or event.key() == Qt.Key_Enter:
             self.send_message()
@@ -187,13 +232,22 @@ class ChatPopup(QDialog):
             super().keyPressEvent(event)
 
 
-    # Respuesta del bot al mensaje del usuario
+    """
+    Obtiene una respuesta del bot a partir del mensaje del usuario y la muestra en la interfaz.
+
+    :param user_message: Texto ingresado por el usuario.
+    """
     def get_bot_response(self, user_message):
         response = self.generate_response(user_message)
         self.add_bot_message(response)
 
 
-    # Genera una respues basada en palabra clave y frases comunes
+    """
+    Genera una respuesta automática basada en palabras clave presentes en el mensaje.
+
+    :param message: Texto del mensaje del usuario.
+    :return: Texto de la respuesta generada.
+    """
     def generate_response(self, message):
         message = message.lower()
 
@@ -312,17 +366,30 @@ class ChatPopup(QDialog):
 
         return random.choice(respuestas_genericas)
 
-    # Mensaje del usuario
+    
+    """
+    Añade un mensaje del usuario a la interfaz como burbuja estilizada.
+
+    :param message: Texto del mensaje del usuario.
+    """
     def add_user_message(self, message):
         self.chat_layout.addWidget(BubbleWidget(message, is_user=True))
         self.scroll_to_bottom()
 
+    
+    """
+    Añade un mensaje del bot a la interfaz como burbuja estilizada.
 
-    # Mensaje del bot
+    :param message: Texto de la respuesta del bot.
+    """
     def add_bot_message(self, message):
         self.chat_layout.addWidget(BubbleWidget(message, is_user=False))
         self.scroll_to_bottom()
 
 
+    """
+    Desplaza automáticamente el scroll del área de mensajes hacia el final.
+    Asegura que el último mensaje esté siempre visible.
+    """
     def scroll_to_bottom(self):
         self.chat_area.verticalScrollBar().setValue(self.chat_area.verticalScrollBar().maximum())

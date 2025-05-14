@@ -1,8 +1,34 @@
+"""
+loading_screen.py
+
+Este módulo define la clase `LoadingScreen`, que representa una pantalla modal de
+carga utilizada durante operaciones importantes como el inicio de sesión, el registro
+o la redirección entre vistas críticas.
+
+Elementos:
+- Imagen central de tipo "en proceso".
+- Texto claro y visible centrado.
+- Fondo con degradado radial y esquinas redondeadas.
+
+Requiere:
+    - PyQt5
+    - Imagen: images/enProceso.png
+"""
+
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QLabel
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QPixmap, QPainter, QRadialGradient, QBrush, QColor
 
 class LoadingScreen(QDialog):
+
+    """
+    Inicializa el cuadro de carga, ocultando bordes de ventana y aplicando fondo transparente.
+    Configura la imagen del spinner y un mensaje de espera centrado.
+
+    Notas:
+    - El cuadro se presenta de forma modal (`setModal(True)`).
+    - El fondo utiliza `WA_TranslucentBackground` y bordes redondeados.
+    """
     def __init__(self):
         super().__init__()
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.Dialog)
@@ -36,7 +62,14 @@ class LoadingScreen(QDialog):
         layout.addSpacing(20)
         layout.addWidget(self.label)
 
-    # Pintar fondo con degradado radial y borde redondeado
+
+    """
+    Sobrescribe el evento de pintura para dibujar un fondo con un degradado radial
+    oscuro y bordes redondeados que mejoran la estética del cuadro de carga.
+
+    Args:
+        event (QPaintEvent): Evento de dibujo recibido por el sistema.
+    """
     def paintEvent(self, event):
         painter = QPainter(self)
         rect = self.rect()

@@ -1,10 +1,35 @@
+"""
+password_field.py
+
+Contiene la clase `PasswordField`, un campo de entrada de contraseña personalizado con opción
+de mostrar/ocultar contenido mediante un botón con icono de ojo.
+
+Diseñado para formularios de perfil o login, soporta:
+- Temas claro/oscuro.
+- Iconos dinámicos.
+- Composición sencilla para integrarlo en layouts personalizados.
+
+Requiere:
+    - PyQt5
+    - Archivos de icono: `b_icon_eye.png`, `b_icon_eye_off.png`
+    - Archivo de configuración `config/settings.json`
+"""
+
 import json
 from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QPushButton, QLineEdit, QHBoxLayout
 
-# Clase para darle estilo a los campos de la contraseña de mi Perfil
 class PasswordField(QHBoxLayout):
+
+    """
+    Inicializa el campo de contraseña con placeholder, icono y estilos personalizados.
+
+    Args:
+        placeholder (str): Texto de ayuda dentro del campo.
+        icon (str, opcional): Ruta al icono (no usado directamente aquí, reservado para extensiones).
+        theme (str, opcional): Tema actual de la app. Si no se proporciona, se lee de settings.json.
+    """
     def __init__(self, placeholder, icon=None, theme=None):
         super().__init__()
 
@@ -63,7 +88,9 @@ class PasswordField(QHBoxLayout):
         self.addWidget(self.eye_button)
 
 
-    # Método para alternar la visibilidad de la contraseña
+    """
+    Alterna entre ocultar y mostrar el texto de la contraseña, cambiando el icono del botón.
+    """
     def toggle_password_visibility(self):
         if self.eye_button.isChecked():
             self.line_edit.setEchoMode(QLineEdit.Normal)
@@ -72,6 +99,12 @@ class PasswordField(QHBoxLayout):
             self.line_edit.setEchoMode(QLineEdit.Password)
             self.eye_button.setIcon(QIcon("images/b_icon_eye_off.png"))
 
-    # Método para obtener el texto del campo
+
+    """
+    Devuelve el contenido del campo de contraseña.
+
+    Returns:
+        str: Contraseña ingresada por el usuario.
+    """
     def text(self):
         return self.line_edit.text()

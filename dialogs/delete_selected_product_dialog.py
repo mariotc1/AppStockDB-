@@ -1,3 +1,13 @@
+"""
+delete_selected_product_dialog.py
+
+Define el cuadro de diálogo `DeleteSelectedProductDialog` que permite
+al usuario eliminar parcial o totalmente productos de una asignación previa.
+
+Este módulo incluye confirmación visual antes de la eliminación,
+comunicación con la API para modificar registros y registro en el historial.
+"""
+
 import requests
 
 from PyQt5.QtCore import Qt
@@ -11,8 +21,8 @@ from PyQt5.QtWidgets import (
 API_BASE_URL = "http://localhost:5000"
 
 
-# Eliminar los productos seleccionados
 class DeleteSelectedProductDialog(QDialog):
+
     def __init__(self, salida, parent=None, categoria=None):
         super().__init__(parent)
         self.salida = salida
@@ -95,11 +105,17 @@ class DeleteSelectedProductDialog(QDialog):
 
         layout.addLayout(btn_layout)
 
-
+    """
+    Habilita o deshabilita el campo de cantidad en función del tipo de eliminación
+    (se total o parcial).
+    """
     def toggle_cantidad(self, enabled):
         self.cantidad_input.setEnabled(enabled)
 
-
+    """
+    Muestra un cuadro de confirmación para asegurarse de que el usuario
+    realmente desea eliminar el producto. Si acepta, se llama a `eliminar_producto`.
+    """
     def confirmar_eliminacion(self):
         self.mostrar_mensaje(
             "Confirmar Eliminación",
@@ -107,7 +123,14 @@ class DeleteSelectedProductDialog(QDialog):
             "confirm"
         )
 
+    """
+    Realiza la eliminación del producto llamando a la API con el ID de la salida.
 
+    - Si se elige modo total, se elimina toda la cantidad.
+    - Si se elige modo parcial, solo se reduce parcialmente.
+
+    Registra además un movimiento de tipo 'Salida' en el historial.
+    """
     def eliminar_producto(self):
         if self.opcion_total.isChecked():
             cantidad_a_eliminar = self.salida['cantidad']
@@ -141,6 +164,17 @@ class DeleteSelectedProductDialog(QDialog):
             self.mostrar_mensaje("Error", f"Error al eliminar el producto: {str(e)}", "error")
 
 
+    """
+    Muestra un QMessageBox estilizado con los siguientes modos:
+    - 'success': Mensaje informativo.
+    - 'error': Mensaje de error.
+    - 'confirm': Mensaje con botones Sí/No para confirmar acciones.
+
+    Args:
+        titulo (str): Título del mensaje.
+        mensaje (str): Contenido del mensaje.
+        tipo (str): Tipo de mensaje ('success', 'error', 'confirm').
+    """
     def mostrar_mensaje(self, titulo, mensaje, tipo):
         msg_box = QMessageBox(self)
         msg_box.setWindowTitle(titulo)

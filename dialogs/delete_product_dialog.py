@@ -1,3 +1,11 @@
+"""
+delete_product_dialog.py
+
+Define el cuadro de diálogo `DeleteProductDialog` para eliminar un producto
+desde la vista de stock actual. Muestra una confirmación al usuario y realiza
+la petición DELETE a la API correspondiente.
+"""
+
 import requests
 
 from PyQt5.QtCore import Qt
@@ -10,8 +18,25 @@ from PyQt5.QtWidgets import (
 # URL para la conexion con la api
 API_BASE_URL = "http://localhost:5000"
 
-# Dialog para poder eliminar un producto desde Stock Actual
 class DeleteProductDialog(QDialog):
+
+    """
+    Cuadro de diálogo para confirmar y ejecutar la eliminación de un producto.
+
+    Este diálogo se utiliza en la subvista de Stock Actual para permitir
+    al usuario eliminar definitivamente un producto del sistema.
+
+    Hereda:
+        QDialog
+
+    Args:
+        producto_id (int): ID del producto a eliminar.
+        parent (QWidget, optional): Ventana que lanza este diálogo.
+
+    Atributos:
+        producto_id (int): ID del producto que se eliminará.
+    """
+
     def __init__(self, producto_id, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Eliminar Producto")
@@ -83,7 +108,12 @@ class DeleteProductDialog(QDialog):
         layout.addLayout(btn_layout)
 
 
-    # Eliminar un producto, conexión con la base de datos
+    """
+    Envía una solicitud DELETE a la API para eliminar el producto.
+
+    - Si la operación es exitosa, muestra un mensaje de éxito y cierra el diálogo.
+    - Si falla, informa al usuario del código de error o fallo de conexión.
+    """
     def delete_product(self):
         try:
             response = requests.delete(f"{API_BASE_URL}/productos/eliminar/{self.producto_id}")

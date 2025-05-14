@@ -1,3 +1,30 @@
+"""
+launcher.py
+
+Punto de entrada principal de la aplicación de escritorio.
+
+Este script lanza la interfaz gráfica de usuario (PyQt5) y arranca simultáneamente
+la API REST desarrollada en Flask como un proceso independiente.
+
+Flujo de ejecución:
+- Inicia el servidor Flask ejecutando `start_api.py`.
+- Carga el tema visual actual desde el `ThemeManager`.
+- Verifica si hay una sesión de usuario activa.
+    - Si existe, abre la ventana principal de la aplicación con un loader.
+    - Si no existe, muestra la ventana de bienvenida.
+- Al cerrar la aplicación, finaliza el proceso del servidor Flask.
+
+Este script debe ejecutarse directamente (`__main__`) y no ser importado como módulo.
+
+Requiere:
+    - Python 3.x
+    - PyQt5
+    - start_api.py (API REST)
+    - main.py (lógica principal)
+    - welcome_window.py (ventana inicial)
+    - themes/theme_manager.py (gestión de temas visuales)
+"""
+
 import sys
 import subprocess
 import time

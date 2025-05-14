@@ -1,11 +1,35 @@
+"""
+rotating_logo_mw.py
+
+Contiene la clase `RotatingLogo`, un widget decorativo que muestra el logo
+girando suavemente en el eje horizontal. Usado como elemento visual en la cabecera
+de la aplicación principal (`MainWindow`).
+
+Características:
+- Rotación continua mediante `QTimer`.
+- Transformación de escala horizontal para simular giro en eje Y.
+- Renderizado optimizado con antialiasing.
+
+Requiere:
+    - PyQt5
+    - Imagen del logo en `images/`
+"""
+
 import math
 
 from PyQt5.QtCore import Qt, QTimer, QTimer
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtGui import QPainter, QPixmap, QTransform
 
-# Clase para el giro del logo en la cabecera de la pantalla principal
 class RotatingLogo(QWidget):
+
+    """
+    Inicializa el logo, lo escala y comienza la animación de rotación.
+
+    Args:
+        logo_path (str): Ruta de la imagen del logo.
+        parent (QWidget, opcional): Widget padre.
+    """
     def __init__(self, logo_path="images/logoDB_Blanco.png", parent=None):
         super().__init__(parent)
         self.logo = QPixmap(logo_path)
@@ -20,13 +44,20 @@ class RotatingLogo(QWidget):
         self.setFixedSize(60, 60)
 
 
-    # Método para actualizar el ángulo de rotación
+    """
+    Actualiza el ángulo de rotación y redibuja el widget.
+    """
     def updateRotation(self):
         self.angle = (self.angle + 1) % 360
         self.update()
 
 
-    # Método para pintar el logo en la pantalla
+    """
+    Dibuja el logo con una transformación de rotación horizontal animada.
+
+    Se utiliza una escala horizontal basada en `cos(angle)` para simular
+    una rotación 3D (como si girara en su eje Y).
+    """
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.Antialiasing)

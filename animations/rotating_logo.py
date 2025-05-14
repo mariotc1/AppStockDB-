@@ -1,3 +1,21 @@
+"""
+rotating_logo.py
+
+Módulo que define el widget `RotatingLogoWidget`, encargado de mostrar un logo
+girando suavemente sobre su eje horizontal, como un elemento decorativo principal
+en la pantalla de bienvenida.
+
+Características:
+- Transformaciones gráficas con `QTransform`.
+- Efecto visual de rotación 3D usando `cos(angle)`.
+- Comprobación del archivo del logo en disco.
+- Temporizador (`QTimer`) para actualizar la animación cada 50 ms.
+
+Requiere:
+    - PyQt5
+    - Archivo de imagen accesible en `images/`
+"""
+
 import math, os
 
 from PyQt5.QtCore import Qt, QTimer
@@ -9,6 +27,14 @@ LOGO_PATH = "images/logoDB_Blanco.png"
 
 # Clase para rotar el logo 360º
 class RotatingLogoWidget(QWidget):
+
+    """
+    Inicializa el widget, carga el logo y comienza la rotación animada.
+
+    Args:
+        logo_path (str): Ruta a la imagen del logo.
+        parent (QWidget, opcional): Widget padre.
+    """
     def __init__(self, logo_path, parent=None):
         super().__init__(parent)
         
@@ -24,7 +50,11 @@ class RotatingLogoWidget(QWidget):
         self.setFixedSize(300, 300)
 
 
-    # Cargo el logo y lo escalo
+    """
+    Carga el logo desde el sistema de archivos y lo escala proporcionalmente.
+
+    Si el archivo no se encuentra, carga un `QPixmap` vacío.
+    """
     def loadLogo(self):
         if os.path.exists(self.logo_path):
             self.logo = QPixmap(self.logo_path)
@@ -34,13 +64,19 @@ class RotatingLogoWidget(QWidget):
             self.logo = QPixmap()
 
 
-    # Actualizo la rotación del logo
+    """
+    Aumenta el ángulo de rotación y solicita el repintado del widget.
+    """
     def updateRotation(self):
         self.angle = (self.angle + 1) % 360
         self.update()
 
 
-    # Pintar el logo en la ventana
+    """
+    Dibuja el logo rotado aplicando una transformación de escala horizontal animada.
+
+    Simula un giro 3D en el eje Y, con efecto visual continuo.
+    """
     def paintEvent(self, event):
         painter = QPainter(self)
         

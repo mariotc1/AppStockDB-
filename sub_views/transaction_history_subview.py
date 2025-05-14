@@ -1,3 +1,14 @@
+"""
+Subvista que muestra el historial de movimientos (entradas y salidas) del inventario por categoría.
+
+Permite al usuario consultar, filtrar y exportar los movimientos registrados del sistema. 
+Las tarjetas visuales muestran cada operación (entrada/salida) con sus detalles clave como producto, 
+cantidad, fecha y dirección. Se incluyen filtros combinados por tipo, criterio y texto.
+
+:param categoria: Categoría del inventario para la que se consulta el historial.
+:param parent: Widget padre opcional.
+"""
+
 import requests
 
 from PyQt5.QtCore import Qt, QSize
@@ -12,13 +23,21 @@ from dialogs.delete_movimiento_dialog import DeleteMovimientoDialog
 
 API_BASE_URL = "http://localhost:5000"
 
-# Clase de la subvista de Historial de movmientos
 class TransactionHistorySubview(QWidget):
+    """
+    Inicializa la subvista de historial para una categoría concreta y construye la interfaz.
+
+    :param categoria: Categoría del inventario a consultar.
+    :param parent: Widget padre opcional.
+    """
     def __init__(self, categoria, parent=None):
         super().__init__(parent)
         self.categoria = categoria
         self.initUI()
 
+    """
+    Configura la interfaz gráfica con filtros, área scrollable, botones y carga inicial del historial.
+    """
     def initUI(self):
         layout = QVBoxLayout(self)
 
@@ -207,6 +226,10 @@ class TransactionHistorySubview(QWidget):
         self.setLayout(layout)
         self.cargar_movimientos()
 
+    """
+    Realiza una petición a la API para obtener todos los movimientos registrados de la categoría actual
+    y los muestra en forma de tarjetas. También actualiza las sugerencias del campo de autocompletado.
+    """
     def cargar_movimientos(self):
         response = requests.get(f"{API_BASE_URL}/historial/listar", params={"categoria": self.categoria})
         if response.status_code == 200:
@@ -229,6 +252,11 @@ class TransactionHistorySubview(QWidget):
             completer.setCaseSensitivity(Qt.CaseInsensitive)
             self.nombre_input.setCompleter(completer)
 
+    """
+    Crea tarjetas visuales para representar cada movimiento (entrada/salida) y las añade al layout.
+
+    :param movimientos: Lista de diccionarios con información de cada movimiento.
+    """
     def populate_movimiento_cards(self, movimientos):
         while self.grid_layout.count():
             item = self.grid_layout.takeAt(0)
@@ -241,6 +269,13 @@ class TransactionHistorySubview(QWidget):
 
         self.grid_layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
+
+    """
+    Crea un QLabel con icono circular estilizado para usar en las tarjetas.
+
+    :param image_path: Ruta al archivo de imagen del icono.
+    :return: QLabel con el icono formateado.
+    """
     def create_icon_label(self, image_path):
         icon_label = QLabel()
         pixmap = QPixmap(image_path).scaled(24, 24, Qt.KeepAspectRatio, Qt.SmoothTransformation)
@@ -249,6 +284,14 @@ class TransactionHistorySubview(QWidget):
         icon_label.setStyleSheet("border-radius: 15px; background-color: #FFA500; padding: 3px;")
         return icon_label
 
+
+    """
+    Construye una tarjeta visual para un movimiento específico con datos como tipo, producto,
+    cantidad, fecha y dirección. También incluye botón para eliminar.
+
+    :param mov: Diccionario con los datos del movimiento.
+    :return: QFrame con el diseño de la tarjeta.
+    """
     def create_mov_card(self, mov):
         tipo = mov['tipo_movimiento']
         color_border = "#27ae60" if tipo == "Entrada" else "#e74c3c"
@@ -335,11 +378,22 @@ class TransactionHistorySubview(QWidget):
 
         return card
 
+
+    """
+    Muestra un cuadro de confirmación para eliminar un movimiento del historial.
+
+    :param mov_id: ID del movimiento a eliminar.
+    """
     def eliminar_movimiento(self, mov_id):
         dialog = DeleteMovimientoDialog(mov_id, self, categoria=self.categoria)
         if dialog.exec_():
             self.cargar_movimientos()
 
+
+    """
+    Filtra los movimientos mostrados según el tipo (entrada/salida), el criterio de búsqueda
+    (producto, dirección o fecha) y el texto introducido.
+    """
     def filtrar_movimientos(self):
         tipo_filtro = self.tipo_combo.currentText()
         criterio = self.criterio_combo.currentText().lower()
@@ -362,6 +416,10 @@ class TransactionHistorySubview(QWidget):
                     
             self.populate_movimiento_cards(movimientos)
 
+
+    """
+    Exporta el historial de movimientos actuales a un archivo Excel mediante la API.
+    """
     def exportar_excel(self):
         try:
             response = requests.get(f"{API_BASE_URL}/historial/exportar")
@@ -374,6 +432,14 @@ class TransactionHistorySubview(QWidget):
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Error al exportar: {str(e)}")
 
+
+    """
+    Muestra un cuadro de diálogo con el mensaje indicado y estilo personalizado.
+
+    :param titulo: Título de la ventana del mensaje.
+    :param mensaje: Texto del mensaje a mostrar.
+    :param tipo: Tipo de mensaje ('info', 'error', 'warning').
+    """
     def mostrar_mensaje(self, titulo, mensaje, tipo="info"):
         msg_box = QMessageBox(self)
         msg_box.setWindowTitle(titulo)

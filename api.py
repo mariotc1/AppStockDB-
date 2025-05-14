@@ -1,3 +1,33 @@
+"""
+api.py
+
+Módulo principal que define la API REST de la aplicación de gestión de stock mediante Flask.
+
+Contiene todos los endpoints necesarios para la autenticación de usuarios,
+gestión de productos, control de salidas de stock, historial de movimientos,
+actualización de perfil, subida de imágenes y exportación de datos a Excel.
+
+Características principales:
+- Registro, login y recuperación de contraseña de usuarios.
+- CRUD completo de productos (añadir, editar, listar, eliminar).
+- Gestión de salidas de stock, con posibilidad de asignación múltiple y devolución.
+- Registro y eliminación de movimientos en el historial.
+- Subida de foto de perfil de usuario.
+- Exportación de productos e historial en formato Excel.
+- Servidor preparado para trabajar con respuestas JSON por defecto.
+
+Dependencias:
+    - Flask
+    - mysql-connector-python
+    - bcrypt
+    - pandas
+    - PyMySQL (si se cambia driver)
+    - werkzeug
+
+Este módulo está pensado para ser ejecutado como backend y conectado desde
+una interfaz PyQt5 vía HTTP.
+"""
+
 import mysql.connector, bcrypt, os, string, random
 import pandas as pd
 
@@ -17,7 +47,16 @@ db_config = {
 def get_db_connection():
     return mysql.connector.connect(**db_config)
 
-# Endpoint para Registrar un nuevo usuario
+
+"""
+Registra un nuevo usuario en la base de datos.
+
+Recibe un JSON con username, email y password. Hashea la contraseña
+y guarda el nuevo usuario.
+
+Returns:
+    Response: JSON con mensaje de éxito o error.
+"""
 @app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
@@ -57,7 +96,14 @@ def register():
         cnx.close()
 
 
-# Endpoint para el Inicio de sesión
+"""
+Inicia sesión de un usuario validando sus credenciales.
+
+Recibe email y password, y compara con la base de datos.
+
+Returns:
+    Response: JSON con datos del usuario si es exitoso, o error.
+"""
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
@@ -93,7 +139,12 @@ def login():
         cnx.close()
 
 
-# Endpoint para solicitar la recuperación de contraseña
+"""
+Genera un código de recuperación para un usuario dado su email.
+
+Returns:
+    Response: JSON con el código generado o mensaje de error.
+"""
 @app.route('/forgot-password', methods=['POST'])
 def forgot_password():
     try:
@@ -133,7 +184,148 @@ def forgot_password():
         cnx.close()
 
 
-# Endpoint para Añadir Productos
+"""
+Actualiza el nombre de usuario o la contraseña de un usuario.
+
+Requiere validación de contraseña actual para cambios sensibles.
+
+Returns:
+    Response: Mensaje de éxito o error.
+"""
+@app.route('/update-profile', methods=['POST'])
+def update_profile():
+    data = request.get_json()
+    user_id = data.get('user_id')
+    new_username = data.get('username')
+    current_password = data.get('current_password')
+    new_password = data.get('new_password')
+    confirm_password = data.get('confirm_password')
+
+    if not user_id:
+        return jsonify({'error': 'Se requiere el ID del usuario'}), 400
+    
+    try:
+        cnx = get_db_connection()
+        cursor = cnx.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM usuarios WHERE id = %s", (user_id,))
+        user = cursor.fetchone()
+        
+        if not user:
+            return jsonify({'error': 'Usuario no encontrado'}), 404
+        
+        # Actualizar el nombre de usuario si se proporciona
+        if new_username:
+            cursor.execute("UPDATE usuarios SET username = %s WHERE id = %s", (new_username, user_id))
+        
+        # Cambiar la contraseña si se proporciona
+        if current_password and new_password and confirm_password:
+            stored_password = user['password'].encode('utf-8')
+            if not bcrypt.checkpw(current_password.encode('utf-8'), stored_password):
+                return jsonify({'error': 'Contraseña actual incorrecta'}), 401
+            if new_password != confirm_password:
+                return jsonify({'error': 'Las contraseñas nuevas no coinciden'}), 400
+            hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
+            cursor.execute("UPDATE usuarios SET password = %s WHERE id = %s", (hashed_password.decode('utf-8'), user_id))
+        
+        cnx.commit()
+        return jsonify({'message': 'Perfil actualizado correctamente'}), 200
+        
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+    finally:
+        cursor.close()
+        cnx.close()
+
+
+"""
+Sube y guarda una imagen de perfil para el usuario.
+
+Guarda la imagen en el sistema de archivos y actualiza su referencia en la base de datos.
+
+Returns:
+    Response: Ruta del archivo subido o error.
+"""
+UPLOAD_FOLDER = "uploads"
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+@app.route('/upload-profile-picture', methods=['POST'])
+def upload_profile_picture():
+    """Subir una foto de perfil para un usuario."""
+    if 'file' not in request.files or 'user_id' not in request.form:
+        return jsonify({'error': 'Archivo de imagen y user_id requeridos'}), 400
+    
+    file = request.files['file']
+    user_id = request.form['user_id']
+    
+    if file.filename == '':
+        return jsonify({'error': 'Nombre de archivo inválido'}), 400
+    
+    # Guardar solo el nombre del archivo en la BD
+    filename = secure_filename(f"user_{user_id}.jpg")
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    file.save(filepath)
+
+    try:
+        cnx = get_db_connection()
+        cursor = cnx.cursor()
+        
+        # Guardar solo el nombre del archivo en la BD, no la ruta completa
+        cursor.execute("UPDATE usuarios SET profile_picture = %s WHERE id = %s", (filename, user_id))
+        cnx.commit()
+        
+        return jsonify({'message': 'Foto de perfil actualizada', 'file_path': f"http://localhost:5000/uploads/{filename}"}), 200
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+    finally:
+        cursor.close()
+        cnx.close()
+
+
+"""
+Obtiene la información pública de un usuario.
+
+Args:
+    user_id (int): ID del usuario.
+
+Returns:
+    Response: JSON con username, email y foto de perfil.
+"""
+@app.route('/get-user/<int:user_id>', methods=['GET'])
+def get_user(user_id):
+    try:
+        cnx = get_db_connection()
+        cursor = cnx.cursor(dictionary=True)
+        cursor.execute("SELECT username, email, profile_picture FROM usuarios WHERE id = %s", (user_id,))
+        user = cursor.fetchone()
+
+        if not user:
+            return jsonify({'error': 'Usuario no encontrado'}), 404
+
+        # Verificar si hay foto de perfil guardada
+        if user["profile_picture"]:
+            # Asegurarse que siempre se construya correctamente la URL
+            user["profile_picture"] = f"http://localhost:5000/uploads/{user['profile_picture']}"
+        else:
+            # Devolver la imagen por defecto si no hay personalizada
+            user["profile_picture"] = "images/b_usuario.png"
+
+        return jsonify(user), 200
+
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+    finally:
+        cursor.close()
+        cnx.close()
+
+
+"""
+Agrega un nuevo producto al inventario.
+
+Recibe nombre, estado, cantidad y categoría.
+
+Returns:
+    Response: Mensaje de confirmación o error.
+"""
 @app.route('/productos/agregar', methods=['POST'])
 def agregar_producto():
     data = request.get_json()
@@ -159,7 +351,15 @@ def agregar_producto():
         cnx.close()
 
 
-# Endpoint para Editar Producto
+"""
+Edita la información de un producto existente.
+
+Args:
+    id (int): ID del producto a editar.
+
+Returns:
+    Response: Mensaje de éxito o error.
+"""
 @app.route('/productos/editar/<int:id>', methods=['PUT'])
 def editar_producto(id):
     data = request.get_json()
@@ -195,7 +395,12 @@ def editar_producto(id):
         cnx.close()
 
 
-# Endpoint para Listar los Productos
+"""
+Devuelve un listado completo de productos en el inventario.
+
+Returns:
+    Response: Lista de productos en formato JSON.
+"""
 @app.route('/productos/listar', methods=['GET'])
 def listar_productos():
     try:
@@ -211,7 +416,14 @@ def listar_productos():
         cnx.close()
 
 
-# Endpoint para Asignar Varios Productos
+"""
+Asigna múltiples productos a distintas direcciones.
+
+Actualiza el stock y crea registros en la tabla `salidas_stock`.
+
+Returns:
+    Response: Mensaje de éxito o error.
+"""
 @app.route('/productos/asignar_multiples', methods=['POST'])
 def asignar_multiples_productos():
     try:
@@ -263,7 +475,16 @@ def asignar_multiples_productos():
         cnx.close()
 
 
-# Endpoint para Eliminar un Producto
+"""
+Elimina un producto del inventario.
+
+Args:
+    id (int): ID del producto a eliminar.
+
+Returns:
+    Response: Confirmación o mensaje de error.
+"""
+
 @app.route('/productos/eliminar/<int:id>', methods=['DELETE'])
 def eliminar_producto(id):
     try:
@@ -279,7 +500,12 @@ def eliminar_producto(id):
         cnx.close()
 
 
-# Endpoint para Exportar Stock (productos) a formato Excel
+"""
+Exporta el inventario actual de productos a un archivo Excel.
+
+Returns:
+    Response: Archivo Excel generado como descarga.
+"""
 @app.route('/productos/exportar', methods=['GET'])
 def exportar_stock():
     try:
@@ -298,7 +524,12 @@ def exportar_stock():
         cnx.close()
 
 
-# Enpoint para lilstar las salidas de stock
+"""
+Lista todas las salidas de stock filtradas por categoría.
+
+Returns:
+    Response: Lista de salidas con información del producto.
+"""
 @app.route('/salidas/listar', methods=['GET'])
 def listar_salidas():
     try:
@@ -328,7 +559,15 @@ def listar_salidas():
         cnx.close()
 
 
-#Endpoint para devolver un producto al almacén
+"""
+Devuelve un producto al almacén restando de la salida actual.
+
+Args:
+    id (int): ID de la salida registrada.
+
+Returns:
+    Response: Cantidad actualizada o mensaje de error.
+"""
 @app.route('/salidas/devolver/<int:id>', methods=['PUT'])
 def devolver_producto(id):
     try:
@@ -376,7 +615,15 @@ def devolver_producto(id):
         cnx.close()
 
 
-# Endpoint para eliminar salidas de stock
+"""
+Elimina parcialmente o completamente una salida de stock.
+
+Args:
+    id (int): ID del movimiento de salida.
+
+Returns:
+    Response: Estado de la eliminación.
+"""
 @app.route('/salidas/eliminar/<int:id>', methods=['DELETE'])
 def eliminar_salida(id):
     try:
@@ -417,91 +664,6 @@ def eliminar_salida(id):
         cursor.close()
         cnx.close()
         
-
-# Endpoint para Actualizar el Perfil del usuario
-@app.route('/update-profile', methods=['POST'])
-def update_profile():
-    data = request.get_json()
-    user_id = data.get('user_id')
-    new_username = data.get('username')
-    current_password = data.get('current_password')
-    new_password = data.get('new_password')
-    confirm_password = data.get('confirm_password')
-
-    if not user_id:
-        return jsonify({'error': 'Se requiere el ID del usuario'}), 400
-    
-    try:
-        cnx = get_db_connection()
-        cursor = cnx.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM usuarios WHERE id = %s", (user_id,))
-        user = cursor.fetchone()
-        
-        if not user:
-            return jsonify({'error': 'Usuario no encontrado'}), 404
-        
-        # Actualizar el nombre de usuario si se proporciona
-        if new_username:
-            cursor.execute("UPDATE usuarios SET username = %s WHERE id = %s", (new_username, user_id))
-        
-        # Cambiar la contraseña si se proporciona
-        if current_password and new_password and confirm_password:
-            stored_password = user['password'].encode('utf-8')
-            if not bcrypt.checkpw(current_password.encode('utf-8'), stored_password):
-                return jsonify({'error': 'Contraseña actual incorrecta'}), 401
-            if new_password != confirm_password:
-                return jsonify({'error': 'Las contraseñas nuevas no coinciden'}), 400
-            hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
-            cursor.execute("UPDATE usuarios SET password = %s WHERE id = %s", (hashed_password.decode('utf-8'), user_id))
-        
-        cnx.commit()
-        return jsonify({'message': 'Perfil actualizado correctamente'}), 200
-        
-    except mysql.connector.Error as err:
-        return jsonify({'error': str(err)}), 500
-    finally:
-        cursor.close()
-        cnx.close()
-
-
-# Endpoint para Subir Foto de Perfil del usuario
-# Ruta donde se guardarán las imágenes de perfil
-UPLOAD_FOLDER = "uploads"
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-@app.route('/upload-profile-picture', methods=['POST'])
-def upload_profile_picture():
-    """Subir una foto de perfil para un usuario."""
-    if 'file' not in request.files or 'user_id' not in request.form:
-        return jsonify({'error': 'Archivo de imagen y user_id requeridos'}), 400
-    
-    file = request.files['file']
-    user_id = request.form['user_id']
-    
-    if file.filename == '':
-        return jsonify({'error': 'Nombre de archivo inválido'}), 400
-    
-    # Guardar solo el nombre del archivo en la BD
-    filename = secure_filename(f"user_{user_id}.jpg")
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    file.save(filepath)
-
-    try:
-        cnx = get_db_connection()
-        cursor = cnx.cursor()
-        
-        # Guardar solo el nombre del archivo en la BD, no la ruta completa
-        cursor.execute("UPDATE usuarios SET profile_picture = %s WHERE id = %s", (filename, user_id))
-        cnx.commit()
-        
-        return jsonify({'message': 'Foto de perfil actualizada', 'file_path': f"http://localhost:5000/uploads/{filename}"}), 200
-    except mysql.connector.Error as err:
-        return jsonify({'error': str(err)}), 500
-    finally:
-        cursor.close()
-        cnx.close()
-
-
 # Endpoint para Servir Archivos de Imágenes guardadas
 UPLOAD_FOLDER = "uploads"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
@@ -511,36 +673,14 @@ def uploaded_file(filename):
     return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
 
 
-# Endpoint para obtener la información de un usuario
-@app.route('/get-user/<int:user_id>', methods=['GET'])
-def get_user(user_id):
-    try:
-        cnx = get_db_connection()
-        cursor = cnx.cursor(dictionary=True)
-        cursor.execute("SELECT username, email, profile_picture FROM usuarios WHERE id = %s", (user_id,))
-        user = cursor.fetchone()
+"""
+Lista todos los movimientos de productos (entrada y salida).
 
-        if not user:
-            return jsonify({'error': 'Usuario no encontrado'}), 404
+Se puede filtrar por categoría.
 
-        # Verificar si hay foto de perfil guardada
-        if user["profile_picture"]:
-            # Asegurarse que siempre se construya correctamente la URL
-            user["profile_picture"] = f"http://localhost:5000/uploads/{user['profile_picture']}"
-        else:
-            # Devolver la imagen por defecto si no hay personalizada
-            user["profile_picture"] = "images/b_usuario.png"
-
-        return jsonify(user), 200
-
-    except mysql.connector.Error as err:
-        return jsonify({'error': str(err)}), 500
-    finally:
-        cursor.close()
-        cnx.close()
-
-
-# Endpoint para listar todos los movimientos 
+Returns:
+    Response: Lista de movimientos.
+"""
 @app.route('/historial/listar', methods=['GET'])
 def listar_historial_movimientos():
     try:
@@ -582,7 +722,15 @@ def listar_historial_movimientos():
         cnx.close()
 
 
-# Endpoint para eliminar un movmiento
+"""
+Elimina un movimiento del historial.
+
+Args:
+    id (int): ID del movimiento.
+
+Returns:
+    Response: Confirmación de eliminación.
+"""
 @app.route('/historial/eliminar/<int:id>', methods=['DELETE'])
 def eliminar_movimiento(id):
     try:
@@ -606,7 +754,14 @@ def eliminar_movimiento(id):
         cnx.close()
 
 
-# Endpoint para registar un moviemnto de entrada/salida en el historial de movimientos
+"""
+Registra un movimiento (entrada o salida) en el historial.
+
+Requiere: producto_id, tipo_movimiento, cantidad.
+
+Returns:
+    Response: Mensaje de éxito o error.
+"""
 @app.route('/historial/registrar', methods=['POST'])
 def registrar_movimiento():
     data = request.get_json()
@@ -641,7 +796,12 @@ def registrar_movimiento():
         cnx.close()
 
 
-# Exportar historial de movimientos a Excel
+"""
+Exporta el historial completo de movimientos a Excel.
+
+Returns:
+    Response: Archivo Excel descargable.
+"""
 @app.route('/historial/exportar', methods=['GET'])
 def exportar_historial():
     try:
@@ -673,7 +833,15 @@ def exportar_historial():
         return jsonify({"error": str(e)}), 500
 
 
-# Endpoint para Forzar que todas la respuestas sean JSON
+"""
+Asegura que todas las respuestas del servidor sean en formato JSON.
+
+Args:
+    response (Response): Respuesta original de Flask.
+
+Returns:
+    Response: Respuesta modificada con headers.
+"""
 @app.after_request
 def add_headers(response):
     response.headers["Content-Type"] = "application/json"

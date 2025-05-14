@@ -1,3 +1,19 @@
+"""
+Vista de perfil de usuario, encargada de mostrar y permitir modificar los datos personales.
+
+Incluye funcionalidades como:
+- Visualización y cambio de nombre de usuario
+- Visualización del correo electrónico
+- Cambio de contraseña
+- Actualización de la imagen de perfil (con carga local y subida al servidor)
+- Aplicación dinámica del tema claro/oscuro
+
+La información del usuario se carga desde una API REST y se actualiza en tiempo real tras los cambios.
+
+:param user_id: ID del usuario autenticado.
+:param parent: Widget padre opcional.
+"""
+
 import requests
 
 from io import BytesIO
@@ -15,10 +31,16 @@ from styles.password_field import PasswordField
 API_BASE_URL = "http://localhost:5000"
 
 
-# Clase principal de la vista Mi Perfil
 class MyProfileView(QWidget):
     profile_pic_updated = pyqtSignal(str)
 
+
+    """
+    Inicializa la vista Mi Perfil, cargando la configuración del tema y construyendo la interfaz.
+
+    :param user_id: Identificador del usuario autenticado.
+    :param parent: Widget padre opcional.
+    """
     def __init__(self, user_id, parent=None):
         super().__init__(parent)
         self.user_id = user_id
@@ -34,7 +56,11 @@ class MyProfileView(QWidget):
 
         self.initUI()
 
-    # Creación de la interfaz
+
+    """
+    Construye la interfaz gráfica del perfil, incluyendo nombre, correo, imagen de perfil,
+    campos de cambio de contraseña y botones de acción.
+    """
     def initUI(self):
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(20, 20, 20, 20)
@@ -152,7 +178,11 @@ class MyProfileView(QWidget):
         self.load_user_data()
 
 
-    # Darle formato circular a la foto de perfil
+    """
+    Aplica una máscara circular a la imagen de perfil y la muestra en la interfaz.
+
+    :param pixmap: Imagen del perfil en formato QPixmap.
+    """
     def set_profile_picture(self, pixmap):
         mask = QBitmap(pixmap.size())
         mask.fill(Qt.color0)
@@ -164,7 +194,10 @@ class MyProfileView(QWidget):
         self.profile_pic.setPixmap(pixmap)
 
 
-    # Crgar los datos del usuario desde la api rest
+    """
+    Realiza una petición a la API para obtener los datos actuales del usuario 
+    (nombre, correo, imagen) y los muestra en la vista.
+    """
     def load_user_data(self):
         response = requests.get(f"{API_BASE_URL}/get-user/{self.user_id}")
         
@@ -191,13 +224,22 @@ class MyProfileView(QWidget):
             self.set_profile_picture(pixmap)
 
 
-    # Se habiliata la edición del nombre (correo no)
+    
+    """
+    Permite al usuario editar su nombre desbloqueando el campo correspondiente.
+    """
     def enable_name_edit(self):
         self.name_input.setReadOnly(False)
         self.name_input.setFocus()
     
 
-    # Mostrar los mensajes en un cuadro de diálogo personalizado
+    """
+    Muestra un cuadro de diálogo personalizado con estilos y logo integrado.
+
+    :param title: Título de la ventana de mensaje.
+    :param message: Texto a mostrar en el mensaje.
+    :param icon_type: Tipo de mensaje ('info' o 'error').
+    """
     def show_message_box(self, title, message, icon_type="info"):
         msg_box = QMessageBox(self)
         
@@ -243,7 +285,10 @@ class MyProfileView(QWidget):
         msg_box.exec_()
 
 
-    # Guardar los cambios del cambio de contraseña y/o nombre conectando con la api
+    """
+    Envía los cambios de nombre y/o contraseña a la API para su actualización.
+    Muestra un mensaje de confirmación o error según la respuesta.
+    """   
     def save_changes(self):
         new_name = self.name_input.text()
         old_pass = self.old_password.text()
@@ -266,7 +311,10 @@ class MyProfileView(QWidget):
             self.show_message_box("Error", "No se pudieron guardar los cambios.", "error")
 
 
-    # Permito al usuairo seleccionar una nueva foto de perdil y enviarla a la API
+    """
+    Abre un diálogo para seleccionar una nueva imagen de perfil desde el sistema de archivos.
+    La imagen se escala, se envía a la API y se actualiza visualmente si la subida es exitosa.
+    """
     def change_profile_picture(self):
         file_path, _ = QFileDialog.getOpenFileName(self, "Seleccionar imagen", "", "Imágenes (*.png *.jpg *.jpeg)")
 

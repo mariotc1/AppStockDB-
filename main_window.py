@@ -1,3 +1,28 @@
+"""
+main_window.py
+
+Módulo que contiene la ventana principal de la aplicación.
+
+Implementa la navegación entre vistas mediante un menú lateral interactivo y animado.
+Se cargan diferentes secciones como: información general, perfil de usuario,
+gestión de mobiliario por categoría (habitaciones, electrodomésticos, zonas comunes, baños),
+y ajustes/soporte.
+
+Además, la clase se conecta a la API para mostrar la imagen de perfil actualizada
+y permite cambiar dinámicamente entre vistas, aplicar temas y mostrar animaciones visuales.
+
+Características:
+- Menú lateral colapsable con animaciones.
+- Sistema modular de vistas (`QStackedWidget`).
+- Icono de usuario dinámico.
+- Diseño responsivo y animaciones suaves.
+
+Requiere:
+    - PyQt5
+    - requests
+    - Archivos de configuración y vistas (`config/`, `views/`, `images/`)
+"""
+
 import sys, requests
 
 from io import BytesIO  
@@ -37,6 +62,13 @@ API_BASE_URL = "http://localhost:5000"
 
 # Clase principal de la app
 class MainWindow(QWidget):
+
+    """
+    Inicializa la ventana principal, carga el tema, configura las vistas y el menú lateral.
+
+    Args:
+        user_id (int): ID del usuario autenticado.
+    """
     def __init__(self, user_id):
         super().__init__()
         self.user_id = user_id 
@@ -59,6 +91,12 @@ class MainWindow(QWidget):
         self.setWindowIcon(QIcon("images/logoDB_Blanco.png"))
         self.showMaximized()
 
+
+    """
+    Construye la interfaz completa: menú lateral, cabecera y área de vistas.
+
+    Agrega botones de navegación, configura el QStackedWidget y conecta señales.
+    """
     def initUI(self):
         self.main_layout = QHBoxLayout(self)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
@@ -189,7 +227,12 @@ class MainWindow(QWidget):
         self.miPerfil_view.profile_pic_updated.connect(self.updateUserIcon)
 
 
-    # Actualiza el icono del usuario en el menú lateral en tiempo real con formato circular
+    """
+    Actualiza dinámicamente el icono del usuario en el menú lateral.
+
+    Args:
+        new_icon_path (str): Ruta o URL de la nueva imagen.
+    """
     def updateUserIcon(self, new_icon_path):
         try:
 
@@ -207,7 +250,9 @@ class MainWindow(QWidget):
             self.user_icon_button.setIcon(self.createCircularIcon("images/b_usuario.png"))  # Imagen por defecto
 
 
-    # Cargo la foto de perfil del usuario desde la API al iniciar la app
+    """
+    Consulta la API para cargar la foto de perfil del usuario al iniciar la aplicación.
+    """
     def load_profile_picture(self):
         try:
 
@@ -234,7 +279,16 @@ class MainWindow(QWidget):
             self.updateUserIcon("images/b_usuario.png")
 
 
-    # Creo un icono circular a partir de una imagen
+    """
+    Crea un icono redondo a partir de una imagen.
+
+    Args:
+        image_path (str or QPixmap): Ruta o imagen ya cargada.
+        icon_size (int): Tamaño del icono (por defecto 32).
+
+    Returns:
+        QIcon: Icono con máscara circular aplicada.
+    """
     def createCircularIcon(self, image_path, icon_size=32):
         pixmap = QPixmap(image_path).scaled(icon_size, icon_size, Qt.KeepAspectRatio, Qt.SmoothTransformation)
 
@@ -251,7 +305,16 @@ class MainWindow(QWidget):
         return QIcon(pixmap)
 
 
-    # Filtro de eventos que expande un menú lateral al pasar el mouse por encima y lo colapsa al alejarse
+    """
+    Detecta si el cursor entra o sale del menú lateral para expandir o colapsar el menú.
+
+    Args:
+        source (QObject): Componente que emite el evento.
+        event (QEvent): Evento recibido.
+
+    Returns:
+        bool: True si el evento fue procesado.
+    """
     def eventFilter(self, source, event):
         if source == self.lateral_menu:
             if event.type() == QEvent.Enter:
@@ -261,7 +324,9 @@ class MainWindow(QWidget):
         return super().eventFilter(source, event)
 
 
-    # Expande el menú lateral mediante una animación suave
+    """
+    Expande el menú lateral mediante una animación suave y muestra los textos de los botones.
+    """
     def expandMenu(self):
         anim = QPropertyAnimation(self.lateral_menu, b"maximumWidth")
         anim.setDuration(300)
@@ -274,7 +339,9 @@ class MainWindow(QWidget):
             btn.setExpanded(True)
     
     
-    # Colapsa el menú lateral mediante una animación suave
+    """
+    Colapsa el menú lateral ocultando los textos, con una animación suave.
+    """
     def collapseMenu(self):
         anim = QPropertyAnimation(self.lateral_menu, b"maximumWidth")
         anim.setDuration(300)
@@ -287,7 +354,12 @@ class MainWindow(QWidget):
             btn.setExpanded(False)
 
 
-    # Mostrar la vista
+    """
+    Muestra la vista correspondiente al nombre recibido en el área central.
+
+    Args:
+        view_name (str): Nombre de la vista a mostrar.
+    """
     def showView(self, view_name):
         print(f"Mostrando vista: {view_name}")
         widget = self.views.get(view_name)
@@ -297,7 +369,9 @@ class MainWindow(QWidget):
             print("Vista no definida.")
 
 
-    # Volver a la pantalla de Bienvenida
+    """
+    Cierra la ventana actual y regresa a la pantalla de bienvenida.
+    """
     def volverWelcome(self):
         print("Volviendo a la pantalla de bienvenida...")
         from welcome_window import WelcomeWindow
@@ -306,13 +380,17 @@ class MainWindow(QWidget):
         self.close()
 
 
-    # Cerrar la app
+    """
+    Cierra completamente la aplicación.
+    """
     def closeApp(self):
         print("Cerrando aplicación...")
         self.close()
 
 
-    # Efecto de desvanecimiento
+    """
+    Aplica un efecto de fade-in al abrir la ventana principal.
+    """
     def fadeIn(self):
         effect = QGraphicsOpacityEffect(self)
         self.setGraphicsEffect(effect)
@@ -325,7 +403,9 @@ class MainWindow(QWidget):
         self.fade_anim = anim
 
 
-    # 'Pinto' el fondo de la pantalla con un degradado de negro a naranja
+    """
+    Dibuja el fondo de la ventana con un degradado dinámico según el tema visual.
+    """
     def paintEvent(self, event):
         painter = QPainter(self)
         rect = self.rect()
