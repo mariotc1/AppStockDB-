@@ -6,12 +6,11 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>launcher module &mdash; documentación de App Stock DB - 1.0</title>
+  <title>main module &mdash; documentación de App Stock DB - 1.0</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
-    <link rel="canonical" href="https://marioct1.github.io/AppStockDB-/launcher.html" />
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="_static/documentation_options.js?v=4936afed"></script>
@@ -44,7 +43,11 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <!-- Local TOC -->
               <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">launcher module</a></li>
+<li><a class="reference internal" href="#">main module</a><ul>
+<li><a class="reference internal" href="#main.load_session"><code class="docutils literal notranslate"><span class="pre">load_session()</span></code></a></li>
+<li><a class="reference internal" href="#main.show_main_with_loader"><code class="docutils literal notranslate"><span class="pre">show_main_with_loader()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </div>
         </div>
@@ -61,9 +64,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">launcher module</li>
+      <li class="breadcrumb-item active">main module</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/launcher.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
+            <a href="_sources/main.rst.txt" rel="nofollow"> Ver código fuente de la página</a>
       </li>
   </ul>
   <hr/>
@@ -71,37 +74,26 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-launcher">
-<span id="launcher-module"></span><h1>launcher module<a class="headerlink" href="#module-launcher" title="Link to this heading"></a></h1>
-<p>launcher.py</p>
-<p>Punto de entrada principal de la aplicación de escritorio.</p>
-<p>Este script lanza la interfaz gráfica de usuario (PyQt5) y arranca simultáneamente
-la API REST desarrollada en Flask como un proceso independiente.</p>
-<p>Flujo de ejecución:
-- Inicia el servidor Flask ejecutando <cite>start_api.py</cite>.
-- Carga el tema visual actual desde el <cite>ThemeManager</cite>.
-- Verifica si hay una sesión de usuario activa.</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>Si existe, abre la ventana principal de la aplicación con un loader.</p></li>
-<li><p>Si no existe, muestra la ventana de bienvenida.</p></li>
-</ul>
-</div></blockquote>
-<ul class="simple">
-<li><p>Al cerrar la aplicación, finaliza el proceso del servidor Flask.</p></li>
-</ul>
-<p>Este script debe ejecutarse directamente (<cite>__main__</cite>) y no ser importado como módulo.</p>
-<dl class="simple">
-<dt>Requiere:</dt><dd><ul class="simple">
-<li><p>Python 3.x</p></li>
-<li><p>PyQt5</p></li>
-<li><p>start_api.py (API REST)</p></li>
-<li><p>main.py (lógica principal)</p></li>
-<li><p>welcome_window.py (ventana inicial)</p></li>
-<li><p>themes/theme_manager.py (gestión de temas visuales)</p></li>
-</ul>
-</dd>
-</dl>
+  <section id="module-main">
+<span id="main-module"></span><h1>main module<a class="headerlink" href="#module-main" title="Link to this heading"></a></h1>
+<p>main.py</p>
+<p>Este módulo gestiona la carga de sesión del usuario y el arranque de la ventana principal
+de la aplicación PyQt5.</p>
+<p>Incluye funciones para:
+- Cargar el identificador de sesión guardado localmente.
+- Mostrar una pantalla de carga mientras se recuperan los datos del usuario desde la API.
+- Lanzar la ventana principal (<cite>MainWindow</cite>) con el usuario autenticado.</p>
+<p>Requiere que el servidor Flask esté corriendo localmente (<cite>http://localhost:5000</cite>).</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="main.load_session">
+<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">load_session</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#main.load_session" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="main.show_main_with_loader">
+<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">show_main_with_loader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#main.show_main_with_loader" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 </section>
 
 
