@@ -286,29 +286,86 @@ class MyProfileView(QWidget):
 
 
     """
-    Envía los cambios de nombre y/o contraseña a la API para su actualización.
-    Muestra un mensaje de confirmación o error según la respuesta.
-    """   
+    Envía los cambios del perfil del usuario a la API (nombre y, opcionalmente, contraseña).
+
+    Este método realiza las siguientes tareas:
+    - Valida que el nombre no esté vacío.
+    - Si se solicita un cambio de contraseña, valida que los campos estén completos, que las nuevas contraseñas coincidan y cumplan requisitos mínimos.
+    - Envía los datos actualizados al servidor mediante una petición POST.
+    - Si la respuesta es exitosa:
+        - Muestra un mensaje de confirmación.
+        - Recarga los datos del perfil.
+        - Limpia los campos de contraseña (accediendo directamente al line_edit).
+        - Bloquea nuevamente el campo de nombre para evitar ediciones accidentales.
+    - Si hay errores de validación o conexión, se informa al usuario mediante cuadros de diálogo estilizados.
+
+    Requiere que `PasswordField` exponga `line_edit` como atributo interno.
+    """ 
     def save_changes(self):
-        new_name = self.name_input.text()
-        old_pass = self.old_password.text()
-        new_pass = self.new_password.text()
-        confirm_pass = self.confirm_password.text()
-        
+        new_name = self.name_input.text().strip()
+        old_pass = self.old_password.text().strip()
+        new_pass = self.new_password.text().strip()
+        confirm_pass = self.confirm_password.text().strip()
+
+        # Validación del nombre
+        if not new_name:
+            self.show_message_box("Error", "El nombre no puede estar vacío.", "error")
+            return
+
+        # Validación del cambio de contraseña
+        cambiar_contrasena = any([old_pass, new_pass, confirm_pass])
+        if cambiar_contrasena:
+            # Todos los campos deben estar llenos
+            if not all([old_pass, new_pass, confirm_pass]):
+                self.show_message_box("Error", "Para cambiar la contraseña, completa todos los campos.", "error")
+                return
+
+            if new_pass != confirm_pass:
+                self.show_message_box("Error", "Las nuevas contraseñas no coinciden.", "error")
+                return
+
+            if len(new_pass) < 6:
+                self.show_message_box("Error", "La nueva contraseña debe tener al menos 6 caracteres.", "error")
+                return
+
+        # Preparar el payload
         data = {
             "user_id": self.user_id,
             "username": new_name,
-            "current_password": old_pass,
-            "new_password": new_pass,
-            "confirm_password": confirm_pass
         }
-        
-        response = requests.post(f"{API_BASE_URL}/update-profile", json=data)
-        if response.status_code == 200:
-            self.show_message_box("Éxito", "Perfil actualizado correctamente.", "info")
 
-        else:
-            self.show_message_box("Error", "No se pudieron guardar los cambios.", "error")
+        if cambiar_contrasena:
+            data["current_password"] = old_pass
+            data["new_password"] = new_pass
+            data["confirm_password"] = confirm_pass
+
+        try:
+            response = requests.post(f"{API_BASE_URL}/update-profile", json=data)
+
+            if response.status_code == 200:
+                self.show_message_box("Éxito", "Perfil actualizado correctamente.", "info")
+
+                # Refrescar datos
+                self.load_user_data()
+
+                # Limpiar campos de contraseña si se cambió
+                if cambiar_contrasena:
+                    self.old_password.line_edit.clear()
+                    self.new_password.line_edit.clear()
+                    self.confirm_password.line_edit.clear()
+
+                # Bloquear de nuevo el nombre para evitar edición accidental
+                self.name_input.setReadOnly(True)
+
+            else:
+                error_msg = response.json().get("error", "No se pudieron guardar los cambios.")
+                self.show_message_box("Error", error_msg, "error")
+
+        except requests.exceptions.ConnectionError:
+            self.show_message_box("Error", "No se pudo conectar con el servidor. Verifica tu conexión a internet.", "error")
+
+        except Exception as e:
+            self.show_message_box("Error", f"Ocurrió un error inesperado: {str(e)}", "error")
 
 
     """
