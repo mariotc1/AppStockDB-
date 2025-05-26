@@ -9,13 +9,13 @@ cantidad, fecha y dirección. Se incluyen filtros combinados por tipo, criterio 
 :param parent: Widget padre opcional.
 """
 
-import requests
+import requests, json
 
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QFont, QIcon, QPixmap
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QHBoxLayout, 
-    QPushButton, QScrollArea, QFrame, QComboBox, 
+    QPushButton, QScrollArea, QFrame, QComboBox, QCompleter,
     QLineEdit, QMessageBox, QGridLayout, QSpacerItem, QSizePolicy
 )
 
@@ -39,72 +39,64 @@ class TransactionHistorySubview(QWidget):
     Configura la interfaz gráfica con filtros, área scrollable, botones y carga inicial del historial.
     """
     def initUI(self):
+        import json
+        try:
+            with open("config/settings.json", "r") as f:
+                config = json.load(f)
+                current_theme = config.get("theme", "light")
+        except:
+            current_theme = "light"
+
         layout = QVBoxLayout(self)
 
         # Filtros
         filtros_layout = QHBoxLayout()
         filtros_layout.setSpacing(15)
 
+        combo_style = """
+        QComboBox {
+            background-color: %s;
+            color: %s;
+            border: 2px solid #FFA500;
+            border-radius: 10px;
+            padding: 8px 30px 8px 8px;
+            font-size: 14px;
+        }
+        QComboBox::drop-down {
+            subcontrol-origin: padding;
+            subcontrol-position: top right;
+            width: 25px;
+            border-left: 1px solid #FFA500;
+        }
+        QComboBox::down-arrow {
+            image: url(images/desplegable.png);
+            width: 16px;
+            height: 16px;
+        }
+        QComboBox QAbstractItemView {
+            background-color: %s;
+            color: %s;
+            selection-background-color: #FFA500;
+            font-size: 14px;
+        }
+        """ % (
+            "#ffffff" if current_theme == "light" else "#222222",
+            "#000000" if current_theme == "light" else "#ffffff",
+            "#ffffff" if current_theme == "light" else "#222222",
+            "#000000" if current_theme == "light" else "#ffffff"
+        )
+
         self.tipo_combo = QComboBox()
         self.tipo_combo.addItems(["Todos", "Entrada", "Salida"])
         self.tipo_combo.setFixedWidth(180)
-        self.tipo_combo.setStyleSheet("""
-            QComboBox {
-                background-color: #ffffff;
-                color: #000000;
-                border: 2px solid #FFA500;
-                border-radius: 10px;
-                padding: 8px 30px 8px 8px;
-                font-size: 14px;
-            }
-            QComboBox::drop-down {
-                subcontrol-origin: padding;
-                subcontrol-position: top right;
-                width: 25px;
-                border-left: 1px solid #FFA500;
-            }
-            QComboBox::down-arrow {
-                image: url(images/desplegable.png);
-                width: 16px;
-                height: 16px;
-            }
-            QComboBox QAbstractItemView {
-                background-color: white;
-                selection-background-color: #FFA500;
-                font-size: 14px;
-            }
-        """)
-
         self.criterio_combo = QComboBox()
+        
         self.criterio_combo.addItems(["Producto", "Dirección", "Fecha"])
         self.criterio_combo.setFixedWidth(180)
-        self.criterio_combo.setStyleSheet("""
-            QComboBox {
-                background-color: #ffffff;
-                color: #000000;
-                border: 2px solid #FFA500;
-                border-radius: 10px;
-                padding: 8px 30px 8px 8px;
-                font-size: 14px;
-            }
-            QComboBox::drop-down {
-                subcontrol-origin: padding;
-                subcontrol-position: top right;
-                width: 25px;
-                border-left: 1px solid #FFA500;
-            }
-            QComboBox::down-arrow {
-                image: url(images/desplegable.png);
-                width: 16px;
-                height: 16px;
-            }
-            QComboBox QAbstractItemView {
-                background-color: white;
-                selection-background-color: #FFA500;
-                font-size: 14px;
-            }
-        """)
-
+        
+        self.tipo_combo.setStyleSheet(combo_style)
+        self.criterio_combo.setStyleSheet(combo_style)
+        
         self.nombre_input = QLineEdit()
         self.nombre_input.setPlaceholderText("🔍 Buscar...")
         self.nombre_input.setFixedWidth(250)
@@ -247,10 +239,47 @@ class TransactionHistorySubview(QWidget):
             elif criterio == "fecha":
                 sugerencias = list({m["fecha_movimiento"].split(" ")[0] for m in movimientos})
 
-            from PyQt5.QtWidgets import QCompleter
             completer = QCompleter(sugerencias)
             completer.setCaseSensitivity(Qt.CaseInsensitive)
+            completer.setFilterMode(Qt.MatchContains)
+            completer.setCompletionMode(QCompleter.PopupCompletion)
             self.nombre_input.setCompleter(completer)
+
+            # Estilo dinámico
+            popup = completer.popup()
+
+            try:
+                with open("config/settings.json", "r") as f:
+                    config = json.load(f)
+                    current_theme = config.get("theme", "light")
+            except:
+                current_theme = "light"
+
+            popup.setStyleSheet("""
+            QListView {
+                background-color: %s;
+                color: %s;
+                font-size: 14px;
+                border: 1px solid #FFA500;
+                border-radius: 8px;
+                padding: 4px;
+            }
+            QListView::item {
+                padding: 6px;
+            }
+            QListView::item:hover {
+                background-color: %s;
+            }
+            QScrollBar:vertical, QScrollBar:horizontal {
+                width: 0px;
+                height: 0px;
+            }
+            """ % (
+                "#FFFFFF" if current_theme == "light" else "#222222",  # fondo
+                "#000000" if current_theme == "light" else "#FFFFFF",  # texto
+                "#FFE0B3" if current_theme == "light" else "#444444"   # hover
+            ))
+
 
     """
     Crea tarjetas visuales para representar cada movimiento (entrada/salida) y las añade al layout.
