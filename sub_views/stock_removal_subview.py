@@ -58,34 +58,52 @@ class StockRemovalSubview(QWidget):
         filter_layout.setSpacing(15)
 
         self.combo_filtro = QComboBox()
+        import json
+        try:
+            with open("config/settings.json", "r") as f:
+                config = json.load(f)
+                current_theme = config.get("theme", "light")
+        except:
+            current_theme = "light"
+
+        # Estilo dinámico del combo
+        combo_style = """
+        QComboBox {
+            background-color: %s;
+            color: %s;
+            border: 2px solid #FFA500;
+            border-radius: 10px;
+            padding: 8px 30px 8px 8px;
+            font-size: 14px;
+        }
+        QComboBox::drop-down {
+            subcontrol-origin: padding;
+            subcontrol-position: top right;
+            width: 25px;
+            border-left: 1px solid #FFA500;
+        }
+        QComboBox::down-arrow {
+            image: url(images/desplegable.png);
+            width: 16px;
+            height: 16px;
+        }
+        QComboBox QAbstractItemView {
+            background-color: %s;
+            color: %s;
+            selection-background-color: #FFA500;
+            font-size: 14px;
+        }
+        """ % (
+            "#ffffff" if current_theme == "light" else "#222222",  # fondo combo
+            "#000000" if current_theme == "light" else "#ffffff",  # texto combo
+            "#ffffff" if current_theme == "light" else "#222222",  # fondo opciones
+            "#000000" if current_theme == "light" else "#ffffff",  # texto opciones
+        )
+
+        self.combo_filtro.setStyleSheet(combo_style)
+
         self.combo_filtro.addItems(["Dirección", "Producto", "Fecha"])
         self.combo_filtro.setFixedWidth(180)
-        self.combo_filtro.setStyleSheet("""
-            QComboBox {
-                background-color: #ffffff;
-                color: #000000;
-                border: 2px solid #FFA500;
-                border-radius: 10px;
-                padding: 8px 30px 8px 8px;
-                font-size: 14px;
-            }
-            QComboBox::drop-down {
-                subcontrol-origin: padding;
-                subcontrol-position: top right;
-                width: 25px;
-                border-left: 1px solid #FFA500;
-            }
-            QComboBox::down-arrow {
-                image: url(images/desplegable.png);
-                width: 16px;
-                height: 16px;
-            }
-            QComboBox QAbstractItemView {
-                background-color: white;
-                selection-background-color: #FFA500;
-                font-size: 14px;
-            }
-        """)
         filter_layout.addWidget(self.combo_filtro)
 
         self.line_edit_filtro = QLineEdit()
@@ -102,6 +120,37 @@ class StockRemovalSubview(QWidget):
             }
         """)
         self.line_edit_filtro.setCompleter(self.completer)  # Asigna el completer al line edit
+        popup = self.completer.popup()
+        popup.setStyleSheet(
+            """
+            QListView {
+                background-color: %s;
+                color: %s;
+                font-size: 14px;
+                border: 1px solid #FFA500;
+                border-radius: 8px;
+                padding: 4px;
+            }
+
+            QListView::item {
+                padding: 6px;
+            }
+
+            QListView::item:hover {
+                background-color: %s;
+            }
+
+            QScrollBar:vertical, QScrollBar:horizontal {
+                width: 0px;
+                height: 0px;
+            }
+            """ % (
+                "#FFFFFF" if current_theme == "light" else "#222222",  # fondo
+                "#000000" if current_theme == "light" else "#FFFFFF",  # texto
+                "#FFE0B3" if current_theme == "light" else "#444444"   # hover
+            )
+        )
+
         filter_layout.addWidget(self.line_edit_filtro)
 
         self.calendar_widget = QCalendarWidget()
