@@ -48,6 +48,48 @@ class CurrentStockSubview(QWidget):
         self.suggestions = []  # Lista para almacenar sugerencias
         self.completer = QCompleter(self.suggestions, self)
         self.completer.setCaseSensitivity(Qt.CaseInsensitive)
+        
+        # Detectar tema actual
+        import json
+        try:
+            with open("config/settings.json", "r") as f:
+                config = json.load(f)
+                current_theme = config.get("theme", "light")
+        except:
+            current_theme = "light"
+
+        # Aplicar estilo visual al QListView del QCompleter
+        popup = self.completer.popup()
+        popup.setStyleSheet(
+            """
+            QListView {
+                background-color: %s;
+                color: %s;
+                font-size: 14px;
+                border: 1px solid #FFA500;
+                border-radius: 8px;
+                padding: 4px;
+            }
+
+            QListView::item {
+                padding: 6px;
+            }
+
+            QListView::item:hover {
+                background-color: %s;
+            }
+
+            QScrollBar:vertical, QScrollBar:horizontal {
+                width: 0px;
+                height: 0px;
+            }
+            """ % (
+                "#FFFFFF" if current_theme == "light" else "#222222",  # fondo
+                "#000000" if current_theme == "light" else "#FFFFFF",  # texto
+                "#FFE0B3" if current_theme == "light" else "#444444"   # hover
+            )
+        )
+
         self.initUI()
         self.load_stock_data()
 
