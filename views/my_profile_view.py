@@ -66,8 +66,6 @@ class MyProfileView(QWidget):
         main_layout.setContentsMargins(20, 20, 20, 20)
         main_layout.setSpacing(15)
 
-        self.setStyleSheet("background: transparent;")
-
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
         scroll_area.setStyleSheet("background: transparent; border: none;")
@@ -241,46 +239,28 @@ class MyProfileView(QWidget):
     :param icon_type: Tipo de mensaje ('info' o 'error').
     """
     def show_message_box(self, title, message, icon_type="info"):
-        msg_box = QMessageBox(self)
-        
-        # Estilo del cuadro de diálogo
-        msg_box.setStyleSheet("""
-            QMessageBox {
-                background-color: white;
-                color: black;
-                border: 2px solid #FFA500;
-                border-radius: 12px;
-                font-size: 16px;
-            }
-            QLabel {
-                color: black;
-            }
-            QPushButton {
-                background-color: #FFA500;
-                border: none;
-                color: white;
-                padding: 8px 16px;
-                border-radius: 8px;
-            }
-            QPushButton:hover {
-                background-color: #FF8C00;
-            }
-        """)
+        import json
+        try:
+            with open("config/settings.json", "r") as f:
+                config = json.load(f)
+                current_theme = config.get("theme", "light")
+        except:
+            current_theme = "light"
 
-        # Icono del mensaje
+        msg_box = QMessageBox(self)
+        msg_box.setWindowTitle(title)
+        msg_box.setText(message)
+
+        # Icono tipo
         if icon_type == "info":
             msg_box.setIcon(QMessageBox.Information)
         elif icon_type == "error":
             msg_box.setIcon(QMessageBox.Critical)
 
-        # Título e información
-        msg_box.setWindowTitle(title)
-        msg_box.setText(message)
-        
-        # Agregar logo personalizado
-        logo = QLabel()
-        logo.setPixmap(QPixmap("images/logoDB_Negro.png").scaled(50, 50, Qt.KeepAspectRatio, Qt.SmoothTransformation))
-        msg_box.setIconPixmap(logo.pixmap())
+        # Logo dinámico según tema
+        logo_path = "images/logoDB_Blanco.png" if current_theme == "dark" else "images/logoDB_Negro.png"
+        logo = QPixmap(logo_path).scaled(50, 50, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        msg_box.setIconPixmap(logo)
 
         msg_box.exec_()
 
