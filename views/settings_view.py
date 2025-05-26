@@ -50,7 +50,6 @@ class SettingsView(QWidget):
     - Footer informativo
     """
     def initUI(self):
-        self.setStyleSheet("background-color: transparent;")
 
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(40, 20, 40, 20)
@@ -227,7 +226,7 @@ class SettingsView(QWidget):
             with open("config/settings.json", "r") as f:
                 config = json.load(f)
                 current_theme = config.get("theme", "light")
-        except (FileNotFoundError, json.JSONDecodeError):
+        except:
             current_theme = "light"
 
         msg_box = QMessageBox(self)
@@ -235,11 +234,9 @@ class SettingsView(QWidget):
         msg_box.setText(message)
         msg_box.setIcon(icon)
 
-        # Logo dinámico según tema
-        if current_theme == "dark":
-            logo = QPixmap("images/logoDB_Blanco.png").scaled(64, 64, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        else:
-            logo = QPixmap("images/logoDB_Negro.png").scaled(64, 64, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-
+        # Logo según el tema
+        logo_path = "images/logoDB_Negro.png" if current_theme == "dark" else "images/logoDB_Blanco.png"
+        logo = QPixmap(logo_path).scaled(64, 64, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         msg_box.setIconPixmap(logo)
+
         msg_box.exec_()
