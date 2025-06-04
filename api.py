@@ -36,13 +36,18 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
-# Configuración de la base de datos MySQL
+from dotenv import load_dotenv
+
+load_dotenv()  # Carga las variables desde el archivo .env
+
 db_config = {
-    'user': 'root',               
-    'password': '#Lavida13',          
-    'host': 'localhost',    
-    'database': 'db_inmuebles'
+    'user': os.getenv("DB_USER"),
+    'password': os.getenv("DB_PASSWORD"),
+    'host': os.getenv("DB_HOST"),
+    'port': int(os.getenv("DB_PORT")),
+    'database': os.getenv("DB_NAME")
 }
+
 
 def get_db_connection():
     return mysql.connector.connect(**db_config)
