@@ -25,7 +25,7 @@ from dialogs.delete_selected_product_dialog import DeleteSelectedProductDialog
 from dialogs.delete_multiple_dialog import DeleteMultipleDialog
 
 # Url para la conexión con la api rest
-API_BASE_URL = "http://localhost:5000"
+API_BASE_URL = "http://127.0.0.1:5000"
 
 # Clase para la subvista de Salida de Stock
 class StockRemovalSubview(QWidget):

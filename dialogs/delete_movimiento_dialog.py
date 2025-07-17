@@ -26,7 +26,7 @@ from PyQt5.QtWidgets import (
 )
 
 # URL para la conexión con la API
-API_BASE_URL = "http://localhost:5000"
+API_BASE_URL = "http://127.0.0.1:5000"
 
 
 class DeleteMovimientoDialog(QDialog):

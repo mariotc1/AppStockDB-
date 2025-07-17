@@ -21,7 +21,7 @@ from PyQt5.QtWidgets import (
 
 from dialogs.delete_movimiento_dialog import DeleteMovimientoDialog
 
-API_BASE_URL = "http://localhost:5000"
+API_BASE_URL = "http://127.0.0.1:5000"
 
 class TransactionHistorySubview(QWidget):
     """

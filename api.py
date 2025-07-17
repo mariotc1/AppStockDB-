@@ -278,7 +278,7 @@ def upload_profile_picture():
         cursor.execute("UPDATE usuarios SET profile_picture = %s WHERE id = %s", (filename, user_id))
         cnx.commit()
         
-        return jsonify({'message': 'Foto de perfil actualizada', 'file_path': f"http://localhost:5000/uploads/{filename}"}), 200
+        return jsonify({'message': 'Foto de perfil actualizada', 'file_path': f"http://127.0.0.1:5000/uploads/{filename}"}), 200
     except mysql.connector.Error as err:
         return jsonify({'error': str(err)}), 500
     finally:
@@ -309,7 +309,7 @@ def get_user(user_id):
         # Verificar si hay foto de perfil guardada
         if user["profile_picture"]:
             # Asegurarse que siempre se construya correctamente la URL
-            user["profile_picture"] = f"http://localhost:5000/uploads/{user['profile_picture']}"
+            user["profile_picture"] = f"http://127.0.0.1:5000/uploads/{user['profile_picture']}"
         else:
             # Devolver la imagen por defecto si no hay personalizada
             user["profile_picture"] = "images/b_usuario.png"

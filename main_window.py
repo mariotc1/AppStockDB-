@@ -57,7 +57,7 @@ from views.my_profile_view import MyProfileView
 from views.settings_view import SettingsView
 
 # URL para la conexión y uso de la api rest
-API_BASE_URL = "http://localhost:5000"
+API_BASE_URL = "http://127.0.0.1:5000"
 
 
 # Clase principal de la app

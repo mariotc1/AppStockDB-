@@ -28,7 +28,7 @@ from styles.styled_line_edit import StyledLineEdit
 from styles.password_field import PasswordField
 
 # URL de la api para la conexión con la api rest
-API_BASE_URL = "http://localhost:5000"
+API_BASE_URL = "http://127.0.0.1:5000"
 
 
 class MyProfileView(QWidget):

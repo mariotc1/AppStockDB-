@@ -327,7 +327,7 @@ class LoginWindow(QWidget):
     pantalla de carga y abre la ventana principal.
     """
     def login(self):
-        url = "http://localhost:5000/login"
+        url = "http://127.0.0.1:5000/login"
 
         data = {
             "email": self.email_field.itemAt(1).widget().text(),
@@ -509,7 +509,7 @@ class LoginWindow(QWidget):
             self.showDialog("Error", "El correo electrónico no es válido.", QMessageBox.Critical)
             return
 
-        url = "http://localhost:5000/forgot-password"
+        url = "http://127.0.0.1:5000/forgot-password"
         data = {"email": email}
 
         try:

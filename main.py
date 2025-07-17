@@ -9,7 +9,7 @@ Incluye funciones para:
 - Mostrar una pantalla de carga mientras se recuperan los datos del usuario desde la API.
 - Lanzar la ventana principal (`MainWindow`) con el usuario autenticado.
 
-Requiere que el servidor Flask esté corriendo localmente (`http://localhost:5000`).
+Requiere que el servidor Flask esté corriendo localmente (`http://127.0.0.1:5000`).
 """
 
 import sys, json, os, requests
@@ -51,7 +51,7 @@ Args:
 """
 def show_main_with_loader(user_id):
     try:
-        response = requests.get(f"http://localhost:5000/get-user/{user_id}")
+        response = requests.get(f"http://127.0.0.1:5000/get-user/{user_id}")
         if response.status_code == 200:
             username = response.json().get("username", "Usuario")
         else:

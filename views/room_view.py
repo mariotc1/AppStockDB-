@@ -28,7 +28,7 @@ from sub_views.stock_removal_subview import StockRemovalSubview
 from sub_views.transaction_history_subview import TransactionHistorySubview
 
 # URL para la conexión con la api rest
-API_BASE_URL = "http://localhost:5000"
+API_BASE_URL = "http://127.0.0.1:5000"
 
 # Clase principal de la svista de Habitaciones
 class RoomView(QWidget):

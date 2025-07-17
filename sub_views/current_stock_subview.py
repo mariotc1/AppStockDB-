@@ -29,7 +29,7 @@ from dialogs.edit_product_dialog import EditProductDialog
 from dialogs.delete_product_dialog import DeleteProductDialog
 
 # URL para la conexión con la base de datos
-API_BASE_URL = "http://localhost:5000"
+API_BASE_URL = "http://127.0.0.1:5000"
 
 
 # Clase principal de la subvista de salida de stock
