@@ -314,7 +314,7 @@ class MainWindow(QWidget):
     Returns:
         bool: True si el evento fue procesado.
     """
-    def eventFilter(self, source, event):
+    def eventFilter(self, source, event):  # type: ignore[override]
         if source == self.lateral_menu:
             if event.type() == QEvent.Enter:
                 self.expandMenu()
@@ -405,7 +405,7 @@ class MainWindow(QWidget):
     """
     Dibuja el fondo de la ventana con un degradado dinámico según el tema visual.
     """
-    def paintEvent(self, event):
+    def paintEvent(self, event):  # type: ignore[override]
         painter = QPainter(self)
         rect = self.rect()
         gradient = QLinearGradient(0, 0, 0, rect.height())
@@ -442,6 +442,6 @@ if __name__ == "__main__":
         with open("themes/light.qss", "r") as f:
             app.setStyleSheet(f.read())
 
-    window = MainWindow()
+    window = MainWindow(user_id=1)
     window.show()
     sys.exit(app.exec_())

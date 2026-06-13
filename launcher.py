@@ -18,7 +18,7 @@ import time
 _FROZEN = getattr(sys, 'frozen', False)
 
 if _FROZEN:
-    _BASE_DIR = sys._MEIPASS
+    _BASE_DIR = getattr(sys, '_MEIPASS')  # type: ignore[attr-defined]
     os.chdir(_BASE_DIR)
 else:
     _BASE_DIR = os.path.dirname(os.path.abspath(__file__))

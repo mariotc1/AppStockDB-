@@ -1,6 +1,10 @@
 # Development-only dependencies
 # Install with: pip install -r requirements-dev.txt
 
+# Type stubs (IDE / static analysis only — not needed at runtime)
+types-requests==2.32.0.20241016
+PyQt5-stubs==5.15.6.0
+
 # Documentation
 Sphinx==8.2.3
 sphinx-autodoc-typehints==3.2.0

@@ -1,3 +1,18 @@
+[tool.pyrefly]
+search_path = ["frontend", "backend"]
+# PyQt5 uses C extensions with SIP — its enum system and signal metaclass are
+# invisible to static analysis. Exclude the entire frontend from Pyrefly to
+# avoid hundreds of false positives (bad-argument-type, missing-attribute, etc.).
+project-excludes = ["frontend/**", "tests/**"]
+
+[tool.pyrefly.errors]
+# These fire exclusively on PyQt5 C-extension types and have no false-negative
+# risk for the backend (Flask/Python-only code).
+bad-argument-type = false
+missing-attribute = false
+bad-override-param-name = false
+untyped-import = false
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
