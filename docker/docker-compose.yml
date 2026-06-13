@@ -1,0 +1,68 @@
+services:
+
+  # ── Base de datos ──────────────────────────────────────────────────────────
+  db:
+    image: mysql:8.0
+    container_name: appstockdb_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${DB_NAME:-db_inmuebles}
+      MYSQL_USER: ${DB_USER:-appuser}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-apppassword}
+    ports:
+      - "3307:3306"    # 3307 en el host → 3306 en el contenedor (evita conflicto con MySQL local)
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ../database/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root",
+             "-p${DB_ROOT_PASSWORD:-rootpassword}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  # ── API Flask (gunicorn) ───────────────────────────────────────────────────
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: appstockdb_api
+    restart: unless-stopped
+    ports:
+      - "5001:5000"    # 5001 en el host (5000 lo ocupa AirPlay en macOS)
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: ${DB_USER:-appuser}
+      DB_PASSWORD: ${DB_PASSWORD:-apppassword}
+      DB_NAME: ${DB_NAME:-db_inmuebles}
+      API_BASE_URL: http://localhost:5001
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - uploads_data:/app/uploads
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]    # puerto interno del contenedor
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # ── Adminer — interfaz web para explorar la base de datos ─────────────────
+  adminer:
+    image: adminer:4
+    container_name: appstockdb_adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+
+volumes:
+  mysql_data:
+    name: appstockdb_mysql_data
+  uploads_data:
+    name: appstockdb_uploads

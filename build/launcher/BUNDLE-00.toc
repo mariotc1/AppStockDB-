@@ -1,3 +1,0 @@
-([('launcher',
-   '/Users/mariotomecore/AppStockDB-/dist/launcher',
-   'EXECUTABLE')],)
