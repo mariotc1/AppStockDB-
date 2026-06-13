@@ -1,0 +1,31 @@
+# Overrides de producción — usar junto al compose base:
+#   docker compose -f docker/docker-compose.yml -f docker/docker-compose.prod.yml up -d
+
+services:
+
+  api:
+    restart: always
+    command:
+      - gunicorn
+      - --bind
+      - "0.0.0.0:5000"
+      - --workers
+      - "4"
+      - --timeout
+      - "120"
+      - --access-logfile
+      - "-"
+      - --error-logfile
+      - "-"
+      - api:app
+    environment:
+      FLASK_ENV: production
+
+  db:
+    restart: always
+
+  # En producción Adminer no debe estar expuesto públicamente.
+  # Descomenta solo para mantenimiento puntual y vuelve a comentarlo.
+  adminer:
+    profiles:
+      - maintenance
